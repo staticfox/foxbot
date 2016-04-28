@@ -12,8 +12,6 @@ AC_PROG_CC
 AC_PROG_YACC
 AM_PROG_LEX
 
-dnl Checks for libraries.
-
 dnl Checks for header files.
 AC_CHECK_HEADERS([malloc.h netdb.h stdlib.h string.h sys/socket.h unistd.h])
 
