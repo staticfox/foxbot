@@ -41,28 +41,32 @@ is_registered(void)
 
 /* IRC related socket helpers */
 void
-privmsg(const char *target, const char *message) {
+privmsg(const char *target, const char *message)
+{
     char buf[MAX_IRC_BUF];
     snprintf(buf, sizeof(buf), "PRIVMSG %s :%s\n", target, message);
     raw(buf);
 }
 
 void
-join(const char *channel) {
+join(const char *channel)
+{
     char buf[MAX_IRC_BUF];
     snprintf(buf, sizeof(buf), "JOIN %s\n", channel);
     raw(buf);
 }
 
 void
-do_quit(const char *message) {
+do_quit(const char *message)
+{
     char buf[MAX_IRC_BUF];
     snprintf(buf, sizeof(buf), "QUIT :%s\n", message);
     raw(buf);
 }
 
 void
-do_error(char *line, ...) {
+do_error(char *line, ...)
+{
     char buf[MAX_IO_BUF] = { 0 };
     va_list ap;
     va_start(ap, line);
@@ -77,7 +81,8 @@ do_error(char *line, ...) {
 
 /* Command parser functions */
 static int
-do_set_enum(const char *command, enum commands ecmd) {
+do_set_enum(const char *command, enum commands ecmd)
+{
     if (strcmp(bot.msg->command, command) == 0) {
         bot.msg->ctype = ecmd;
         return 1;
@@ -292,8 +297,7 @@ end:
 }
 
 int
-main(/*int argc, char **argv*/)
-{
+main(/*int argc, char **argv*/) {
     bot.msg = xmalloc(sizeof(*bot.msg));
     bot.msg->from = xmalloc(sizeof(*bot.msg->from));
 
