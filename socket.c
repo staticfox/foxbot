@@ -118,9 +118,9 @@ raw(char *fmt, ...)
 void
 io(void)
 {
-    char inbuf[MAX_IO_BUF], innbuf[MAX_IO_BUF];
-    size_t inbuf_used = 0, buf_used = 0;
-    size_t buf_remain = sizeof(inbuf) - inbuf_used;
+    static char inbuf[MAX_IO_BUF];
+    static size_t buf_used;
+    size_t buf_remain = sizeof(inbuf) - buf_used;
 
     if (buf_remain == 0) {
         fprintf(stderr, "Line exceeded buffer length\n");
@@ -128,7 +128,7 @@ io(void)
         return;
     }
 
-    ssize_t rv = recv(bot.fd, (void *)&inbuf[inbuf_used], buf_remain, 0);
+    ssize_t rv = recv(bot.fd, inbuf + buf_used, buf_remain, 0);
 
     if (rv == 0) {
         fprintf(stderr, "Remote host closed the connection\n");
@@ -164,5 +164,5 @@ io(void)
 
     /* Shift buffer down so the unprocessed data is at the start */
     buf_used -= (line_start - inbuf);
-    memmove(innbuf, line_start, buf_used);
+    memmove(inbuf, line_start, buf_used);
 }
