@@ -1,7 +1,7 @@
 dnl                                               -*- Autoconf -*-
 dnl Process this file with autoconf to produce a configure script.
 
-AC_PREREQ([2.69])
+AC_PREREQ([2.68])
 AC_INIT(foxbot, 0.0.1, staticfox@staticfox.net)
 AM_INIT_AUTOMAKE
 AC_CONFIG_SRCDIR([foxbot.c])
