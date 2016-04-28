@@ -1,6 +1,5 @@
 # foxbot automake file
 
-AUTOMAKE_OPTIONS = foreign
 AM_YFLAGS = -d
 
 if DEBUG
