@@ -282,7 +282,7 @@ parse_line(const char *line)
         if (strlen(line) > len)
             bot.msg->params = xstrdup(line + len);
         else if (bot.msg->ctype != JOIN && bot.msg->ctype != PART)
-            printf("hmm? (%zu) > %zu - Command: %s\n", strlen(line), len, bot.msg->command);
+            do_error("Received command with no arguments: (%zu) > %zu - Command: %s\n", strlen(line), len, bot.msg->command);
     }
 
     call_hooks();
