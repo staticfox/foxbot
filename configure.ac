@@ -23,7 +23,7 @@ AC_TYPE_SSIZE_T
 dnl Checks for library functions.
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
-AC_CHECK_FUNCS([memchr memmove memset socket strerror strstr])
+AC_CHECK_FUNCS([memchr memmove memset socket strcspn strerror strstr])
 
 dnl debugging information
 AC_MSG_CHECKING(whether to enable debugging symbols)
