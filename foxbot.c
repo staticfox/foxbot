@@ -23,6 +23,7 @@
 #define _POSIX_C_SOURCE 201112L
 
 #include <assert.h>
+#include <fcntl.h>
 #include <netdb.h>
 #include <stdarg.h>
 #include <sys/types.h>
@@ -51,6 +52,7 @@ is_registered(void)
 static int
 create_and_bind(void)
 {
+    int flags;
     struct addrinfo hints;
 
     memset(&hints, 0, sizeof(hints));
@@ -69,6 +71,11 @@ create_and_bind(void)
         perror("socket");
         exit(EXIT_FAILURE);
     }
+
+    if(-1 == (flags = fcntl(bot.fd, F_GETFL, 0)))
+        flags = 0;
+
+    fcntl(bot.fd, F_SETFL, flags | O_NONBLOCK);
 
     return 0;
 }
@@ -392,7 +399,7 @@ io(void)
         return;
     }
 
-    ssize_t rv = recv(bot.fd, (void *)&inbuf[inbuf_used], buf_remain, MSG_DONTWAIT);
+    ssize_t rv = recv(bot.fd, (void *)&inbuf[inbuf_used], buf_remain, 0);
 
     if (rv == 0) {
         fprintf(stderr, "Remote host closed the connection\n");
@@ -401,7 +408,7 @@ io(void)
     }
 
     /* no data for now, call back when the socket is readable */
-    if (rv < 0 && errno == EAGAIN)
+    if (rv < 0 && (errno == EAGAIN || errno == EWOULDBLOCK))
         return;
 
     if (rv < 0) {

@@ -14,6 +14,7 @@ AM_PROG_LEX
 
 dnl Checks for header files.
 AC_CHECK_HEADERS([malloc.h netdb.h stdlib.h string.h sys/socket.h unistd.h])
+AC_CHECK_HEADERS([fcntl.h], [], [AC_MSG_ERROR([Could not find fcntl.h.])])
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL
