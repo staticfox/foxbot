@@ -36,15 +36,19 @@ unsigned long long num_allocs = { 0 };
 # define MEMDEBUG(f, ...)
 #endif
 
+#ifdef HAVE_MALLOC_H
+#include <malloc.h>
+#endif
+
+#ifndef HAVE_MALLOC_USABLE_SIZE
+#define malloc_usable_size(x) 0
+#endif
+
 static unsigned long long
 max(unsigned long long x, unsigned long long y)
 {
     return x > y ? x : y;
 }
-
-#ifndef HAVE_MALLOC_USABLE_SIZE
-#define malloc_usable_size(x) 0
-#endif
 
 void *
 xmalloc(size_t bytes)

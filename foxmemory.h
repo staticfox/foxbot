@@ -21,13 +21,8 @@
  */
 
 #include <stdlib.h>
-#include <memory.h>
 
 #include "config.h"
-
-#ifdef HAVE_MALLOC_H
-#include <malloc.h>
-#endif
 
 void * xmalloc(size_t bytes);
 void * xcalloc(size_t n, size_t s);
