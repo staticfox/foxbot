@@ -24,8 +24,8 @@
 
 #include "conf.h"
 #include "foxbot.h"
-#include "foxsignal.h"
 #include "foxmemory.h"
+#include "signal.h"
 #include "socket.h"
 #include "stdinc.h"
 

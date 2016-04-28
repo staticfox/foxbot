@@ -1,5 +1,5 @@
 /*
- *   foxsignal.h -- April 27 2016 15:02:30 EST
+ *   signal.c -- April 27 2016 15:02:57 EST
  *
  *   This file is part of the foxbot IRC bot
  *   Copyright (C) 2016 Matt Ullman (staticfox at staticfox dot net)
@@ -20,4 +20,30 @@
  *
  */
 
-void setup_signals(void);
+#define _POSIX_C_SOURCE 201112L
+
+#include <stdio.h>
+
+#include "foxbot.h"
+#include "signal.h"
+
+static void
+sigint_handler(int sig)
+{
+    (void)sig;
+    quitting = 2;
+}
+
+void
+setup_signals(void)
+{
+    sigset_t sigs;
+    struct sigaction act;
+
+    sigemptyset(&sigs);
+
+    act.sa_handler = sigint_handler;
+    sigaddset(&act.sa_mask, SIGINT);
+    sigaction(SIGINT, &act, 0);
+    sigaddset(&sigs, SIGINT);
+}

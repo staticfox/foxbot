@@ -11,8 +11,8 @@ foxbot_SOURCES = conf.c \
                  foxbot.h \
                  foxmemory.c \
                  foxmemory.h \
-                 foxsignal.c \
-                 foxsignal.h \
+                 signal.c \
+                 signal.h \
                  socket.c \
                  socket.h \
                  stdinc.h

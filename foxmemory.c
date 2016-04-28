@@ -22,7 +22,7 @@
 
 #include "foxbot.h"
 #include "foxmemory.h"
-#include "foxsignal.h" /* raise SIGUSR1 */
+#include "signal.h" /* raise SIGUSR1 */
 #include "stdinc.h"
 
 static int alive = 1;
