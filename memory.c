@@ -23,11 +23,6 @@
 #include "memory.h"
 #include "stdinc.h"
 
-static int alive = 1;
-unsigned long long heap = { 0 };
-unsigned long long heap_max = { 0 };
-unsigned long long num_allocs = { 0 };
-
 #ifdef WANT_MEMDEBUG
 # define MEMDEBUG(f, ...) printf((f), __VA_ARGS__)
 #else
@@ -41,6 +36,11 @@ unsigned long long num_allocs = { 0 };
 #ifndef HAVE_MALLOC_USABLE_SIZE
 #define malloc_usable_size(x) 0
 #endif
+
+static int alive = 1;
+unsigned long long heap = { 0 };
+unsigned long long heap_max = { 0 };
+unsigned long long num_allocs = { 0 };
 
 static unsigned long long
 max(unsigned long long x, unsigned long long y)
