@@ -25,7 +25,7 @@
 #include "foxsignal.h" /* raise SIGUSR1 */
 #include "stdinc.h"
 
-int alive = 1;
+static int alive = 1;
 unsigned long long heap = { 0 };
 unsigned long long heap_max = { 0 };
 unsigned long long num_allocs = { 0 };
@@ -121,12 +121,13 @@ xfree(void *x)
 void *
 xstrdup(const char *s)
 {
-    void *ret = xmalloc(strlen(s) + 1);
+    size_t size = strlen(s) + 1;
+    void *ret = xmalloc(size);
 
     if (ret == NULL)
         outofmemory();
 
-    strcpy(ret, s);
+    memcpy(ret, s, size);
 
     return ret;
 }
@@ -135,5 +136,7 @@ void
 outofmemory(void)
 {
     alive = 0;
-    raise(SIGUSR1);
+    fprintf(stderr, "Out of memory! x.x\n");
+    fflush(stderr);
+    abort();
 }

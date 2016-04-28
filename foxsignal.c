@@ -28,28 +28,10 @@
 #include "foxsignal.h"
 
 static void
-sigusr1_handler(int sig)
-{
-    (void) sig;
-    char buf[MAX_IRC_BUF];
-    snprintf(buf, sizeof(buf), "%s", "Out of memory!");
-    do_error(buf);
-
-    if (is_registered())
-        do_quit(buf);
-}
-
-static void
 sigint_handler(int sig)
 {
-    char buf[MAX_IRC_BUF];
-
-    if (is_registered()) {
-        snprintf(buf, sizeof(buf), "Exiting on signal %d", sig);
-        do_quit(buf);
-    }
-
-    quitting = true;
+    (void)sig;
+    quitting = 2;
 }
 
 void
@@ -59,11 +41,6 @@ setup_signals(void)
     struct sigaction act;
 
     sigemptyset(&sigs);
-
-    act.sa_handler = sigusr1_handler;
-    sigaddset(&act.sa_mask, SIGUSR1);
-    sigaction(SIGUSR1, &act, 0);
-    sigaddset(&sigs, SIGUSR1);
 
     act.sa_handler = sigint_handler;
     sigaddset(&act.sa_mask, SIGINT);

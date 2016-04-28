@@ -20,6 +20,7 @@
  *
  */
 
+#include <signal.h>
 #include <stdbool.h>
 
 #define MAX_IRC_BUF 512
@@ -73,5 +74,5 @@ void do_quit(const char *message);
 void do_error(char *line, ...);
 void parse_line(const char *line);
 
-extern bool quitting;
+extern volatile sig_atomic_t quitting;
 extern struct bot_t bot;

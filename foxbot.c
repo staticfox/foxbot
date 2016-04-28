@@ -30,7 +30,7 @@
 #include "stdinc.h"
 
 struct bot_t bot; /* That's me */
-bool quitting = false;
+volatile sig_atomic_t quitting;
 
 /* External helper functions */
 bool
@@ -306,8 +306,24 @@ main(/*int argc, char **argv*/) {
     create_and_bind();
     establish_link();
 
-    while (!quitting)
+    while (!quitting) {
         io();
+    }
+
+    if (is_registered()) {
+        char buf[MAX_IRC_BUF];
+        const char *reason = "<unknown>";
+        switch (quitting) {
+        case 1:
+            reason = "QUIT";
+            break;
+        case 2:
+            reason = "SIGINT";
+            break;
+        }
+        snprintf(buf, sizeof(buf), "Exiting due to %s", reason);
+        do_quit(buf);
+    }
 
     return 0;
 }
