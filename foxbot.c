@@ -103,8 +103,8 @@ set_command_enum(void)
     unsigned int digits = 0;
 
     for (ii = 0; bot.msg->command[ii]; ii++)
-    if (isdigit(bot.msg->command[ii]))
-        digits++;
+        if (isdigit(bot.msg->command[ii]))
+            digits++;
 
     if (digits == n) {
         bot.msg->ctype = NUMERIC;
@@ -227,8 +227,8 @@ parse_line(const char *line)
     bot.msg->buffer = xstrdup(line);
 
     for (ii = 0; line[ii] != '\0'; ii++)
-    if (line[ii] == ' ')
-        params++;
+        if (line[ii] == ' ')
+            params++;
 
     tofree = string = xstrdup(line);
 
@@ -297,7 +297,8 @@ end:
 }
 
 int
-main(/*int argc, char **argv*/) {
+main(/*int argc, char **argv*/)
+{
     bot.msg = xmalloc(sizeof(*bot.msg));
     bot.msg->from = xmalloc(sizeof(*bot.msg->from));
 

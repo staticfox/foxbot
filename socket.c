@@ -153,8 +153,7 @@ io(void)
      */
     char *line_start = inbuf;
     char *line_end;
-    while ((line_end = memchr(line_start, '\n', buf_used - (line_start - inbuf))))
-    {
+    while ((line_end = memchr(line_start, '\n', buf_used - (line_start - inbuf)))) {
         *line_end = 0;
         /* Straight out of RFC */
         assert(strlen(line_start) <= MAX_IRC_BUF);
