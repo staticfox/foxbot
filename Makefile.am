@@ -3,9 +3,7 @@
 AM_YFLAGS = -d
 
 if DEBUG
-DBG = -g
-else
-DBG = -O2
+DBG = -O0
 endif
 
 AM_CFLAGS = -Wall -Wextra -std=c99 $(DBG)
