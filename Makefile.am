@@ -2,12 +2,6 @@
 
 AM_YFLAGS = -d
 
-if DEBUG
-DBG = -O0
-endif
-
-AM_CFLAGS = -Wall -Wextra -std=c99 $(DBG)
-
 bin_PROGRAMS = foxbot
 foxbot_SOURCES = conf.c \
                  conf.h \

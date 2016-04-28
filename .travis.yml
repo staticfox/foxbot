@@ -10,6 +10,17 @@ compiler:
   - gcc
   - clang
 
+addons:
+  apt:
+    packages:
+    - autoconf-archive
+
+before_install:
+  - if [ "$TRAVIS_OS_NAME" = osx ]; then
+      brew update &&
+      brew install autoconf-archive;
+    fi
+
 script:
   - autoreconf -vi
   - ./configure

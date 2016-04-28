@@ -12,6 +12,11 @@ AC_PROG_CC_C99
 AC_PROG_YACC
 AM_PROG_LEX
 
+dnl Enable warnings.
+AX_CFLAGS_WARN_ALL
+AX_CHECK_COMPILE_FLAG([-Wextra], [AX_APPEND_FLAG([-Wextra])])
+AX_CHECK_COMPILE_FLAG([-std=c99], [AX_APPEND_FLAG([-std=c99])])
+
 dnl Checks for header files.
 AC_CHECK_HEADERS([malloc.h netdb.h stdlib.h string.h sys/socket.h unistd.h])
 AC_CHECK_HEADERS([fcntl.h], [], [AC_MSG_ERROR([Could not find fcntl.h.])])
@@ -53,7 +58,10 @@ AC_ARG_ENABLE([memdebug],
   AC_MSG_RESULT(no)
 ])
 
-AM_CONDITIONAL([DEBUG],    [test "$debug" = "true"])
 AM_CONDITIONAL([MEMDEBUG], [test "$memdebug" = "true"])
+
+if test "$debug" = yes; then
+  AX_APPEND_FLAG([-O0])
+fi
 
 AC_OUTPUT(Makefile)
