@@ -1,5 +1,5 @@
 /*
- *   memory.c -- April 27 2016 11:28:55 EST
+ *   foxmemory.c -- April 27 2016 11:28:55 EST
  *
  *   This file is part of the foxbot IRC bot
  *   Copyright (C) 2016 Matt Ullman (staticfox at staticfox dot net)
@@ -20,8 +20,8 @@
  *
  */
 
-#include "memory.h"
 #include "foxbot.h"
+#include "foxmemory.h"
 #include "foxsignal.h" /* raise SIGUSR1 */
 #include "stdinc.h"
 
@@ -41,6 +41,10 @@ max(unsigned long long x, unsigned long long y)
 {
     return x > y ? x : y;
 }
+
+#ifndef HAVE_MALLOC_USABLE_SIZE
+#define malloc_usable_size(x) 0
+#endif
 
 void *
 xmalloc(size_t bytes)

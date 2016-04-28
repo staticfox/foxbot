@@ -18,8 +18,8 @@ foxbot_SOURCES = conf.c \
                  config_lexer.l \
                  foxbot.c \
                  foxbot.h \
+                 foxmemory.c \
+                 foxmemory.h \
                  foxsignal.c \
                  foxsignal.h \
-                 memory.c \
-                 memory.h \
                  stdinc.h

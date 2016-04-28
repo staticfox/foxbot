@@ -1,5 +1,5 @@
 /*
- *   memory.h -- April 27 2016 11:29:12 EST
+ *   foxmemory.h -- April 27 2016 11:29:12 EST
  *
  *   This file is part of the foxbot IRC bot
  *   Copyright (C) 2016 Matt Ullman (staticfox at staticfox dot net)
@@ -20,7 +20,14 @@
  *
  */
 
+#include <stdlib.h>
+#include <memory.h>
+
+#include "config.h"
+
+#ifdef HAVE_MALLOC_H
 #include <malloc.h>
+#endif
 
 void * xmalloc(size_t bytes);
 void * xcalloc(size_t n, size_t s);

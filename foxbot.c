@@ -32,7 +32,7 @@
 #include "conf.h"
 #include "foxbot.h"
 #include "foxsignal.h"
-#include "memory.h"
+#include "foxmemory.h"
 #include "stdinc.h"
 
 void raw(char *fmt, ...);

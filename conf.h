@@ -23,8 +23,10 @@
 #ifndef _CONFIG_h
 #define _CONFIG_h
 
+#include <stdio.h>
+
 #include "config.h"
-#include "memory.h"
+#include "foxmemory.h"
 
 struct conf_parser_context {
     unsigned int pass;
