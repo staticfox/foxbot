@@ -2,6 +2,9 @@ language: c
 
 sudo: false
 
+env:
+  - ACLOCAL_PATH=$HOME/share/aclocal
+
 os:
   - linux
   - osx
@@ -17,8 +20,12 @@ addons:
 
 before_install:
   - if [ "$TRAVIS_OS_NAME" = osx ]; then
-      brew update &&
-      brew install autoconf-archive;
+      curl -fLSs http://ftpmirror.gnu.org/autoconf-archive/autoconf-archive-2016.03.20.tar.xz | tar xJ &&
+      (
+        cd autoconf-archive-* &&
+        ./configure --prefix="$HOME" &&
+        make install;
+      );
     fi
 
 script:
