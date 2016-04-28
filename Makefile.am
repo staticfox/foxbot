@@ -1,5 +1,7 @@
 # foxbot automake file
 
+BUILT_SOURCES = config_parser.h
+CLEANFILES = ${BUILT_SOURCES}
 AM_YFLAGS = -d
 
 bin_PROGRAMS = foxbot
