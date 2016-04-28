@@ -1,0 +1,14 @@
+language: c
+
+sudo: false
+
+compiler:
+  - gcc
+  - clang
+
+script:
+  - ./configure
+  - make
+
+matrix:
+  fast_finish: true
