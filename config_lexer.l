@@ -59,7 +59,7 @@ STRING   \"[^\"\n]*[\"\n]
                         yylval.string = yytext + 1;
                         if (yylval.string[yyleng - 2] == '"')
                         {
-                            unsigned int i = 0, j = 0;
+                            size_t i = 0, j = 0;
 
                             /* Remove close quote */
                             yylval.string[yyleng - 2] = '\0';
