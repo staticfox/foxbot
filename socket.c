@@ -37,6 +37,7 @@
 int
 create_and_bind(void)
 {
+    int addrerr;
     struct addrinfo hints;
 
     memset(&hints, 0, sizeof(hints));
@@ -45,14 +46,15 @@ create_and_bind(void)
     hints.ai_socktype = SOCK_STREAM;
 
     /* TODO: Un-hardcode this. */
-    if (getaddrinfo(botconfig.host, botconfig.port, &hints, &bot.hil) != 0) {
-        perror("getaddrinfo");
+    if ((addrerr = getaddrinfo(botconfig.host, botconfig.port, &hints, &bot.hil)) != 0) {
+        do_error("getaddrinfo() returned %d. %s",
+                 addrerr, addrerr == EAI_SYSTEM ? strerror(errno) : "");
         exit(EXIT_FAILURE);
     }
 
     bot.fd = socket(bot.hil->ai_family, bot.hil->ai_socktype, bot.hil->ai_protocol);
     if (bot.fd == -1) {
-        perror("socket");
+        do_error(strerror(errno));
         exit(EXIT_FAILURE);
     }
 
@@ -65,9 +67,8 @@ establish_link(void)
     int status, flags;
 
     status = connect(bot.fd, bot.hil->ai_addr, bot.hil->ai_addrlen);
-
     if (status == -1) {
-        perror("connect");
+        do_error(strerror(errno));
         exit(EXIT_FAILURE);
     }
 
