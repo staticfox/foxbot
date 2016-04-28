@@ -29,7 +29,7 @@ AC_CHECK_FUNCS([malloc_usable_size memchr memmove memset socket strcspn strerror
 dnl debugging information
 AC_MSG_CHECKING(whether to enable debugging symbols)
 AC_ARG_ENABLE([debug],
-[  --enable-debug          Turn on debugging],
+[AS_HELP_STRING([--enable-debug], [Turn on debugging])],
 [
   debug=true
   AC_MSG_RESULT(yes)
@@ -42,7 +42,7 @@ AC_ARG_ENABLE([debug],
 dnl memory debug spam
 AC_MSG_CHECKING(whether to enable memory debugging spam)
 AC_ARG_ENABLE([memdebug],
-[  --enable-memdebug       Print memory debugging information],
+[AS_HELP_STRING([--enable-memdebug], [Print memory debugging information])],
 [
   memdebug=true
   AC_DEFINE([WANT_MEMDEBUG], [1], ["Print out memory debugging information"])
