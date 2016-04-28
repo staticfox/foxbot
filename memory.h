@@ -20,6 +20,9 @@
  *
  */
 
+#ifndef _foxmemory_h
+#define _foxmemory_h
+
 #include <stdlib.h>
 
 #include "config.h"
@@ -30,3 +33,5 @@ void * xrealloc(void *x, size_t y);
 void   xfree(void *x);
 void * xstrdup(const char *s);
 void   outofmemory(void);
+
+#endif

@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef FOXSOCKET_H
-#define FOXSOCKET_H
+#ifndef _foxsocket_h
+#define _foxsocket_h
 
 int create_and_bind(void);
 int establish_link(void);

@@ -20,4 +20,9 @@
  *
  */
 
+#ifndef _foxsignal_h
+#define _foxsignal_h
+
 void setup_signals(void);
+
+#endif

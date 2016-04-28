@@ -20,6 +20,9 @@
  *
  */
 
+#ifndef _foxstdinc_h
+#define _foxstdinc_h
+
 #include <assert.h>
 #include <ctype.h>
 #include <errno.h>
@@ -29,3 +32,5 @@
 #include <string.h>
 
 #include "config.h"
+
+#endif
