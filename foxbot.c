@@ -21,7 +21,7 @@
  */
 
 #define _POSIX_C_SOURCE 201112L
-#define _BSD_SOURCE /* for strsep() */
+#define _DEFAULT_SOURCE /* for strsep() */
 
 #include <assert.h>
 #include <netdb.h>
