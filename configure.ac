@@ -8,7 +8,7 @@ AC_CONFIG_SRCDIR([foxbot.c])
 AC_CONFIG_HEADERS([config.h])
 
 dnl Checks for programs.
-AC_PROG_CC
+AC_PROG_CC_C99
 AC_PROG_YACC
 AM_PROG_LEX
 
