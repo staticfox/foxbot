@@ -20,9 +20,7 @@
  *
  */
 
-#include "foxbot.h"
 #include "memory.h"
-#include "signal.h" /* raise SIGUSR1 */
 #include "stdinc.h"
 
 static int alive = 1;
