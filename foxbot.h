@@ -71,6 +71,7 @@ void privmsg(const char *target, const char *message);
 void join(const char *channel);
 void do_quit(const char *message);
 void do_error(char *line, ...);
+void parse_line(const char *line);
 
 extern bool quitting;
 extern struct bot_t bot;

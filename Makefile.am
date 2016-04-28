@@ -13,6 +13,8 @@ foxbot_SOURCES = conf.c \
                  foxmemory.h \
                  foxsignal.c \
                  foxsignal.h \
+                 socket.c \
+                 socket.h \
                  stdinc.h
 foxbot_LDADD = libfoxbotconfigparser.a
 noinst_LIBRARIES = libfoxbotconfigparser.a
