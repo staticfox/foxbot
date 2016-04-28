@@ -303,7 +303,7 @@ parse_line(const char *line)
         if (params < 3) {
             if (i == 0 && strncmp(token, "PING", 4) == 0) {
                 size_t n = strlen(line);
-                char tmp[MAX_IO_BUF];
+                char tmp[MAX_IRC_BUF];
                 memcpy(tmp, line, n);
                 tmp[1] = 'O';
                 tmp[n] = '\n';
