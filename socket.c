@@ -118,7 +118,7 @@ raw(char *fmt, ...)
 void
 io(void)
 {
-    static char inbuf[MAX_IO_BUF];
+    static char inbuf[MAX_IRC_BUF];
     static size_t buf_used;
     size_t buf_remain = sizeof(inbuf) - buf_used;
 
@@ -153,16 +153,17 @@ io(void)
      */
     char *line_start = inbuf;
     char *line_end;
-    while ((line_end = memchr(line_start, '\n', buf_used - (line_start - inbuf)))) {
-        *line_end = 0;
+    while ((line_end = memchr(line_start, '\n', buf_used))) {
+        *line_end = '\0';
         /* Straight out of RFC */
         assert(strlen(line_start) <= MAX_IRC_BUF);
         printf(">> %s\n", line_start);
         parse_line(line_start);
-        line_start = line_end + 1;
+        ++line_end;
+        buf_used -= line_end - line_start;
+        line_start = line_end;
     }
 
     /* Shift buffer down so the unprocessed data is at the start */
-    buf_used -= (line_start - inbuf);
     memmove(inbuf, line_start, buf_used);
 }
