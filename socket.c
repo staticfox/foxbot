@@ -45,7 +45,6 @@ create_and_bind(void)
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
 
-    /* TODO: Un-hardcode this. */
     if ((addrerr = getaddrinfo(botconfig.host, botconfig.port, &hints, &bot.hil)) != 0) {
         do_error("getaddrinfo() returned %d. %s",
                  addrerr, addrerr == EAI_SYSTEM ? strerror(errno) : "");
