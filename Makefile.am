@@ -9,8 +9,8 @@ foxbot_SOURCES = conf.c \
                  conf.h \
                  foxbot.c \
                  foxbot.h \
-                 foxmemory.c \
-                 foxmemory.h \
+                 memory.c \
+                 memory.h \
                  signal.c \
                  signal.h \
                  socket.c \

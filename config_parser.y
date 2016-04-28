@@ -22,7 +22,7 @@
 
 %{
 #include "conf.h"
-#include "foxmemory.h"
+#include "memory.h"
 
 int yylex(void);
 %}

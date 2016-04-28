@@ -1,5 +1,5 @@
 /*
- *   foxmemory.h -- April 27 2016 11:29:12 EST
+ *   memory.h -- April 27 2016 11:29:12 EST
  *
  *   This file is part of the foxbot IRC bot
  *   Copyright (C) 2016 Matt Ullman (staticfox at staticfox dot net)
