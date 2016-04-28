@@ -52,7 +52,6 @@ is_registered(void)
 static int
 create_and_bind(void)
 {
-    int flags;
     struct addrinfo hints;
 
     memset(&hints, 0, sizeof(hints));
@@ -72,25 +71,25 @@ create_and_bind(void)
         exit(EXIT_FAILURE);
     }
 
-    if(-1 == (flags = fcntl(bot.fd, F_GETFL, 0)))
-        flags = 0;
-
-    fcntl(bot.fd, F_SETFL, flags | O_NONBLOCK);
-
     return 0;
 }
 
 static int
 establish_link(void)
 {
-    int status;
+    int status, flags;
 
     status = connect(bot.fd, bot.hil->ai_addr, bot.hil->ai_addrlen);
 
     if (status == -1) {
         perror("connect");
-        return 1;
+        exit(EXIT_FAILURE);
     }
+
+    if(-1 == (flags = fcntl(bot.fd, F_GETFL, 0)))
+        flags = 0;
+
+    fcntl(bot.fd, F_SETFL, flags | O_NONBLOCK);
 
     raw("NICK %s\n", botconfig.nick);
     raw("USER %s 0 0 :%s\n", botconfig.ident, botconfig.realname);
