@@ -21,7 +21,6 @@
  */
 
 #define _POSIX_C_SOURCE 201112L
-#define _DEFAULT_SOURCE /* for strsep() */
 
 #include <assert.h>
 #include <netdb.h>
@@ -231,7 +230,7 @@ fail:
 }
 
 static void
-free_message()
+free_message(void)
 {
     xfree(bot.msg->buffer);
     bot.msg->buffer = NULL;
@@ -282,6 +281,22 @@ call_hooks(void)
         hook_numeric();
 }
 
+char *
+fox_strsep(char **stringp, const char *delim)
+{
+    char *p = *stringp;
+    if (!p)
+        return NULL;
+    size_t n = strcspn(p, delim);
+    if (p[n]) {
+        p[n] = '\0';
+        *stringp = p + n + 1;
+    } else {
+        *stringp = NULL;
+    }
+    return p;
+}
+
 void
 parse_line(const char *line)
 {
@@ -299,7 +314,7 @@ parse_line(const char *line)
 
     tofree = string = xstrdup(line);
 
-    while (((token = strsep(&string, " ")) != NULL) && i < 3) {
+    while (((token = fox_strsep(&string, " ")) != NULL) && i < 3) {
         if (params < 3) {
             if (i == 0 && strncmp(token, "PING", 4) == 0) {
                 size_t n = strlen(line);

@@ -4,7 +4,9 @@ foxbot.conf
 depcomp
 aclocal.m4
 autom4te.cache
+autoscan.log
 configure
+configure.scan
 Makefile
 Makefile.in
 compile
