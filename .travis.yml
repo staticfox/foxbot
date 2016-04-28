@@ -14,7 +14,7 @@ matrix:
       compiler: gcc
 
 script:
-  - autoreconf
+  - autoreconf -vi
   - ./configure
   - make
 
