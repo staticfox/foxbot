@@ -20,7 +20,4 @@
  *
  */
 
-#include <signal.h>
-
 void setup_signals(void);
-void sighandler(int sig);
