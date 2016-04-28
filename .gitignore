@@ -3,6 +3,7 @@ foxbot.conf
 .deps
 depcomp
 aclocal.m4
+ar-lib
 autom4te.cache
 autoscan.log
 configure
@@ -26,5 +27,6 @@ install-sh
 missing
 stamp-h1
 ylwrap
+*.a
 *.in~
 *.o
