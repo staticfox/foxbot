@@ -9,7 +9,7 @@ else
 DBG = -O2
 endif
 
-CFLAGS = -Wall -Wextra -std=c11 $(DBG)
+CFLAGS = -Wall -Wextra -std=c99 $(DBG)
 
 bin_PROGRAMS = foxbot
 foxbot_SOURCES = conf.c \
