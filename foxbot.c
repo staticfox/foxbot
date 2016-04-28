@@ -231,7 +231,7 @@ fail:
 }
 
 static void
-free_message()
+free_message(void)
 {
     xfree(bot.msg->buffer);
     bot.msg->buffer = NULL;
