@@ -299,7 +299,7 @@ parse_line(const char *line)
 
     tofree = string = xstrdup(line);
 
-    while ((token = strsep(&string, " ")) != NULL) {
+    while (((token = strsep(&string, " ")) != NULL) && i < 3) {
         if (params < 3) {
             if (i == 0 && strncmp(token, "PING", 4) == 0) {
                 size_t n = strlen(line);
