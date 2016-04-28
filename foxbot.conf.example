@@ -1,0 +1,18 @@
+/* Config file for foxbot
+ *
+ * C/C++/Bash comments are allowed.
+ *
+ * I can't imagine there would be many more questions
+ * on what each option does. (Yes, more to come soonish).
+ */
+
+/* bot {}: Bot options, major WIP */
+bot {
+    nick = "foxbot";
+    ident = "fox";
+
+    host = "misconfigured.network";
+    port = "-4";
+    channel = "#misconfigured";
+    realname = ":3";
+};
