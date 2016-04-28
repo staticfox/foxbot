@@ -291,14 +291,10 @@ char *
 fox_strsep(char **stringp, const char *delim)
 {
     char *p = *stringp;
-    if (!p)
-        return NULL;
-    size_t n = strcspn(p, delim);
-    if (p[n]) {
-        p[n] = '\0';
-        *stringp = p + n + 1;
-    } else {
-        *stringp = NULL;
+    if (p) {
+        char *q = p + strcspn(p, delim);
+        *stringp = *q ? q + 1 : NULL;
+        *q = '\0';
     }
     return p;
 }
