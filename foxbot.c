@@ -247,8 +247,6 @@ parse_line(const char *line)
                 do_error("(2) Invalid line detected. Skipping... %s", line);
                 goto end;
             }
-            i++;
-            continue;
         }
 
         switch(i) {
