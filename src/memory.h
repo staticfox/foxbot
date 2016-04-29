@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef _foxmemory_h
-#define _foxmemory_h
+#ifndef FOX_MEMORY_H_
+#define FOX_MEMORY_H_
 
 #include <stdlib.h>
 

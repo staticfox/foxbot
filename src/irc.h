@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef _foxirc_h
-#define _foxirc_h
+#ifndef FOX_IRC_H_
+#define FOX_IRC_H_
 
 void handle_quit(void);
 

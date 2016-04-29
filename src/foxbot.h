@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef _foxbot_h
-#define _foxbot_h
+#ifndef FOX_FOXBOT_H_
+#define FOX_FOXBOT_H_
 
 #include <signal.h>
 #include <stdbool.h>

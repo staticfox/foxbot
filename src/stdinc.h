@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef _foxstdinc_h
-#define _foxstdinc_h
+#ifndef FOX_STDINC_H_
+#define FOX_STDINC_H_
 
 #include <assert.h>
 #include <ctype.h>

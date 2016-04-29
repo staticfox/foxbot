@@ -24,8 +24,8 @@
  * they are simple yet effective
  */
 
-#ifndef _foxlist_h
-#define _foxlist_h
+#ifndef FOX_LIST_H_
+#define FOX_LIST_H_
 
 #define DLINK_FOREACH(pos, head) for (pos = (head); pos != NULL; pos = pos->next)
 #define dlist_length(list) (list)->length

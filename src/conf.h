@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef _foxconfig_h
-#define _foxconfig_h
+#ifndef FOX_CONFIG_H_
+#define FOX_CONFIG_H_
 
 #include <stdio.h>
 

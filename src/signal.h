@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef _foxsignal_h
-#define _foxsignal_h
+#ifndef FOX_SIGNAL_H_
+#define FOX_SIGNAL_H_
 
 void setup_signals(void);
 

@@ -20,8 +20,8 @@
  *
  */
 
-#ifndef _foxuser_h
-#define _foxuser_h
+#ifndef FOX_USER_H_
+#define FOX_USER_H_
 
 #include "list.h"
 
