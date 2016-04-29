@@ -53,16 +53,13 @@ make_nuh(const char *n, const char *u, const char *h)
 struct user_t *
 get_user_by_nick(const char *nick)
 {
-    struct user_t *user = NULL;
     dlink_node *node = NULL;
     DLINK_FOREACH(node, users->head) {
         if (strcmp(((struct user_t *)node->data)->nick, nick) == 0) {
-            user = (struct user_t *)node->data;
-            break;
+            return (struct user_t *)node->data;
         }
     }
-
-    return user;
+    return NULL;
 }
 
 struct user_t *
