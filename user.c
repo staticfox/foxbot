@@ -65,33 +65,24 @@ get_user_by_nick(const char *nick)
 struct user_t *
 get_nuh(char *src)
 {
-    char *n, *u, *h;
-    char *nick, *ident, *host;
     if (!(strstr(src, "!") && strstr(src, "@")))
         return false;
 
-    n = strtok(src, "!");
-    if (!n) goto fail;
+    const char *nick = strtok(src, "!");
+    if (!nick) goto fail;
 
-    struct user_t *user = get_user_by_nick(n);
+    struct user_t *user = get_user_by_nick(nick);
     if (user != NULL)
         return user;
 
-    nick = xstrdup(n);
-    u = strtok(NULL, "!");
-    if (!u) goto fail;
-    h = strtok(u, "@");
-    if (!h) goto fail;
-    ident = xstrdup(h);
-    h = strtok(NULL, "@");
-    if (!h) goto fail;
-    host = xstrdup(h);
+    char *ident = strtok(NULL, "!");
+    if (!ident) goto fail;
+    ident = strtok(ident, "@");
+    if (!ident) goto fail;
+    const char *host = strtok(NULL, "@");
+    if (!host) goto fail;
 
     user = make_nuh(nick, ident, host);
-
-    xfree(nick);
-    xfree(ident);
-    xfree(host);
 
     return user;
 fail:
