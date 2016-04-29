@@ -74,7 +74,10 @@ establish_link(void)
     if(-1 == (flags = fcntl(bot.fd, F_GETFL, 0)))
         flags = 0;
 
-    fcntl(bot.fd, F_SETFL, flags | O_NONBLOCK);
+    if(fcntl(bot.fd, F_SETFL, flags | O_NONBLOCK) == -1) {
+        do_error(strerror(errno));
+        exit(EXIT_FAILURE);
+    }
 
     raw("NICK %s\n", botconfig.nick);
     raw("USER %s 0 0 :%s\n", botconfig.ident, botconfig.realname);
