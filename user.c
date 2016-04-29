@@ -28,7 +28,7 @@
 #include "memory.h"
 #include "user.h"
 
-dlink_list *users;
+static dlink_list *users;
 
 void
 init_users(void)
