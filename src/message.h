@@ -20,6 +20,9 @@
  *
  */
 
+#ifndef FOX_MESSAGE_H_
+#define FOX_MESSAGE_H_
+
 struct msg_t {
     enum commands ctype;
     unsigned int numeric;
@@ -38,3 +41,5 @@ void hook_literal(void);
 void call_hooks(void);
 char * fox_strsep(char **stringp, const char *delim);
 void parse_line(const char *line);
+
+#endif
