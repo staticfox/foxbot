@@ -28,6 +28,7 @@
 #include "memory.h"
 #include "user.h"
 
+/** The global user cache. */
 static dlink_list *users;
 
 void

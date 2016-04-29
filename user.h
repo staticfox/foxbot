@@ -20,13 +20,23 @@
  *
  */
 
+/** A user object.  The object owns the 3 member strings. */
 struct user_t {
     char *nick;
     char *ident;
     char *host;
 };
 
+/** Initialize the global user cache.  Must be called before any of the
+    functions in this module. */
 void init_users(void);
+
+/** Create a `#user_t` from the nick, ident, and hostname. */
 struct user_t * make_nuh(const char *n, const char *u, const char *h);
+
+/** Look up a user by nick in the global user cache. */
 struct user_t * get_user_by_nick(const char *nick);
+
+/** Parse the nick, ident, and hostname (NUH) from a string.  The string is
+    modified by this process. */
 struct user_t * get_nuh(char *src);
