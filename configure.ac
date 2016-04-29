@@ -4,8 +4,9 @@ dnl Process this file with autoconf to produce a configure script.
 AC_PREREQ([2.68])
 AC_INIT(foxbot, 0.0.1, staticfox@staticfox.net)
 AM_INIT_AUTOMAKE([-Wall -Werror foreign nostdinc])
-AC_CONFIG_SRCDIR([foxbot.c])
-AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_FILES([Makefile src/Makefile])
+AC_CONFIG_SRCDIR([src/foxbot.c])
+AC_CONFIG_HEADERS([src/config.h])
 
 dnl Checks for programs.
 AC_PROG_CC_C99
@@ -66,4 +67,4 @@ if test "$debug" = yes; then
   AX_APPEND_FLAG([-O0])
 fi
 
-AC_OUTPUT(Makefile)
+AC_OUTPUT
