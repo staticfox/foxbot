@@ -72,12 +72,11 @@ get_nuh(char *src)
     if (!(strstr(src, "!") && strstr(src, "@")))
         return false;
 
-    struct user_t *user = NULL;
-
     n = strtok(src, "!");
     if (!n) goto fail;
 
-    if ((user = get_user_by_nick(n)) != NULL)
+    struct user_t *user = get_user_by_nick(n);
+    if (user != NULL)
         return user;
 
     nick = xstrdup(n);

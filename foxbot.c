@@ -220,8 +220,8 @@ parse_line(const char *line)
         case 0:
             if (token[0] == ':') {
                 bot.msg->source = xstrdup(token + 1);
-                struct user_t *user = NULL;
-                if ((user = get_nuh(token + 1)) == NULL)
+                struct user_t *user = get_nuh(token + 1);
+                if (user == NULL)
                     bot.msg->from_server = true;
                 else
                     bot.msg->from = user;
