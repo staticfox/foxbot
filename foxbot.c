@@ -24,10 +24,12 @@
 
 #include "conf.h"
 #include "foxbot.h"
+#include "list.h"
 #include "memory.h"
 #include "signal.h"
 #include "socket.h"
 #include "stdinc.h"
+#include "user.h"
 
 struct bot_t bot; /* That's me */
 volatile sig_atomic_t quitting;
@@ -126,31 +128,6 @@ set_command_enum(void)
     do_error("Unhandled command: %s", bot.msg->command);
 }
 
-static bool
-get_nuh(char *src)
-{
-    char *n, *u, *h;
-    if (!(strstr(src, "!") && strstr(src, "@")))
-        return false;
-
-    /* I hate this */
-    n = strtok(src, "!");
-    if (!n) goto fail;
-    bot.msg->from->nick = xstrdup(n);
-    u = strtok(NULL, "!");
-    if (!u) goto fail;
-    h = strtok(u, "@");
-    if (!h) goto fail;
-    bot.msg->from->ident = xstrdup(h);
-    h = strtok(NULL, "@");
-    if (!h) goto fail;
-    bot.msg->from->host = xstrdup(h);
-    return true;
-fail:
-    do_error("Error parsing n!u@h %s", src);
-    return false;
-}
-
 static void
 free_message(void)
 {
@@ -168,16 +145,6 @@ free_message(void)
 
     xfree(bot.msg->params);
     bot.msg->params = NULL;
-
-    /* zero out the from field */
-    xfree(bot.msg->from->nick);
-    bot.msg->from->nick = NULL;
-
-    xfree(bot.msg->from->ident);
-    bot.msg->from->ident = NULL;
-
-    xfree(bot.msg->from->host);
-    bot.msg->from->host = NULL;
 }
 
 void
@@ -253,8 +220,11 @@ parse_line(const char *line)
         case 0:
             if (token[0] == ':') {
                 bot.msg->source = xstrdup(token + 1);
-                if (!get_nuh(token + 1))
+                struct user_t *user = NULL;
+                if ((user = get_nuh(token + 1)) == NULL)
                     bot.msg->from_server = true;
+                else
+                    bot.msg->from = user;
             } else {
                 if (strncmp(token, "ERROR", 5) == 0) {
                     quitting = 1;
@@ -300,6 +270,7 @@ main(/*int argc, char **argv*/)
     bot.msg = xmalloc(sizeof(*bot.msg));
     bot.msg->from = xmalloc(sizeof(*bot.msg->from));
 
+    init_users();
     read_conf_file();
     setup_signals();
     create_and_bind();

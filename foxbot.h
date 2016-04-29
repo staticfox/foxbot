@@ -40,12 +40,6 @@ enum commands {
     NUMERIC,
 };
 
-struct user_t {
-    char *nick;
-    char *ident;
-    char *host;
-};
-
 struct msg_t {
     enum commands ctype;
     unsigned int numeric;
