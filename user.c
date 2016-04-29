@@ -20,6 +20,7 @@
  *
  */
 
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -54,12 +55,48 @@ struct user_t *
 get_user_by_nick(const char *nick)
 {
     dlink_node *node = NULL;
+    DLINK_FOREACH(node, users->head)
+        if (strcmp(((struct user_t *)node->data)->nick, nick) == 0)
+            return (struct user_t *)node->data;
+    return NULL;
+}
+
+void
+delete_user_by_nick(const char *nick)
+{
+    dlink_node *node = NULL;
+    struct user_t *user = NULL;
+
     DLINK_FOREACH(node, users->head) {
         if (strcmp(((struct user_t *)node->data)->nick, nick) == 0) {
-            return (struct user_t *)node->data;
+            user = (struct user_t *)node->data;
+            xfree(user->nick);
+            xfree(user->ident);
+            xfree(user->host);
+            dlink_delete(node, users);
+            return;
         }
     }
-    return NULL;
+
+    /* Should never be here */
+    assert(0);
+}
+
+void
+delete_user_by_struct(struct user_t *user)
+{
+    dlink_node *node = NULL;
+
+    if ((node = dlink_find(users, user))) {
+        xfree(user->nick);
+        xfree(user->ident);
+        xfree(user->host);
+        dlink_delete(node, users);
+        return;
+    }
+
+    /* Should never be here */
+    assert(0);
 }
 
 struct user_t *

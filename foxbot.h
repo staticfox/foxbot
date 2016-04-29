@@ -40,19 +40,6 @@ enum commands {
     NUMERIC,
 };
 
-struct msg_t {
-    enum commands ctype;
-    unsigned int numeric;
-    char *buffer;
-    struct user_t *from;
-    bool from_server;
-    char *source;
-    char *command;
-    char *target;
-    char *params;
-    bool is_invalid;
-};
-
 struct bot_t {
     int fd;
     bool registered;

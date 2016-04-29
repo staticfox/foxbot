@@ -1,5 +1,5 @@
 /*
- *   list.h -- April 28 2016 21:18:53 EST
+ *   irc.c -- April 29 2016 10:12:47 EST
  *
  *   This file is part of the foxbot IRC bot
  *   Copyright (C) 2016 Matt Ullman (staticfox at staticfox dot net)
@@ -20,29 +20,19 @@
  *
  */
 
-/* These macros are basically swiped from the linux kernel
- * they are simple yet effective
- */
+#include <assert.h>
+#include <stdlib.h>
+#include <stdio.h>
 
-#define DLINK_FOREACH(pos, head) for (pos = (head); pos != NULL; pos = pos->next)
-#define dlist_length(list) (list)->length
+#include "foxbot.h"
+#include "message.h"
+#include "memory.h"
+#include "user.h"
 
-typedef struct _dlink_node dlink_node;
-typedef struct _dlink_list dlink_list;
-
-struct _dlink_node {
-    void *data;
-    dlink_node *prev;
-    dlink_node *next;
-};
-
-struct _dlink_list {
-    dlink_node *head;
-    dlink_node *tail;
-    unsigned length;
-};
-
-void dlink_insert(dlink_list *list, void *data);
-void dlink_delete(dlink_node *m, dlink_list *list);
-dlink_list * dlist_create(void);
-dlink_node * dlink_find(dlink_list *list, void *data);
+void
+handle_quit(void)
+{
+    assert(bot.msg->from != NULL);
+    delete_user_by_struct(bot.msg->from);
+    bot.msg->from = NULL;
+}

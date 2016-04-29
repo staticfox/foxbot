@@ -1,5 +1,5 @@
 /*
- *   list.h -- April 28 2016 21:18:53 EST
+ *   message.h -- April 29 2016 10:08:32 EST
  *
  *   This file is part of the foxbot IRC bot
  *   Copyright (C) 2016 Matt Ullman (staticfox at staticfox dot net)
@@ -20,29 +20,21 @@
  *
  */
 
-/* These macros are basically swiped from the linux kernel
- * they are simple yet effective
- */
-
-#define DLINK_FOREACH(pos, head) for (pos = (head); pos != NULL; pos = pos->next)
-#define dlist_length(list) (list)->length
-
-typedef struct _dlink_node dlink_node;
-typedef struct _dlink_list dlink_list;
-
-struct _dlink_node {
-    void *data;
-    dlink_node *prev;
-    dlink_node *next;
+struct msg_t {
+    enum commands ctype;
+    unsigned int numeric;
+    char *buffer;
+    struct user_t *from;
+    bool from_server;
+    char *source;
+    char *command;
+    char *target;
+    char *params;
+    bool is_invalid;
 };
 
-struct _dlink_list {
-    dlink_node *head;
-    dlink_node *tail;
-    unsigned length;
-};
-
-void dlink_insert(dlink_list *list, void *data);
-void dlink_delete(dlink_node *m, dlink_list *list);
-dlink_list * dlist_create(void);
-dlink_node * dlink_find(dlink_list *list, void *data);
+void hook_numeric(void);
+void hook_literal(void);
+void call_hooks(void);
+char * fox_strsep(char **stringp, const char *delim);
+void parse_line(const char *line);

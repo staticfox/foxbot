@@ -52,6 +52,23 @@ dlink_insert(dlink_list *list, void *data)
     list->length++;
 }
 
+void
+dlink_delete(dlink_node *m, dlink_list *list)
+{
+    if (m->next)
+        m->next->prev = m->prev;
+    else
+        list->tail = m->prev;
+
+    if (m->prev)
+        m->prev->next = m->next;
+    else
+        list->head = m->next;
+
+    m->next = m->prev = NULL;
+    list->length--;
+}
+
 dlink_node *
 dlink_find(dlink_list *list, void *data)
 {

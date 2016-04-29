@@ -9,10 +9,14 @@ foxbot_SOURCES = conf.c \
                  conf.h \
                  foxbot.c \
                  foxbot.h \
+                 irc.c \
+                 irc.h \
                  list.c \
                  list.h \
                  memory.c \
                  memory.h \
+                 message.c \
+                 message.h \
                  signal.c \
                  signal.h \
                  socket.c \
