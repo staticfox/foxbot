@@ -20,4 +20,9 @@
  *
  */
 
+#ifndef _foxirc_h
+#define _foxirc_h
+
 void handle_quit(void);
+
+#endif

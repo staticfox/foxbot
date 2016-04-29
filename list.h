@@ -24,6 +24,9 @@
  * they are simple yet effective
  */
 
+#ifndef _foxlist_h
+#define _foxlist_h
+
 #define DLINK_FOREACH(pos, head) for (pos = (head); pos != NULL; pos = pos->next)
 #define dlist_length(list) (list)->length
 
@@ -46,3 +49,5 @@ void dlink_insert(dlink_list *list, void *data);
 void dlink_delete(dlink_node *m, dlink_list *list);
 dlink_list * dlist_create(void);
 dlink_node * dlink_find(dlink_list *list, void *data);
+
+#endif

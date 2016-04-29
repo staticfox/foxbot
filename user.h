@@ -20,6 +20,11 @@
  *
  */
 
+#ifndef _foxuser_h
+#define _foxuser_h
+
+#include "list.h"
+
 /** A user object.  The object owns the 3 member strings. */
 struct user_t {
     char *nick;
@@ -47,3 +52,5 @@ void delete_user_by_nick(const char *nick);
 /** Delete a user from the global user cache if we already have the user's
     struct. */
 void delete_user_by_struct(struct user_t *user);
+
+#endif

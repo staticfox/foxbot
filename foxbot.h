@@ -20,6 +20,9 @@
  *
  */
 
+#ifndef _foxbot_h
+#define _foxbot_h
+
 #include <signal.h>
 #include <stdbool.h>
 
@@ -57,3 +60,5 @@ void parse_line(const char *line);
 
 extern volatile sig_atomic_t quitting;
 extern struct bot_t bot;
+
+#endif
