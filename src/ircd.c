@@ -20,6 +20,7 @@
  *
  */
 
+#include <limits.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -67,6 +68,58 @@ parse_rpl_myinfo(void)
     xfree(tofree);
 }
 
+static bool
+parse_long(const char *str, long *value)
+{
+    char *end;
+    const long n = strtol(str, &end, 10);
+    return str != end && (*value = n);
+}
+
+static bool
+parse_uint(const char *str, unsigned *value)
+{
+    long n;
+    return parse_long(str, &n) && n >= 0 && n <= UINT_MAX && (*value = n);
+}
+
+static bool
+strip_prefix(const char *str, const char *prefix, char **suffix /* nullable */)
+{
+    for (; *prefix; ++str, ++prefix)
+        if (*str != *prefix)
+            return false;
+    if (suffix)
+        *suffix = (char *)str;
+    return true;
+}
+
+static bool
+support_bool(const char *token, const char *word, bool *value)
+{
+    return !strcmp(token, word) && (*value = true);
+}
+
+static bool
+support_str(const char *token, const char *prefix, char **value)
+{
+    char *suffix;
+    return strip_prefix(token, prefix, &suffix) && (*value = xstrdup(suffix));
+}
+
+static bool
+support_uint(const char *token, const char *prefix, unsigned *value)
+{
+    char *suffix;
+    if (!strip_prefix(token, prefix, &suffix))
+        return false;
+    if (!parse_uint(suffix, value)) {
+        fprintf(stderr, "warning: not a valid unsigned int: %s\n", suffix);
+        return false;
+    }
+    return true;
+}
+
 /* 005 | RPL_ISUPPORT */
 void
 parse_rpl_isupport(void)
@@ -75,39 +128,36 @@ parse_rpl_isupport(void)
 
     tofree = string = xstrdup(bot.msg->params);
 
-#define SUPPORT_BOOL(x, y, z) if (strcmp(x, y) == 0) { z = true; continue; }
-#define SUPPORT_STR(x, y, z) if (strncmp(x, y, strlen(y)) == 0) { z = xstrdup(x + strlen(y)); continue; }
-#define SUPPORT_INT(x, y, z) if (strncmp(x, y, strlen(y)) == 0) { z = atoi(x + strlen(y)); continue; }
     while ((token = fox_strsep(&string, " ")) != NULL) {
         /* End of anything useful to parse */
         if (strcmp(token, ":are") == 0)
             break;
 
-        SUPPORT_BOOL(token, "EXCEPTS", bot.ircd->supports.excepts);
-        SUPPORT_BOOL(token, "INVEX", bot.ircd->supports.invex);
-        SUPPORT_BOOL(token, "KNOCK", bot.ircd->supports.knock);
-        SUPPORT_BOOL(token, "WHOX", bot.ircd->supports.whox);
+        if (support_bool(token, "EXCEPTS", &bot.ircd->supports.excepts)) continue;
+        if (support_bool(token, "INVEX", &bot.ircd->supports.invex)) continue;
+        if (support_bool(token, "KNOCK", &bot.ircd->supports.knock)) continue;
+        if (support_bool(token, "WHOX", &bot.ircd->supports.whox)) continue;
 
-        SUPPORT_STR(token, "NETWORK=", bot.ircd->network);
-        SUPPORT_STR(token, "CHANTYPES=", bot.ircd->supports.chan_types);
+        if (support_str(token, "NETWORK=", &bot.ircd->network)) continue;
+        if (support_str(token, "CHANTYPES=", &bot.ircd->supports.chan_types)) continue;
 
-        SUPPORT_INT(token, "NICKLEN=", bot.ircd->nick_length);
-        SUPPORT_INT(token, "CHANNELLEN=", bot.ircd->channel_length);
-        SUPPORT_INT(token, "TOPICLEN=", bot.ircd->topic_length);
+        if (support_uint(token, "NICKLEN=", &bot.ircd->nick_length)) continue;
+        if (support_uint(token, "CHANNELLEN=", &bot.ircd->channel_length)) continue;
+        if (support_uint(token, "TOPICLEN=", &bot.ircd->topic_length)) continue;
 
-        if (strncmp(token, "CHANLIMIT=", 10) == 0) {
-            strtok(token + 10, ":");
+        char *value;
+
+        if (strip_prefix(token, "CHANLIMIT=", &value)) {
+            strtok(value, ":");
             bot.ircd->chan_limit = atoi(strtok(NULL, ":"));
             continue;
         }
 
-        if (strncmp(token, "PREFIX=", 7) == 0) {
-            char *value = token + 7;
+        if (strip_prefix(token, "PREFIX=", &value)) {
             char modes[MAX_IRC_BUF] = {0}, prefixes[MAX_IRC_BUF] = {0};
-            size_t ii, pos = 0;
             bool mode = true;
 
-            for (ii = 0; value[ii] != '\0'; ii++) {
+            for (size_t ii = 0, pos = 0; value[ii] != '\0'; ii++) {
                 switch(value[ii]) {
                 case '(':
                     continue;
@@ -129,9 +179,6 @@ parse_rpl_isupport(void)
             continue;
         }
     }
-#undef SUPPORT_BOOL
-#undef SUPPORT_STR
-#undef SUPPORT_INT
 
     xfree(tofree);
 }
