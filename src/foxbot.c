@@ -22,6 +22,7 @@
 
 #include <stdarg.h>
 
+#include "channel.h"
 #include "conf.h"
 #include "foxbot.h"
 #include "ircd.h"
@@ -88,6 +89,7 @@ main(/*int argc, char **argv*/)
     bot.msg->from = xmalloc(sizeof(*bot.msg->from));
     bot.ircd = xmalloc(sizeof(*bot.ircd));
 
+    init_channels();
     init_users();
     read_conf_file();
     setup_signals();
