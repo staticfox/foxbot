@@ -98,13 +98,13 @@ void
 hook_numeric(void)
 {
     switch(bot.msg->numeric) {
-    case 001: /* RPL_WELCOME */
+    case   1: /* RPL_WELCOME */
         parse_rpl_welcome();
         break;
-    case 004:
+    case   4:
         parse_rpl_myinfo();
         break;
-    case 005:
+    case   5:
         parse_rpl_isupport();
         break;
     case 421: /* ERR_UNKNOWNCOMMAND */
