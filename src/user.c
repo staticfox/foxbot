@@ -45,6 +45,8 @@ make_me(const char *nick)
     struct user_t *user = xmalloc(sizeof(*user));
     user->nick = xstrdup(nick);
 
+    bot.user = user;
+
     dlink_insert(users, user);
 }
 

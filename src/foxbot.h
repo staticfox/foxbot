@@ -48,7 +48,9 @@ enum commands {
 struct bot_t {
     int fd;
     bool registered;
+    bool modes[256];
     struct msg_t *msg;
+    struct user_t *user;
     struct addrinfo *hil; /* Needed for reconnects */
     struct ircd_t *ircd;
 };
