@@ -20,8 +20,9 @@
  *
  */
 
+#include <string.h>
+
 #include "memory.h"
-#include "stdinc.h"
 
 #ifdef WANT_MEMDEBUG
 # define MEMDEBUG(f, ...) printf((f), __VA_ARGS__)

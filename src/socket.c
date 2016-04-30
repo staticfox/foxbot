@@ -22,9 +22,13 @@
 
 #define _POSIX_C_SOURCE 201112L
 
+#include <assert.h>
+#include <errno.h>
 #include <fcntl.h>
 #include <netdb.h>
 #include <stdarg.h>
+#include <stdlib.h>
+#include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <unistd.h>
@@ -32,7 +36,6 @@
 #include "conf.h"
 #include "foxbot.h"
 #include "socket.h"
-#include "stdinc.h"
 
 int
 create_and_bind(void)

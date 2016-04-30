@@ -25,7 +25,6 @@ foxbot_SOURCES = channel.c \
                  signal.h \
                  socket.c \
                  socket.h \
-                 stdinc.h \
                  user.c \
                  user.h
 

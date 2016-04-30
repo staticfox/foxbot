@@ -20,9 +20,11 @@
  *
  */
 
+#include <errno.h>
+#include <string.h>
+
 #include "conf.h"
 #include "foxbot.h"
-#include "stdinc.h"
 
 struct conf_parser_context conf_parser_ctx;
 struct botconfig_entry botconfig;

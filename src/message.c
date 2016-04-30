@@ -20,13 +20,16 @@
  *
  */
 
+#include <assert.h>
+#include <ctype.h>
+#include <string.h>
+
 #include "conf.h"
 #include "foxbot.h"
 #include "irc.h"
 #include "ircd.h"
 #include "memory.h"
 #include "message.h"
-#include "stdinc.h"
 #include "user.h"
 
 static int
