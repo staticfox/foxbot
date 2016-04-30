@@ -35,7 +35,8 @@ static dlink_list *users;
 void
 init_users(void)
 {
-    users = dlist_create();
+    if (!users)
+        users = dlist_create();
 }
 
 struct user_t *
