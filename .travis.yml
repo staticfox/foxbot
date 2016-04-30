@@ -41,7 +41,7 @@ before_install:
     fi
 
 script:
-  - autoreconf -vi
+  - autoreconf -fvi
   - ./configure
   - make
 
