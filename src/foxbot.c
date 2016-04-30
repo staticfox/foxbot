@@ -24,6 +24,7 @@
 
 #include "conf.h"
 #include "foxbot.h"
+#include "ircd.h"
 #include "list.h"
 #include "message.h"
 #include "signal.h"
@@ -85,6 +86,7 @@ main(/*int argc, char **argv*/)
 {
     bot.msg = xmalloc(sizeof(*bot.msg));
     bot.msg->from = xmalloc(sizeof(*bot.msg->from));
+    bot.ircd = xmalloc(sizeof(*bot.ircd));
 
     init_users();
     read_conf_file();

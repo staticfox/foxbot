@@ -23,6 +23,8 @@
 #ifndef FOX_FOXBOT_H_
 #define FOX_FOXBOT_H_
 
+#include "ircd.h"
+
 #include <signal.h>
 #include <stdbool.h>
 
@@ -48,6 +50,7 @@ struct bot_t {
     bool registered;
     struct msg_t *msg;
     struct addrinfo *hil; /* Needed for reconnects */
+    struct ircd_t *ircd;
 };
 
 bool is_registered(void);

@@ -23,6 +23,7 @@
 #include "conf.h"
 #include "foxbot.h"
 #include "irc.h"
+#include "ircd.h"
 #include "memory.h"
 #include "message.h"
 #include "stdinc.h"
@@ -100,6 +101,12 @@ hook_numeric(void)
     case 001: /* RPL_WELCOME */
         bot.registered = true;
         join(botconfig.channel);
+        break;
+    case 004:
+        parse_rpl_myinfo();
+        break;
+    case 005:
+        parse_rpl_isupport();
         break;
     case 421: /* ERR_UNKNOWNCOMMAND */
         do_error(bot.msg->buffer);

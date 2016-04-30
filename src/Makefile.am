@@ -11,6 +11,8 @@ foxbot_SOURCES = conf.c \
                  foxbot.h \
                  irc.c \
                  irc.h \
+                 ircd.c \
+                 ircd.h \
                  list.c \
                  list.h \
                  memory.c \

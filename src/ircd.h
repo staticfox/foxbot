@@ -1,5 +1,5 @@
 /*
- *   message.h -- April 29 2016 10:08:32 EST
+ *   ircd.h -- April 28 2016 19:47:26 EST
  *
  *   This file is part of the foxbot IRC bot
  *   Copyright (C) 2016 Matt Ullman (staticfox at staticfox dot net)
@@ -20,30 +20,32 @@
  *
  */
 
-#ifndef FOX_MESSAGE_H_
-#define FOX_MESSAGE_H_
+#ifndef FOX_IRCD_H_
+#define FOX_IRCD_H_
 
 #include <stdbool.h>
 
-#include "foxbot.h"
-
-struct msg_t {
-    enum commands ctype;
-    unsigned int numeric;
-    char *buffer;
-    struct user_t *from;
-    bool from_server;
-    char *source;
-    char *command;
-    char *target;
-    char *params;
-    bool is_invalid;
+struct ircd_t {
+    char *name;
+    char *network;
+    char *version;
+    char *user_modes;
+    unsigned int chan_limit;
+    unsigned int nick_length;
+    unsigned int channel_length;
+    unsigned int topic_length;
+    struct {
+        bool whox;
+        bool knock;
+        bool invex;
+        bool excepts;
+        char *chanop_modes;
+        char *prefix;
+        char *chan_types;
+    } supports;
 };
 
-void hook_numeric(void);
-void hook_literal(void);
-void call_hooks(void);
-char * fox_strsep(char **stringp, const char *delim);
-void parse_line(const char *line);
+void parse_rpl_myinfo(void);
+void parse_rpl_isupport(void);
 
 #endif
