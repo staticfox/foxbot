@@ -113,7 +113,7 @@ struct user_t *
 get_nuh(char *src)
 {
     if (!(strstr(src, "!") && strstr(src, "@")))
-        return false;
+        return NULL;
 
     const char *nick = strtok(src, "!");
     if (!nick) goto fail;
