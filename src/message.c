@@ -195,7 +195,7 @@ parse_line(const char *line)
                 else
                     bot.msg->from = user;
             } else {
-                if (strncmp(token, "ERROR", 5) == 0) {
+                if (strcmp(token, "ERROR") == 0) {
                     quitting = 1;
                     goto end;
                 }
