@@ -45,6 +45,7 @@ struct ircd_t {
     } supports;
 };
 
+void parse_rpl_welcome(void);
 void parse_rpl_myinfo(void);
 void parse_rpl_isupport(void);
 

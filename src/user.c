@@ -39,6 +39,15 @@ init_users(void)
         users = dlist_create();
 }
 
+void
+make_me(const char *nick)
+{
+    struct user_t *user = xmalloc(sizeof(*user));
+    user->nick = xstrdup(nick);
+
+    dlink_insert(users, user);
+}
+
 struct user_t *
 make_nuh(const char *n, const char *u, const char *h)
 {

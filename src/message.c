@@ -99,8 +99,7 @@ hook_numeric(void)
 {
     switch(bot.msg->numeric) {
     case 001: /* RPL_WELCOME */
-        bot.registered = true;
-        join(botconfig.channel);
+        parse_rpl_welcome();
         break;
     case 004:
         parse_rpl_myinfo();

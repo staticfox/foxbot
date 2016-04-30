@@ -36,6 +36,9 @@ struct user_t {
     functions in this module. */
 void init_users(void);
 
+/** Create our user struct at 001 */
+void make_me(const char *nick);
+
 /** Create a `#user_t` from the nick, ident, and hostname. */
 struct user_t * make_nuh(const char *n, const char *u, const char *h);
 

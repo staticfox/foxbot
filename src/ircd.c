@@ -23,10 +23,24 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "conf.h"
 #include "memory.h"
 #include "message.h"
 #include "foxbot.h"
+#include "user.h"
 
+/* 001 | RPL_WELCOME */
+void
+parse_rpl_welcome(void)
+{
+    bot.registered = true;
+    join(botconfig.channel);
+
+    /* That's me! */
+    make_me(bot.msg->target);
+}
+
+/* 004 | RPL_MYINFO */
 void
 parse_rpl_myinfo(void)
 {
@@ -53,6 +67,7 @@ parse_rpl_myinfo(void)
     xfree(tofree);
 }
 
+/* 005 | RPL_ISUPPORT */
 void
 parse_rpl_isupport(void)
 {
