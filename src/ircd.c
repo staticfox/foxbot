@@ -76,6 +76,8 @@ parse_rpl_isupport(void)
     tofree = string = xstrdup(bot.msg->params);
 
 #define SUPPORT_BOOL(x, y, z) if (strcmp(x, y) == 0) { z = true; continue; }
+#define SUPPORT_STR(x, y, z) if (strncmp(x, y, strlen(y)) == 0) { z = xstrdup(x + strlen(y)); continue; }
+#define SUPPORT_INT(x, y, z) if (strncmp(x, y, strlen(y)) == 0) { z = atoi(x + strlen(y)); continue; }
     while ((token = fox_strsep(&string, " ")) != NULL) {
         /* End of anything useful to parse */
         if (strcmp(token, ":are") == 0)
@@ -86,13 +88,16 @@ parse_rpl_isupport(void)
         SUPPORT_BOOL(token, "KNOCK", bot.ircd->supports.knock);
         SUPPORT_BOOL(token, "WHOX", bot.ircd->supports.whox);
 
-        if (strncmp(token, "NETWORK=", 8) == 0) {
-            bot.ircd->network = xstrdup(token + 8);
-            continue;
-        }
+        SUPPORT_STR(token, "NETWORK=", bot.ircd->network);
+        SUPPORT_STR(token, "CHANTYPES=", bot.ircd->supports.chan_types);
 
-        if (strncmp(token, "CHANTYPES=", 10) == 0) {
-            bot.ircd->supports.chan_types = xstrdup(token + 10);
+        SUPPORT_INT(token, "NICKLEN=", bot.ircd->nick_length);
+        SUPPORT_INT(token, "CHANNELLEN=", bot.ircd->channel_length);
+        SUPPORT_INT(token, "TOPICLEN=", bot.ircd->topic_length);
+
+        if (strncmp(token, "CHANLIMIT=", 10) == 0) {
+            strtok(token + 10, ":");
+            bot.ircd->chan_limit = atoi(strtok(NULL, ":"));
             continue;
         }
 
@@ -104,7 +109,8 @@ parse_rpl_isupport(void)
 
             for (ii = 0; value[ii] != '\0'; ii++) {
                 switch(value[ii]) {
-                case '(': continue;
+                case '(':
+                    continue;
                 case ')':
                     mode = false;
                     pos = 0;
@@ -122,30 +128,10 @@ parse_rpl_isupport(void)
             bot.ircd->supports.prefix = xstrdup(prefixes);
             continue;
         }
-
-        if (strncmp(token, "NICKLEN=", 8) == 0) {
-            bot.ircd->nick_length = atoi(token + 8);
-            continue;
-        }
-
-        if (strncmp(token, "CHANNELLEN=", 11) == 0) {
-            bot.ircd->channel_length = atoi(token + 11);
-            continue;
-        }
-
-        if (strncmp(token, "CHANLIMIT=", 10) == 0) {
-            char *value = token + 10;
-            value = strtok(value, ":");
-            bot.ircd->chan_limit = atoi(strtok(NULL, ":"));
-            continue;
-        }
-
-        if (strncmp(token, "TOPICLEN=", 9) == 0) {
-            bot.ircd->topic_length = atoi(token + 9);
-            continue;
-        }
     }
 #undef SUPPORT_BOOL
+#undef SUPPORT_STR
+#undef SUPPORT_INT
 
     xfree(tofree);
 }
