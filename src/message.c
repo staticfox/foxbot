@@ -104,10 +104,10 @@ hook_numeric(void)
     case   1: /* RPL_WELCOME */
         parse_rpl_welcome();
         break;
-    case   4:
+    case   4: /* RPL_MYINFO */
         parse_rpl_myinfo();
         break;
-    case   5:
+    case   5: /* RPL_ISUPPORT */
         parse_rpl_isupport();
         break;
     case 421: /* ERR_UNKNOWNCOMMAND */
