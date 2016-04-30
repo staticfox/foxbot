@@ -5,7 +5,9 @@ CLEANFILES = config_lexer.[ch] config_parser.[ch]
 AM_YFLAGS = -d
 
 bin_PROGRAMS = foxbot
-foxbot_SOURCES = conf.c \
+foxbot_SOURCES = channel.c \
+                 channel.h \
+                 conf.c \
                  conf.h \
                  foxbot.c \
                  foxbot.h \
