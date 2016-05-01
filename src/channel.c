@@ -123,11 +123,22 @@ delete_channel(const char *name)
 void
 delete_channel_s(struct channel_t *channel)
 {
-    dlink_node *node = NULL;
+    dlink_node *node = NULL, *u_node = NULL;
+    struct user_t *user = NULL;
 
     if ((node = dlink_find(channels, channel))) {
         xfree(channel->name);
         xfree(channel->modes);
+
+        /* Remove users from the channel. Also* delete
+         * their cache entry if need be */
+        DLINK_FOREACH(u_node, channel->users->head) {
+            user = (struct user_t *)u_node->data;
+            if (--user->number_of_channels == 0 && user != bot.user)
+                delete_user_by_struct(user);
+            dlink_delete(u_node, channel->users);
+        }
+
         dlink_delete(node, channels);
         return;
     }
