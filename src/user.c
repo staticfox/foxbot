@@ -115,6 +115,7 @@ delete_user_by_nick(const char *nick)
             xfree(user->nick);
             xfree(user->ident);
             xfree(user->host);
+            xfree(user);
             dlink_delete(node, users);
             return;
         }
@@ -135,6 +136,7 @@ delete_user_by_struct(struct user_t *user)
         xfree(user->nick);
         xfree(user->ident);
         xfree(user->host);
+        xfree(user);
         dlink_delete(node, users);
         return;
     }
