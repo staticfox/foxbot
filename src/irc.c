@@ -90,7 +90,10 @@ handle_join(void)
         channel = create_channel(bot.msg->target);
         assert(channel != NULL);
         add_user_to_channel(channel, bot.msg->from);
+        return;
     }
+
+    add_user_to_channel(channel, bot.msg->from);
 }
 
 void
