@@ -90,7 +90,6 @@ handle_join(void)
         channel = create_channel(bot.msg->target);
 
     add_user_to_channel(channel, bot.msg->from);
-    bot.msg->from->number_of_channels++;
 }
 
 void
@@ -115,9 +114,6 @@ handle_part(void)
     }
 
     channel_remove_user(channel, bot.msg->from);
-
-    if (--bot.msg->from->number_of_channels == 0 && bot.msg->from != bot.user)
-        delete_user_by_struct(bot.msg->from);
 }
 
 void
@@ -125,8 +121,6 @@ handle_quit(void)
 {
     assert(bot.msg->from != NULL);
 
+    /* SHOULD delete the user's struct on channel_remove_user */
     channel_quit_user(bot.msg->from);
-
-    delete_user_by_struct(bot.msg->from);
-    bot.msg->from = NULL;
 }

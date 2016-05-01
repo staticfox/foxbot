@@ -61,6 +61,7 @@ add_user_to_channel(struct channel_t *channel, struct user_t *user)
         return;
     }
 
+    user->number_of_channels++;
     dlink_insert(channel->users, user);
 }
 
@@ -87,6 +88,9 @@ channel_remove_user(struct channel_t *channel, struct user_t *user)
             break;
         }
     }
+
+    if (--user->number_of_channels == 0 && user != bot.user)
+        delete_user_by_struct(user);
 }
 
 /* This function should really be renamed to
