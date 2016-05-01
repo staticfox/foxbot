@@ -126,6 +126,7 @@ delete_channel(const char *name)
                 dlink_delete(u_node, channel->users);
             }
 
+            xfree(channel);
             dlink_delete(node, channels);
             return;
         }
@@ -154,6 +155,7 @@ delete_channel_s(struct channel_t *channel)
             dlink_delete(u_node, channel->users);
         }
 
+        xfree(channel);
         dlink_delete(node, channels);
         return;
     }
