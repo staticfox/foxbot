@@ -37,29 +37,33 @@ handle_mode(void)
 {
     /* User mode change, it *must* be us. */
     if (!(strchr(bot.ircd->supports.chan_types, bot.msg->target[0]))) {
+        bool adding = true;
+
         assert(bot.user != NULL); /* Should not be null at this point */
-        if (strcmp(bot.msg->target, bot.user->nick) == 0) {
-            bool adding = true;
-            for (size_t ii = 0; bot.msg->params[ii] != '\0'; ii++) {
-                switch (bot.msg->params[ii]) {
-                case ':':
-                    continue;
-                case '+':
-                    adding = true;
-                    continue;
-                case '-':
-                    adding = false;
-                    continue;
-                default:
-                    assert(isalnum(bot.msg->params[ii]));
-                    bot.modes[(uint8_t)bot.msg->params[ii]] = adding;
-                    continue;
-                }
-            }
+
+        if (strcmp(bot.msg->target, bot.user->nick) != 0) {
+            do_error("Received mode change for another user? %s", bot.msg->buffer);
             return;
         }
-        do_error("Received mode change for another user? %s", bot.msg->buffer);
-        return;
+
+        for (size_t ii = 0; bot.msg->params[ii] != '\0'; ii++) {
+            switch (bot.msg->params[ii]) {
+            case ':':
+                continue;
+            case '+':
+                adding = true;
+                continue;
+            case '-':
+                adding = false;
+                continue;
+            default:
+                assert(isalnum(bot.msg->params[ii]));
+                bot.modes[(uint8_t)bot.msg->params[ii]] = adding;
+                continue;
+            }
+        }
+
+    return;
     }
 
     /* TODO: Channel mode parser */
