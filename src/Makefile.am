@@ -1,11 +1,17 @@
 # foxbot automake file
 
 BUILT_SOURCES = config_parser.h
-CLEANFILES = config_lexer.[ch] config_parser.[ch]
+CLEANFILES = config_lexer.[ch] config_parser.[ch] libfoxbotconfigparser.a
 AM_YFLAGS = -d
 
-bin_PROGRAMS = foxbot
-foxbot_SOURCES = channel.c \
+libfoxbot_la_LDFLAGS = -export-dynamic -module
+libfoxbot_la_LIBADD = $(LIBLTDL)
+libfoxbot_la_DEPENDENCIES = $(LTDLDEPS)
+
+foxbotdir = $(pkglibdir)
+foxbot_LTLIBRARIES = libfoxbot.la
+
+libfoxbot_la_SOURCES = channel.c \
                  channel.h \
                  conf.c \
                  conf.h \
@@ -26,9 +32,6 @@ foxbot_SOURCES = channel.c \
                  socket.c \
                  socket.h \
                  user.c \
-                 user.h
-
-foxbot_LDADD = libfoxbotconfigparser.a
-noinst_LIBRARIES = libfoxbotconfigparser.a
-libfoxbotconfigparser_a_SOURCES = config_lexer.l config_parser.y
-libfoxbotconfigparser_a_CFLAGS = -Wno-sign-compare
+                 user.h \
+                 config_lexer.l \
+                 config_parser.y

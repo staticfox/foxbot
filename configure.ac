@@ -4,7 +4,7 @@ dnl Process this file with autoconf to produce a configure script.
 AC_PREREQ([2.68])
 AC_INIT(foxbot, 0.0.1, staticfox@staticfox.net)
 AM_INIT_AUTOMAKE([-Wall -Werror foreign nostdinc])
-AC_CONFIG_FILES([Makefile src/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile tests/Makefile])
 AC_CONFIG_SRCDIR([src/foxbot.c])
 AC_CONFIG_HEADERS([src/config.h])
 
@@ -14,6 +14,12 @@ AC_PROG_RANLIB
 AC_PROG_YACC
 AM_PROG_AR
 AM_PROG_LEX
+
+dnl initialize libtool
+LT_CONFIG_LTDL_DIR([libltdl])
+LT_INIT([dlopen disable-static])
+LTDL_INIT([recursive convenience])
+LIBTOOL="$LIBTOOL --silent"
 
 dnl Enable warnings.
 AX_CFLAGS_WARN_ALL
@@ -66,5 +72,16 @@ AM_CONDITIONAL([MEMDEBUG], [test "$memdebug" = true])
 if test "$debug" = true; then
   AX_APPEND_FLAG([-O0])
 fi
+
+dnl check for pkg-config
+if test m4_ifdef([PKG_CHECK_MODULES], [yes], [no]) == no; then
+  AC_MSG_ERROR([pkg-config is required.
+Please install it via your system's package manager or visit pkg-config.freedesktop.org])
+fi
+
+dnl Check for libcheck
+PKG_CHECK_MODULES([CHECK], [check], [HAVE_CHECK=1], [HAVE_CHECK=0])
+AC_REQUIRE_AUX_FILE([tap-driver.sh])
+AC_PROG_AWK
 
 AC_OUTPUT

@@ -5,7 +5,14 @@ src/config_parser.c
 src/config_parser.h
 src/foxbot
 
+libltdl/
+libtool
+ltmain.sh
+
 *.[ao]
+*.la
+*.libs/
+*.lo
 *.in
 *.tab.[ch]
 *~
