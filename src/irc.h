@@ -24,5 +24,7 @@
 #define FOX_IRC_H_
 
 void handle_quit(void);
+void handle_join(void);
+void handle_mode(void);
 
 #endif

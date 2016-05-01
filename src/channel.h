@@ -24,10 +24,12 @@
 #define FOX_CHANNEL_H_
 
 #include "list.h"
+#include "user.h"
 
 struct channel_t {
     char *name;
     char *modes;
+    dlink_list *users;
 };
 
 /** Initialize the global channel cache.  Must be called before any of the
@@ -36,6 +38,9 @@ void init_channels(void);
 
 /** Create a `#channel_t` from the name. */
 struct channel_t * create_channel(const char *name);
+
+/** Add a `#user_t` to a channel. */
+void add_user_to_channel(struct channel_t *channel, struct user_t *user);
 
 /** Delete a channel from the global channel cache if we already have the
     channel's struct. */

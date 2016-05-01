@@ -22,9 +22,11 @@
 
 #include <assert.h>
 #include <ctype.h>
+#include <stdio.h>
 #include <stdint.h>
 #include <string.h>
 
+#include "channel.h"
 #include "foxbot.h"
 #include "message.h"
 #include "memory.h"
@@ -61,6 +63,34 @@ handle_mode(void)
     }
 
     /* TODO: Channel mode parser */
+}
+
+void
+handle_join(void)
+{
+    /* eh? */
+    if (bot.msg->from_server == true)
+        return;
+
+    /* We know their full n!u@h now, incase we just got them from
+     * /NAMES */
+    if (bot.msg->from->ident == NULL || bot.msg->from->host == NULL)
+        set_uh(bot.msg->from, bot.msg->source);
+
+    struct channel_t *channel = NULL;
+    channel = find_channel(bot.msg->target);
+
+    if (channel == NULL && bot.msg->from != bot.user) {
+        do_error("Received join for an unknown channel: %s", bot.msg->buffer);
+        return;
+    }
+
+    /* Must be us */
+    if (channel == NULL) {
+        channel = create_channel(bot.msg->target);
+        assert(channel != NULL);
+        add_user_to_channel(channel, bot.msg->from);
+    }
 }
 
 void

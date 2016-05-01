@@ -124,6 +124,12 @@ void
 hook_literal(void)
 {
     switch(bot.msg->ctype) {
+    case JOIN:
+        handle_join();
+        break;
+    case MODE:
+        handle_mode();
+        break;
     case QUIT:
         handle_quit();
         break;

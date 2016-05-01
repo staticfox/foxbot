@@ -41,10 +41,20 @@ create_channel(const char *name)
 {
     struct channel_t *channel = xmalloc(sizeof(*channel));
     channel->name = xstrdup(name);
+    channel->users = dlist_create();
 
     dlink_insert(channels, channel);
 
     return channel;
+}
+
+void
+add_user_to_channel(struct channel_t *channel, struct user_t *user)
+{
+    assert(channel != NULL);
+    assert(channel->users != NULL);
+    assert(user != NULL);
+    dlink_insert(channel->users, user);
 }
 
 void

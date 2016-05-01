@@ -39,6 +39,9 @@ void init_users(void);
 /** Create our user struct at 001 */
 void make_me(const char *nick);
 
+/** Set the user and hostname given the struct */
+void set_uh(struct user_t *user, char *src);
+
 /** Create a `#user_t` from the nick, ident, and hostname. */
 struct user_t * make_nuh(const char *n, const char *u, const char *h);
 

@@ -52,6 +52,29 @@ make_me(const char *nick)
     dlink_insert(users, user);
 }
 
+void
+set_uh(struct user_t *user, char *src)
+{
+    if (!(strstr(src, "!") && strstr(src, "@")))
+        return;
+
+    const char *nick = strtok(src, "!");
+    if (!nick) goto fail;
+
+    char *ident = strtok(NULL, "!");
+    if (!ident) goto fail;
+    ident = strtok(ident, "@");
+    if (!ident) goto fail;
+    const char *host = strtok(NULL, "@");
+    if (!host) goto fail;
+
+    user->ident = xstrdup(ident);
+    user->host  = xstrdup(host);
+    return;
+fail:
+    do_error("Error parsing n!u@h %s", src);
+}
+
 struct user_t *
 make_nuh(const char *n, const char *u, const char *h)
 {
