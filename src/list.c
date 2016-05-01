@@ -31,7 +31,10 @@
 dlink_list *
 dlist_create(void)
 {
-    return xmalloc(sizeof(dlink_list));
+    static const dlink_list empty_list = {0};
+    dlink_list *l = xmalloc(sizeof(dlink_list));
+    *l = empty_list;
+    return l;
 }
 
 void

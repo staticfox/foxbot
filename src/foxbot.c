@@ -85,9 +85,11 @@ do_error(char *line, ...)
 int
 main(/*int argc, char **argv*/)
 {
+    static const struct msg_t empty_msg = {0};
     bot.msg = xmalloc(sizeof(*bot.msg));
     bot.msg->from = xmalloc(sizeof(*bot.msg->from));
     bot.ircd = xmalloc(sizeof(*bot.ircd));
+    *bot.msg = empty_msg;
 
     init_channels();
     init_users();
