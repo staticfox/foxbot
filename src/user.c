@@ -42,7 +42,7 @@ init_users(void)
 void
 make_me(const char *nick)
 {
-    static const struct user_t empty_user = {0};
+    static const struct user_t empty_user;
     struct user_t *user = xmalloc(sizeof(*user));
     *user = empty_user;
     user->nick = xstrdup(nick);

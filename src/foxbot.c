@@ -85,7 +85,7 @@ do_error(char *line, ...)
 int
 main(/*int argc, char **argv*/)
 {
-    static const struct msg_t empty_msg = {0};
+    static const struct msg_t empty_msg;
     bot.msg = xmalloc(sizeof(*bot.msg));
     bot.msg->from = xmalloc(sizeof(*bot.msg->from));
     bot.ircd = xmalloc(sizeof(*bot.ircd));
