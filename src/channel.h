@@ -48,6 +48,9 @@ void channel_quit_user(struct user_t *user);
 /** Delete a '#user_t' from a '#channel_t' */
 void channel_remove_user(struct channel_t *channel, struct user_t *user);
 
+/** Returns a pointer is '#user_t' is in '#channel_t' */
+struct user_t * channel_get_user(struct channel_t *channel, struct user_t *user);
+
 /** Delete a channel from the global channel cache if we already have the
     channel's struct. */
 void delete_channel_s(struct channel_t *channel);

@@ -23,8 +23,9 @@
 #include <assert.h>
 #include <string.h>
 
-#include "memory.h"
 #include "channel.h"
+#include "foxbot.h"
+#include "memory.h"
 
 /** Global channel cache */
 static dlink_list *channels;
@@ -54,7 +55,25 @@ add_user_to_channel(struct channel_t *channel, struct user_t *user)
     assert(channel != NULL);
     assert(channel->users != NULL);
     assert(user != NULL);
+
+    if (channel_get_user(channel, user) != NULL) {
+        do_error("Attempting to rejoin %s to %s.", user->nick, channel->name);
+        return;
+    }
+
     dlink_insert(channel->users, user);
+}
+
+struct user_t *
+channel_get_user(struct channel_t *channel, struct user_t *user)
+{
+    dlink_node *node = NULL;
+
+    DLINK_FOREACH(node, channel->users->head)
+        if (((struct user_t *)node->data) == user)
+            return (struct user_t *)node->data;
+
+    return NULL;
 }
 
 void
@@ -70,6 +89,8 @@ channel_remove_user(struct channel_t *channel, struct user_t *user)
     }
 }
 
+/* This function should really be renamed to
+ * Ping timeout: 256 seconds */
 void
 channel_quit_user(struct user_t *user)
 {
