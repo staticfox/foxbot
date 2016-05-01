@@ -161,6 +161,8 @@ io(void)
     char *line_end;
     while ((line_end = memchr(line_start, '\n', buf_used))) {
         *line_end = '\0';
+        if (strlen(line_start) > 0 && line_end[-1] == '\r')
+            line_end[-1] = '\0';
         /* Straight out of RFC */
         assert(strlen(line_start) <= MAX_IRC_BUF);
         printf(">> %s\n", line_start);
