@@ -26,6 +26,7 @@
 
 #include "list.h"
 #include "foxbot.h"
+#include "message.h"
 #include "memory.h"
 #include "user.h"
 
@@ -109,6 +110,8 @@ delete_user_by_nick(const char *nick)
     DLINK_FOREACH(node, users->head) {
         if (strcmp(((struct user_t *)node->data)->nick, nick) == 0) {
             user = (struct user_t *)node->data;
+            if (bot.msg->from == user)
+                bot.msg->from = NULL;
             xfree(user->nick);
             xfree(user->ident);
             xfree(user->host);
@@ -127,6 +130,8 @@ delete_user_by_struct(struct user_t *user)
     dlink_node *node = NULL;
 
     if ((node = dlink_find(users, user))) {
+        if (bot.msg->from == user)
+            bot.msg->from = NULL;
         xfree(user->nick);
         xfree(user->ident);
         xfree(user->host);
