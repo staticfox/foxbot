@@ -100,6 +100,9 @@ void
 handle_quit(void)
 {
     assert(bot.msg->from != NULL);
+
+    channel_quit_user(bot.msg->from);
+
     delete_user_by_struct(bot.msg->from);
     bot.msg->from = NULL;
 }

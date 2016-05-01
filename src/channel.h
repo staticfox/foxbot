@@ -42,6 +42,12 @@ struct channel_t * create_channel(const char *name);
 /** Add a `#user_t` to a channel. */
 void add_user_to_channel(struct channel_t *channel, struct user_t *user);
 
+/** Delete '#user_t' from all channels. */
+void channel_quit_user(struct user_t *user);
+
+/** Delete a '#user_t' from a '#channel_t' */
+void channel_remove_user(struct channel_t *channel, struct user_t *user);
+
 /** Delete a channel from the global channel cache if we already have the
     channel's struct. */
 void delete_channel_s(struct channel_t *channel);

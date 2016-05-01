@@ -58,6 +58,28 @@ add_user_to_channel(struct channel_t *channel, struct user_t *user)
 }
 
 void
+channel_remove_user(struct channel_t *channel, struct user_t *user)
+{
+    dlink_node *u_node = NULL;
+
+    DLINK_FOREACH(u_node, channel->users->head) {
+        if (((struct user_t *)u_node->data) == user) {
+            dlink_delete(u_node, channel->users);
+            break;
+        }
+    }
+}
+
+void
+channel_quit_user(struct user_t *user)
+{
+    dlink_node *node = NULL;
+
+    DLINK_FOREACH(node, channels->head)
+        channel_remove_user(((struct channel_t *)node->data), user);
+}
+
+void
 delete_channel(const char *name)
 {
     dlink_node *node = NULL;
