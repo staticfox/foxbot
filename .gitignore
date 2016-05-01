@@ -28,5 +28,7 @@ depcomp
 install-sh
 Makefile
 missing
+tap-driver.sh
+test-driver
 stamp-h1
 ylwrap
