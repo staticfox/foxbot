@@ -63,7 +63,7 @@ AC_ARG_ENABLE([memdebug],
 
 AM_CONDITIONAL([MEMDEBUG], [test "$memdebug" = true])
 
-if test "$debug" = yes; then
+if test "$debug" = true; then
   AX_APPEND_FLAG([-O0])
 fi
 
