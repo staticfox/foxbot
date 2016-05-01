@@ -30,6 +30,7 @@ struct user_t {
     char *nick;
     char *ident;
     char *host;
+    int number_of_channels;
 };
 
 /** Initialize the global user cache.  Must be called before any of the

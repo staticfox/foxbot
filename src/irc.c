@@ -81,19 +81,43 @@ handle_join(void)
     channel = find_channel(bot.msg->target);
 
     if (channel == NULL && bot.msg->from != bot.user) {
-        do_error("Received join for an unknown channel: %s", bot.msg->buffer);
+        do_error("Received JOIN for an unknown channel: %s", bot.msg->buffer);
         return;
     }
 
     /* Must be us */
-    if (channel == NULL) {
+    if (channel == NULL)
         channel = create_channel(bot.msg->target);
-        assert(channel != NULL);
-        add_user_to_channel(channel, bot.msg->from);
+
+    add_user_to_channel(channel, bot.msg->from);
+    bot.msg->from->number_of_channels++;
+}
+
+void
+handle_part(void)
+{
+    /* eh? */
+    if (bot.msg->from_server == true)
+        return;
+
+    struct channel_t *channel = NULL;
+    channel = find_channel(bot.msg->target);
+
+    if (channel == NULL) {
+        do_error("Received PART for an unknown channel %s", bot.msg->target);
         return;
     }
 
-    add_user_to_channel(channel, bot.msg->from);
+    /* We left, clear out all data */
+    if (bot.msg->from == bot.user) {
+        delete_channel_s(channel);
+        return;
+    }
+
+    channel_remove_user(channel, bot.msg->from);
+
+    if (--bot.msg->from->number_of_channels == 0 && bot.msg->from != bot.user)
+        delete_user_by_struct(bot.msg->from);
 }
 
 void

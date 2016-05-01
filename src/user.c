@@ -46,6 +46,7 @@ make_me(const char *nick)
     struct user_t *user = xmalloc(sizeof(*user));
     *user = empty_user;
     user->nick = xstrdup(nick);
+    user->number_of_channels = 0;
 
     bot.user = user;
 
@@ -82,6 +83,7 @@ make_nuh(const char *n, const char *u, const char *h)
     user->nick  = xstrdup(n);
     user->ident = xstrdup(u);
     user->host  = xstrdup(h);
+    user->number_of_channels = 0;
 
     dlink_insert(users, user);
 

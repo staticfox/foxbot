@@ -127,6 +127,9 @@ hook_literal(void)
     case JOIN:
         handle_join();
         break;
+    case PART:
+        handle_part();
+        break;
     case MODE:
         handle_mode();
         break;
