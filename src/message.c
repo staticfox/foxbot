@@ -79,7 +79,7 @@ set_command_enum(void)
 }
 
 static void
-free_message(void)
+reset_message(void)
 {
     xfree(bot.msg->buffer);
     bot.msg->buffer = NULL;
@@ -158,7 +158,7 @@ parse_line(const char *line)
     int params = 1;
     char *token, *string, *tofree;
 
-    free_message();
+    reset_message();
 
     bot.msg->buffer = xstrdup(line);
 
