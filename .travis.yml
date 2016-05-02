@@ -34,8 +34,9 @@ addons:
 before_install:
   # version is too old
   - if [ "$TRAVIS_OS_NAME" = linux ]; then
-      sudo apt-get remove check
+      sudo apt-get remove check;
     fi
+
   - if [ "$TRAVIS_OS_NAME" = osx ]; then
       curl -fLSs http://ftpmirror.gnu.org/autoconf-archive/autoconf-archive-2016.03.20.tar.xz | tar xJ &&
       (
@@ -44,6 +45,7 @@ before_install:
         make install;
       );
     fi
+
   # test system
   - wget https://github.com/libcheck/check/archive/master.zip &&
       unzip -qq master &&
