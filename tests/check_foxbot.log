@@ -1,8 +1,0 @@
-in start_listener
-Running suite(s): check_foxbot
-not ok 1 - units/connect_parse.c:connect_parse:connect: Test timeout expired
-FAIL: check_foxbot 1 - units/connect_parse.c:connect_parse:connect: Test timeout expired
-0%: Checks: 1, Failures: 0, Errors: 1
-units/connect_parse.c:33:E:connect_parse:connect:0: (after this point) Test timeout expired
-1..1
-ERROR: check_foxbot - exited with status 1

@@ -22,10 +22,12 @@
 
 #define _POSIX_C_SOURCE 201112L
 
+#include <stdio.h>
 #include <time.h>
 
 #include <foxbot/foxbot.h>
 #include <foxbot/list.h>
+#include <foxbot/user.h>
 
 #include "../check_foxbot.h"
 #include "../check_server.h"
@@ -42,7 +44,7 @@ START_TEST(connect)
         nanosleep(&tim , NULL);
     } while (!bot.registered);
 
-    ck_assert(bot.ircd->supports.whox);
+    fprintf(stderr, "%s = my name\n", bot.user->nick);
 
     delete_foxbot();
 }

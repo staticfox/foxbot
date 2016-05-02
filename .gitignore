@@ -39,3 +39,8 @@ tap-driver.sh
 test-driver
 stamp-h1
 ylwrap
+
+tests/*.log
+tests/check_foxbot
+tests/*.trs
+tests/units/.dirstamp

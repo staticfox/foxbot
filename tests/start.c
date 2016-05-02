@@ -44,7 +44,9 @@ delete_foxbot(void)
 void
 new_foxbot(void)
 {
+    fprintf(stderr, "in new_foxbot()\n");
     pthread_create(&(tid[1]), NULL, (void *)main_foxbot, NULL);
+    fprintf(stderr, "out new_foxbot()\n");
 }
 
 void
