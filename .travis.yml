@@ -21,6 +21,7 @@ addons:
   apt:
     packages:
     - autoconf-archive
+    - check
   coverity_scan:
     project:
       name: "staticfox/foxbot"
