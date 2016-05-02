@@ -54,6 +54,9 @@ before_install:
       ./configure && sudo make install &&
       cd .. && sudo rm -rf check-* && sudo rm -rf master.zip
 
+  - if [ "$TRAVIS_OS_NAME" = linux]; then
+      sudo ldconfig;
+    fi
 
 script:
   - autoreconf -fvi
