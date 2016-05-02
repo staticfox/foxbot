@@ -45,6 +45,7 @@ script:
   - autoreconf -fvi
   - ./configure
   - make
+  - make check
 
 matrix:
   fast_finish: true
