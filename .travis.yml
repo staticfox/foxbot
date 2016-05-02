@@ -21,6 +21,7 @@ addons:
   apt:
     packages:
     - autoconf-archive
+    - texinfo # test system
   coverity_scan:
     project:
       name: "staticfox/foxbot"
@@ -39,7 +40,12 @@ before_install:
         make install;
       );
     fi
-  - wget https://github.com/libcheck/check/archive/master.zip && unzip master && cd check-* && autoreconf -fi && ./configure && make && make install
+  # test system
+  - wget https://github.com/libcheck/check/archive/master.zip && \
+      unzip -qq master && \
+      cd check-* && \
+      autoreconf -fi \
+      && ./configure && make install
 
 script:
   - autoreconf -fvi
