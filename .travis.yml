@@ -1,6 +1,6 @@
 language: c
 
-sudo: false
+sudo: true
 
 env:
   global:
@@ -32,6 +32,8 @@ addons:
     branch_pattern: coverity_scan
 
 before_install:
+  # version is too old
+  - sudo apt-get remove check
   - if [ "$TRAVIS_OS_NAME" = osx ]; then
       curl -fLSs http://ftpmirror.gnu.org/autoconf-archive/autoconf-archive-2016.03.20.tar.xz | tar xJ &&
       (
@@ -44,8 +46,10 @@ before_install:
   - wget https://github.com/libcheck/check/archive/master.zip &&
       unzip -qq master &&
       cd check-* &&
-      autoreconf -fi
-      && ./configure && make install
+      autoreconf -fi &&
+      ./configure && make install &&
+      cd .. && rm -r check-* && rm -r master.zip
+
 
 script:
   - autoreconf -fvi
