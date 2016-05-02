@@ -41,10 +41,10 @@ before_install:
       );
     fi
   # test system
-  - wget https://github.com/libcheck/check/archive/master.zip && \
-      unzip -qq master && \
-      cd check-* && \
-      autoreconf -fi \
+  - wget https://github.com/libcheck/check/archive/master.zip &&
+      unzip -qq master &&
+      cd check-* &&
+      autoreconf -fi
       && ./configure && make install
 
 script:
