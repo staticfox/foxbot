@@ -62,6 +62,8 @@ void join(const char *channel);
 void do_quit(const char *message);
 void do_error(char *line, ...);
 void parse_line(const char *line);
+void foxbot_quit(void);
+int main_foxbot(/*int argc, char **argv*/);
 
 extern volatile sig_atomic_t quitting;
 extern struct bot_t bot;

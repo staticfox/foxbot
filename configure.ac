@@ -3,14 +3,13 @@ dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.68])
 AC_INIT(foxbot, 0.0.1, staticfox@staticfox.net)
-AM_INIT_AUTOMAKE([-Wall -Werror foreign nostdinc])
+AM_INIT_AUTOMAKE([-Wall -Werror foreign nostdinc subdir-objects])
 AC_CONFIG_FILES([Makefile src/Makefile tests/Makefile])
 AC_CONFIG_SRCDIR([src/foxbot.c])
-AC_CONFIG_HEADERS([src/config.h])
+AC_CONFIG_HEADERS([include/foxbot/config.h])
 
 dnl Checks for programs.
 AC_PROG_CC_C99
-AC_PROG_RANLIB
 AC_PROG_YACC
 AM_PROG_AR
 AM_PROG_LEX
@@ -59,7 +58,7 @@ AC_ARG_ENABLE([memdebug],
 [AS_HELP_STRING([--enable-memdebug], [Print memory debugging information])],
 [
   memdebug=true
-  AC_DEFINE([WANT_MEMDEBUG], [1], ["Print out memory debugging information"])
+  AC_DEFINE([WANT_MEMDEBUG], [1], [Print out memory debugging information])
   AC_MSG_RESULT(yes)
 ],
 [

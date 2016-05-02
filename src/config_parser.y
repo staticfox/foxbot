@@ -21,8 +21,8 @@
  */
 
 %{
-#include "conf.h"
-#include "memory.h"
+#include <foxbot/conf.h>
+#include <foxbot/memory.h>
 
 int yylex(void);
 %}

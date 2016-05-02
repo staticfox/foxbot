@@ -22,15 +22,15 @@
 
 #include <stdarg.h>
 
-#include "channel.h"
-#include "conf.h"
-#include "foxbot.h"
-#include "ircd.h"
-#include "list.h"
-#include "message.h"
-#include "signal.h"
-#include "socket.h"
-#include "user.h"
+#include <foxbot/channel.h>
+#include <foxbot/conf.h>
+#include <foxbot/foxbot.h>
+#include <foxbot/ircd.h>
+#include <foxbot/list.h>
+#include <foxbot/message.h>
+#include <foxbot/signal.h>
+#include <foxbot/socket.h>
+#include <foxbot/user.h>
 
 struct bot_t bot; /* That's me */
 volatile sig_atomic_t quitting;
@@ -82,8 +82,14 @@ do_error(char *line, ...)
         fprintf(stderr, "%s\n", buf);
 }
 
+void
+foxbot_quit(void)
+{
+    quitting = 1;
+}
+
 int
-main(/*int argc, char **argv*/)
+main_foxbot(/*int argc, char **argv*/)
 {
     static const struct msg_t empty_msg;
     bot.msg = xmalloc(sizeof(*bot.msg));

@@ -24,13 +24,13 @@
 #include <ctype.h>
 #include <string.h>
 
-#include "conf.h"
-#include "foxbot.h"
-#include "irc.h"
-#include "ircd.h"
-#include "memory.h"
-#include "message.h"
-#include "user.h"
+#include <foxbot/conf.h>
+#include <foxbot/foxbot.h>
+#include <foxbot/irc.h>
+#include <foxbot/ircd.h>
+#include <foxbot/memory.h>
+#include <foxbot/message.h>
+#include <foxbot/user.h>
 
 static int
 do_set_enum(const char *command, enum commands ecmd)

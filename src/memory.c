@@ -23,7 +23,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "memory.h"
+#include <foxbot/memory.h>
 
 #ifdef WANT_MEMDEBUG
 # define MEMDEBUG(f, ...) printf((f), __VA_ARGS__)

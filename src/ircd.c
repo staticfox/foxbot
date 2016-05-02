@@ -24,11 +24,11 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "conf.h"
-#include "memory.h"
-#include "message.h"
-#include "foxbot.h"
-#include "user.h"
+#include <foxbot/conf.h>
+#include <foxbot/memory.h>
+#include <foxbot/message.h>
+#include <foxbot/foxbot.h>
+#include <foxbot/user.h>
 
 /* 001 | RPL_WELCOME */
 void

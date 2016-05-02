@@ -25,8 +25,8 @@
 #include <stdio.h>
 #include <string.h> /* for memset */
 
-#include "foxbot.h"
-#include "signal.h"
+#include <foxbot/foxbot.h>
+#include <foxbot/signal.h>
 
 static void
 sigint_handler(int sig)

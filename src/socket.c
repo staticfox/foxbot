@@ -33,9 +33,9 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-#include "conf.h"
-#include "foxbot.h"
-#include "socket.h"
+#include <foxbot/conf.h>
+#include <foxbot/foxbot.h>
+#include <foxbot/socket.h>
 
 int
 create_and_bind(void)
