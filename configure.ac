@@ -20,6 +20,9 @@ LT_INIT([dlopen disable-static])
 LTDL_INIT([recursive convenience])
 LIBTOOL="$LIBTOOL --silent"
 
+dnl m4 directrory
+AC_CONFIG_MACRO_DIR([m4])
+
 dnl Enable warnings.
 AX_CFLAGS_WARN_ALL
 AX_CHECK_COMPILE_FLAG([-Wextra], [AX_APPEND_FLAG([-Wextra])])
