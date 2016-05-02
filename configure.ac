@@ -3,10 +3,11 @@ dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.68])
 AC_INIT(foxbot, 0.0.1, staticfox@staticfox.net)
-AM_INIT_AUTOMAKE([-Wall -Werror foreign nostdinc subdir-objects])
+AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_FILES([Makefile src/Makefile tests/Makefile])
 AC_CONFIG_SRCDIR([src/foxbot.c])
 AC_CONFIG_HEADERS([include/foxbot/config.h])
+AM_INIT_AUTOMAKE([-Wall -Werror foreign nostdinc subdir-objects])
 
 dnl Checks for programs.
 AC_PROG_CC_C99
