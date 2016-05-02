@@ -52,7 +52,7 @@ before_install:
       cd check-* &&
       autoreconf -fi &&
       ./configure && sudo make install &&
-      cd .. && rm -r check-* && rm -r master.zip
+      cd .. && rm -rf check-* && rm -rf master.zip
 
 
 script:
