@@ -39,7 +39,7 @@ before_install:
         make install;
       );
     fi
-  - wget https://github.com/libcheck/check/archive/master.zip && unzip master && cd check-* && autoreconf -fi && make && make install
+  - wget https://github.com/libcheck/check/archive/master.zip && unzip master && cd check-* && autoreconf -fi && ./configure && make && make install
 
 script:
   - autoreconf -fvi
