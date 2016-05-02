@@ -147,14 +147,6 @@ fox_write(int fd, char *line, ...)
     }
 }
 
-/* Basically copy pasted from socket.c. To understand
- * the implementation better, check the comments in
- * the main socket.c file as well as the git revision
- * history. This is also pretty un-necessary, considering
- * we are physically controlling what gets sent so why we
- * need to have a complicated read system instead of just
- * piping it out to /dev/null is beyond me...
- */
 void
 fox_read(int fd)
 {
@@ -205,10 +197,8 @@ fox_read(int fd)
     memmove(inbuf, line_start, buf_used);
 }
 
-/* We should globally declare this fd since
- * it's going to be important. */
 void *
-start_listener(void * unused)
+start_listener(void *unused)
 {
     (void)unused;
 
