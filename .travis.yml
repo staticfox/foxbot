@@ -21,7 +21,6 @@ addons:
   apt:
     packages:
     - autoconf-archive
-    - check
   coverity_scan:
     project:
       name: "staticfox/foxbot"
@@ -40,6 +39,7 @@ before_install:
         make install;
       );
     fi
+  - wget https://github.com/libcheck/check/archive/master.zip && unzip master && cd check-* && autoreconf -fi && make && make install
 
 script:
   - autoreconf -fvi
