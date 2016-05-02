@@ -1,10 +1,11 @@
 language: c
 
-sudo: true
+sudo: false
 
 env:
   global:
-    - ACLOCAL_PATH=$HOME/share/aclocal
+    - ACLOCAL_PATH=$HOME/share/aclocal${ACLOCAL_PATH+:}$ACLOCAL_PATH
+    - PKG_CONFIG_PATH=$HOME/lib/pkgconfig${PKG_CONFIG_PATH+:}$PKG_CONFIG_PATH
     # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
     #   via the "travis encrypt" command using the project repo's public key
     - secure: "mQ/mVTXPZC4oQDvTHnW9acs4kZM0YSQj9M1AW3WNZvyP6v97rThrb71KmDQMuzVC4/ez0SmGmaM86pVpynIImqm/bsgxaBbX/8lMIxhO7Zieubi4Bp7d5zRX8FmonS/8CqXceO5AOCqMQT/jJFDBCz7tqKdYwlYuT0fxgB+rIDQDWPg1oa77sB0grS1yqZ9RBbk2rtgx76zbs97YLgtuvPMvqHtumUd4GPO5rR/rCuulIARmJTYQhU6corGbsfcuQ+yEd2P8RLExGwvldRuBVo2Bm3Vrx1w0ngNfyQbWW2GfL3SuVu+T/K4GpShMKph+1SRrW9ybVOzVGvXKpyOtU/pRmDTsYjPUR20QbR3gFz0OkIG/EGt4+0MEMCAuDe10CmaGDeoVtdkjUVQgVHwmY3grl+lfPGGAVG0skH/v6hFMMCZY7sViHu65fXM3S/WSyIeX+LwgtFCoAxbi80kXT7O74BEYF2OgNJevpgIgEZVAbCcOqYbEkVUYxLEbhmZ3o56zbEk52J9xHWgTCjKywzqTGzL74VrwzGyYnJ8AVO4c923p/gq7X8rNVc1gFX+CPBzpXlcnwgBlyztHuL12kjHz4CAqKothkzTx9UEAuycf+t5KqZAuozJwp7ov8SoBo9jiKds53v4dMGCmGTv7asTAevOL1ApLDTPjov+1Ubc="
@@ -32,10 +33,6 @@ addons:
     branch_pattern: coverity_scan
 
 before_install:
-  # version is too old
-  - if [ "$TRAVIS_OS_NAME" = linux ]; then
-      sudo apt-get remove check;
-    fi
 
   - if [ "$TRAVIS_OS_NAME" = osx ]; then
       curl -fLSs http://ftpmirror.gnu.org/autoconf-archive/autoconf-archive-2016.03.20.tar.xz | tar xJ &&
@@ -48,15 +45,12 @@ before_install:
 
   # test system
   - wget https://github.com/libcheck/check/archive/master.zip &&
-      unzip -qq master &&
+    unzip -qq master &&
+    (
       cd check-* &&
       autoreconf -fi &&
-      ./configure && sudo make install &&
-      cd .. && sudo rm -rf check-* && sudo rm -rf master.zip
-
-  - if [ "$TRAVIS_OS_NAME" = linux ]; then
-      sudo ldconfig;
-    fi
+      ./configure --prefix="$HOME" && make install;
+    )
 
 script:
   - autoreconf -fvi
