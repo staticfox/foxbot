@@ -20,10 +20,7 @@
  *
  */
 
-#define _POSIX_C_SOURCE 201112L
-
 #include <stdio.h>
-#include <time.h>
 
 #include <foxbot/foxbot.h>
 #include <foxbot/list.h>
@@ -34,19 +31,13 @@
 
 START_TEST(connect)
 {
-    new_foxbot();
+    begin_test();
 
-    do
-    {
-        struct timespec tim;
-        tim.tv_sec  = 0;
-        tim.tv_nsec = 250000000L;
-        nanosleep(&tim , NULL);
-    } while (!bot.registered);
+    ck_assert(strcmp(bot.user->nick, "foxbot") == 0);
+    ck_assert(strcmp(bot.user->ident, "~fox") == 0);
+    ck_assert(strcmp(bot.user->host, "127.0.0.1") == 0);
 
-    fprintf(stderr, "%s = my name\n", bot.user->nick);
-
-    delete_foxbot();
+    end_test();
 }
 END_TEST
 

@@ -20,8 +20,11 @@
  *
  */
 
-#include <pthread.h>
+#define _POSIX_C_SOURCE 201112L
+
 #include <errno.h>
+#include <pthread.h>
+#include <time.h>
 #include <stdio.h>
 
 #include <foxbot/foxbot.h>
@@ -36,17 +39,13 @@ pthread_t tid[3];
 void
 delete_foxbot(void)
 {
-    printf("in delete_foxbot()\n");
     foxbot_quit();
-    printf("past delete_foxbot()\n");
 }
 
 void
 new_foxbot(void)
 {
-    fprintf(stderr, "in new_foxbot()\n");
     pthread_create(&(tid[1]), NULL, (void *)main_foxbot, NULL);
-    fprintf(stderr, "out new_foxbot()\n");
 }
 
 void
@@ -66,4 +65,27 @@ new_testserver(void)
         fprintf(stderr, "Thread error: %s\n", strerror(errno));
         return;
     }
+}
+
+void
+begin_test(void)
+{
+    new_testserver();
+    new_foxbot();
+
+    do
+    {
+        struct timespec tim;
+        tim.tv_sec  = 0;
+        tim.tv_nsec = 250000000L;
+        nanosleep(&tim , NULL);
+    } while (!bot.registered);
+}
+
+void
+end_test(void)
+{
+    delete_foxbot();
+    tests_done = 1;
+    shutdown_test_server();
 }

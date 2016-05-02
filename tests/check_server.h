@@ -33,4 +33,4 @@ extern int tests_done;
 extern int client_sock_fd;
 extern int sockfd;
 bool got_nick, got_user;
-char *nick, *user;
+char *check_nick, *check_user;

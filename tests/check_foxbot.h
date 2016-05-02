@@ -26,6 +26,8 @@
 void new_foxbot(void);
 void delete_foxbot(void);
 void new_testserver(void);
+void begin_test(void);
+void end_test(void);
 
 /* Unit tests */
 void connect_parse_setup(Suite *);

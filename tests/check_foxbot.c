@@ -39,21 +39,6 @@ add_testcases(Suite *s)
 int
 main()
 {
-    int fd;
-    int err;
-
-    if((fd = setup_test_server()) < 0) {
-        fprintf(stderr, "Unable to start socket server.\n");
-        return 1;
-    }
-
-    err = pthread_create(&(tid[0]), NULL, start_listener, NULL);
-
-    if(err != 0) {
-        fprintf(stderr, "Thread error: %s\n", strerror(errno));
-        return 1;
-    }
-
     Suite *s = suite_create("check_foxbot");
 
     add_testcases(s);

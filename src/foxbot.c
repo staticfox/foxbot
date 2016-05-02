@@ -91,6 +91,7 @@ foxbot_quit(void)
 int
 main_foxbot(/*int argc, char **argv*/)
 {
+    fprintf(stderr, "Starting foxbot\n");
     static const struct msg_t empty_msg;
     bot.msg = xmalloc(sizeof(*bot.msg));
     bot.msg->from = xmalloc(sizeof(*bot.msg->from));

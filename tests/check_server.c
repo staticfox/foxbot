@@ -38,10 +38,11 @@
 #include "check_server.h"
 
 int tests_done = 0;
-int client_sock_fd;
-int sockfd;
+int client_sock_fd = 0;
+int sockfd = 0;
 
 enum check_commands {
+    INVALID,
     NICK,
     USER
 };
@@ -52,42 +53,39 @@ char *check_nick, *check_user;
 static void
 do_burst(void)
 {
-    fox_write(client_sock_fd, ":hades.arpa NOTICE * :*** Ident disabled, not checking ident\r\n");
-    fox_write(client_sock_fd, ":hades.arpa NOTICE * :*** Looking up your hostname...\r\n");
-    fox_write(client_sock_fd, ":hades.arpa 001 %s :Welcome to the StaticFox Internet Relay Chat Network %s\r\n", check_nick, check_nick);
-    fox_write(client_sock_fd, ":hades.arpa 002 %s :Your host is hades.arpa[hades.arpa/9990], running version charybdis-4-beta1\r\n");
-    fox_write(client_sock_fd, ":hades.arpa 003 %s :This server was created Sat Apr 30 2016 at 21:34:09 EDT\r\n", check_nick);
-    fox_write(client_sock_fd, ":hades.arpa 004 %s hades.arpa charybdis-4-beta1 DQRSZagiloswz CFILPQbcefgijklmnopqrstvz bkloveqjfI\r\n", check_nick);
-    fox_write(client_sock_fd, ":hades.arpa 005 %s CPRIVMSG CNOTICE MONITOR=100 WHOX ETRACE SAFELIST ELIST=CTU KNOCK FNC CHANTYPES=&# EXCEPTS INVEX :are supported by this server\r\n", check_nick);
-    fox_write(client_sock_fd, ":hades.arpa 005 %s CHANMODES=eIbq,k,flj,CFLPQcgimnprstz CHANLIMIT=&#:15 PREFIX=(ov)@+ MAXLIST=bqeI:100 MODES=4 NETWORK=StaticFox STATUSMSG=@+ CALLERID=g CASEMAPPING=rfc1459 NICKLEN=30 MAXNICKLEN=31 CHANNELLEN=50 :are supported by this server\r\n", check_nick);
-    fox_write(client_sock_fd, ":hades.arpa 005 %s TOPICLEN=390 DEAF=D TARGMAX=NAMES:1,LIST:1,KICK:1,WHOIS:1,PRIVMSG:4,NOTICE:4,ACCEPT:,MONITOR: CLIENTVER=3.0 :are supported by this server\r\n", check_nick);
-    fox_write(client_sock_fd, ":hades.arpa 251 %s :There are 0 users and 18 invisible on 2 servers\r\n", check_nick);
-    fox_write(client_sock_fd, ":hades.arpa 252 %s 1 :IRC Operators online\r\n", check_nick);
-    fox_write(client_sock_fd, ":hades.arpa 254 %s 4 :channels formed\r\n", check_nick);
-    fox_write(client_sock_fd, ":hades.arpa 255 %s :I have 3 clients and 1 servers\r\n", check_nick);
-    fox_write(client_sock_fd, ":hades.arpa 265 %s 3 4 :Current local users 3, max 4\r\n", check_nick);
-    fox_write(client_sock_fd, ":hades.arpa 266 %s 18 19 :Current global users 18, max 19\r\n", check_nick);
-    fox_write(client_sock_fd, ":hades.arpa 250 %s :Highest connection count: 5 (4 clients) (30 connections received)\r\n", check_nick);
-    fox_write(client_sock_fd, ":hades.arpa 375 %s :- hades.arpa Message of the Day -\r\n", check_nick);
-    fox_write(client_sock_fd, ":hades.arpa 372 %s :- This is charybdis MOTD you might replace it, but if not your friends will\r\n", check_nick);
-    fox_write(client_sock_fd, ":hades.arpa 372 %s :- laugh at you.\r\n", check_nick);
-    fox_write(client_sock_fd, ":hades.arpa 376 %s :End of /MOTD command.\r\n", check_nick);
+    fox_write(client_sock_fd, ":ircd.staticfox.net NOTICE * :*** Ident disabled, not checking ident\r\n");
+    fox_write(client_sock_fd, ":ircd.staticfox.net NOTICE * :*** Looking up your hostname...\r\n");
+    fox_write(client_sock_fd, ":ircd.staticfox.net 001 %s :Welcome to the StaticFox Internet Relay Chat Network %s\r\n", check_nick, check_nick);
+    fox_write(client_sock_fd, ":ircd.staticfox.net 002 %s :Your host is ircd.staticfox.net[ircd.staticfox.net/9990], running version generic-ircd-1\r\n", check_nick);
+    fox_write(client_sock_fd, ":ircd.staticfox.net 003 %s :This server was created Sat Apr 30 2016 at 21:34:09 EDT\r\n", check_nick);
+    fox_write(client_sock_fd, ":ircd.staticfox.net 004 %s ircd.staticfox.net generic-ircd-1 DQRSZagiloswz CFILPQbcefgijklmnopqrstvz bkloveqjfI\r\n", check_nick);
+    fox_write(client_sock_fd, ":ircd.staticfox.net 005 %s CPRIVMSG CNOTICE MONITOR=100 WHOX ETRACE SAFELIST ELIST=CTU KNOCK FNC CHANTYPES=&# EXCEPTS INVEX :are supported by this server\r\n", check_nick);
+    fox_write(client_sock_fd, ":ircd.staticfox.net 005 %s CHANMODES=eIbq,k,flj,CFLPQcgimnprstz CHANLIMIT=&#:15 PREFIX=(ov)@+ MAXLIST=bqeI:100 MODES=4 NETWORK=StaticFox STATUSMSG=@+ CALLERID=g CASEMAPPING=rfc1459 NICKLEN=30 MAXNICKLEN=31 CHANNELLEN=50 :are supported by this server\r\n", check_nick);
+    fox_write(client_sock_fd, ":ircd.staticfox.net 005 %s TOPICLEN=390 DEAF=D TARGMAX=NAMES:1,LIST:1,KICK:1,WHOIS:1,PRIVMSG:4,NOTICE:4,ACCEPT:,MONITOR: CLIENTVER=3.0 :are supported by this server\r\n", check_nick);
+    fox_write(client_sock_fd, ":ircd.staticfox.net 251 %s :There are 0 users and 18 invisible on 2 servers\r\n", check_nick);
+    fox_write(client_sock_fd, ":ircd.staticfox.net 252 %s 1 :IRC Operators online\r\n", check_nick);
+    fox_write(client_sock_fd, ":ircd.staticfox.net 254 %s 4 :channels formed\r\n", check_nick);
+    fox_write(client_sock_fd, ":ircd.staticfox.net 255 %s :I have 3 clients and 1 servers\r\n", check_nick);
+    fox_write(client_sock_fd, ":ircd.staticfox.net 265 %s 3 4 :Current local users 3, max 4\r\n", check_nick);
+    fox_write(client_sock_fd, ":ircd.staticfox.net 266 %s 18 19 :Current global users 18, max 19\r\n", check_nick);
+    fox_write(client_sock_fd, ":ircd.staticfox.net 250 %s :Highest connection count: 5 (4 clients) (30 connections received)\r\n", check_nick);
+    fox_write(client_sock_fd, ":ircd.staticfox.net 375 %s :- ircd.staticfox.net Message of the Day -\r\n", check_nick);
+    fox_write(client_sock_fd, ":ircd.staticfox.net 372 %s :- Not an important MOTD\r\n", check_nick);
+    fox_write(client_sock_fd, ":ircd.staticfox.net 376 %s :End of /MOTD command.\r\n", check_nick);
     fox_write(client_sock_fd, ":%s MODE %s :+i\r\n", check_nick, check_nick);
     fox_write(client_sock_fd, ":%s!~%s@127.0.0.1 JOIN #unit_test\r\n", check_nick, check_user);
-    fox_write(client_sock_fd, ":hades.arpa 353 %s = #chat :%s staticfox xofcitats @ChanServ\r\n", check_nick, check_nick);
-    fox_write(client_sock_fd, ":hades.arpa 366 %s #chat :End of /NAMES list.\r\n", check_nick);
+    fox_write(client_sock_fd, ":ircd.staticfox.net 353 %s = #chat :%s staticfox xofcitats @ChanServ\r\n", check_nick, check_nick);
+    fox_write(client_sock_fd, ":ircd.staticfox.net 366 %s #chat :End of /NAMES list.\r\n", check_nick);
 }
 
 /* Should we even bother parsing? */
 static void
 parse_buffer(const char *buf)
 {
-    enum check_commands cmd = 0;
+    enum check_commands cmd = INVALID;
     unsigned int i = 0, ii;
     int params = 1;
     char *token, *string, *tofree;
-
-    fprintf(stderr, "in parse_buffer()\n");
 
     for (ii = 0; buf[ii] != '\0'; ii++)
         if (buf[ii] == ' ')
@@ -98,25 +96,24 @@ parse_buffer(const char *buf)
     while (((token = fox_strsep(&string, " ")) != NULL) && i < 3) {
         switch(i) {
         case 0:
-            if (strcmp(token, "NICK")) {
+            if (strcmp(token, "NICK") == 0)
                 cmd = NICK;
+            else if (strcmp(token, "USER") == 0)
+                cmd = USER;
+            break;
+        case 1:
+            if (cmd == NICK) {
+                check_nick = xstrdup(token);
                 got_nick = true;
                 goto end;
-            }
-            else if (strcmp(token, "USER")) {
-                cmd = USER;
+            } else if (cmd == USER) {
+                check_user = xstrdup(token);
                 got_user = true;
                 goto end;
             }
             break;
-        case 1:
-            if (cmd == NICK)
-                check_nick = xstrdup(token);
-            else if (cmd == USER)
-                check_user = xstrdup(token);
-            break;
-        i++;
         }
+        i++;
     }
 
 end:
@@ -198,7 +195,6 @@ fox_read(int fd)
             line_end[-1] = '\0';
 
         assert(strlen(line_start) <= MAX_IRC_BUF);
-        fprintf(stderr, ">> %s\n", line_start);
         parse_buffer(line_start);
         ++line_end;
         buf_used -= line_end - line_start;
@@ -214,8 +210,6 @@ void *
 start_listener(void * unused)
 {
     (void)unused;
-
-    fprintf(stderr, "in start_listener\n");
 
     struct sockaddr_in cli_addr;
     socklen_t clilen;
@@ -233,11 +227,8 @@ start_listener(void * unused)
     }
 
     while(!tests_done) {
-        fprintf(stderr, "!tests_done\n");
         fox_read(client_sock_fd);
     }
-
-    fprintf(stderr, "start_listener: close()\n");
 
     close(client_sock_fd);
 
