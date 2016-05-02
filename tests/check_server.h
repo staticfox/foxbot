@@ -25,7 +25,12 @@
 int setup_test_server(void);
 void fox_write(int fd, char *line, ...);
 void fox_read(int fd);
-void start_listener(int fd);
-void shutdown_test_server(int fd);
+void * start_listener(void *unused);
+void shutdown_test_server(void);
+void delete_foxbot(void);
 
 extern int tests_done;
+extern int client_sock_fd;
+extern int sockfd;
+bool got_nick, got_user;
+char *nick, *user;

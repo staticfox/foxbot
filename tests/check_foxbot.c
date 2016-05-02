@@ -20,24 +20,50 @@
  *
  */
 
-/* Test plans here soon^tm */
-
+#include <errno.h>
+#include <pthread.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "check_foxbot.h"
 #include "check_server.h"
 
+pthread_t tid[0];
+
+static void
+add_testcases(Suite *s)
+{
+    connect_parse_setup(s);
+}
+
 int
-main(/*int argc, char **argv*/)
+main()
 {
     int fd;
+    int err;
+
     if((fd = setup_test_server()) < 0) {
         fprintf(stderr, "Unable to start socket server.\n");
         return 1;
     }
 
-    /* Must be started in a thread/background process */
-    /* start_listener(fd); */
+    err = pthread_create(&(tid[0]), NULL, start_listener, NULL);
 
-    return 0;
+    if(err != 0) {
+        fprintf(stderr, "Thread error: %s\n", strerror(errno));
+        return 1;
+    }
+
+    Suite *s = suite_create("check_foxbot");
+
+    add_testcases(s);
+
+    SRunner *runner = srunner_create(s);
+    srunner_set_tap(runner, "-");
+    srunner_run_all(runner, CK_NORMAL);
+
+    int number_failed = srunner_ntests_failed(runner);
+    srunner_free(runner);
+
+    return (number_failed == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }

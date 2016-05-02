@@ -1,5 +1,5 @@
 /*
- *   check_foxbot.h -- May 1 2016 9:18:05 EST
+ *   connect_parse.c -- May 1 2016 19:42:39 EST
  *
  *   This file is part of the foxbot IRC bot
  *   Copyright (C) 2016 Matt Ullman (staticfox at staticfox dot net)
@@ -20,12 +20,41 @@
  *
  */
 
-#include <assert.h>
-#include <check.h>
+#define _POSIX_C_SOURCE 201112L
 
-void new_foxbot(void);
-void delete_foxbot(void);
-void new_testserver(void);
+#include <time.h>
 
-/* Unit tests */
-void connect_parse_setup(Suite *);
+#include <foxbot/foxbot.h>
+#include <foxbot/list.h>
+
+#include "../check_foxbot.h"
+#include "../check_server.h"
+
+START_TEST(connect)
+{
+    new_foxbot();
+
+    do
+    {
+        struct timespec tim;
+        tim.tv_sec  = 0;
+        tim.tv_nsec = 250000000L;
+        nanosleep(&tim , NULL);
+    } while (!bot.registered);
+
+    ck_assert(bot.ircd->supports.whox);
+
+    delete_foxbot();
+}
+END_TEST
+
+void
+connect_parse_setup(Suite *s)
+{
+    TCase *tc = tcase_create("connect_parse");
+
+    tcase_add_checked_fixture(tc, NULL, delete_foxbot);
+    tcase_add_test(tc, connect);
+
+    suite_add_tcase(s, tc);
+}
