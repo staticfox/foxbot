@@ -20,11 +20,13 @@
  *
  */
 
+#define _POSIX_C_SOURCE 201112L
 
 #include <errno.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 #include <foxbot/config.h>
 #include <foxbot/foxbot.h>
@@ -70,6 +72,12 @@ new_testserver(void)
     }
 
     err = pthread_create(&(tid[0]), NULL, start_listener, NULL);
+
+    /* Brief moment to start the listener */
+    struct timespec tim;
+    tim.tv_sec  = 0;
+    tim.tv_nsec = 500000L;
+    nanosleep(&tim , NULL);
 
     if(err != 0) {
         fprintf(stderr, "Thread error: %s\n", strerror(errno));

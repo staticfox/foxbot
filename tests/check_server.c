@@ -21,8 +21,6 @@
  */
 #define _POSIX_C_SOURCE 201112L
 
-#include <time.h>
-
 #include <assert.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -33,6 +31,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <time.h>
 #include <unistd.h>
 
 #include <foxbot/memory.h>
