@@ -95,11 +95,14 @@ static void
 parse_opts(int argc, char **argv)
 {
     bool got_port = false;
-    for (int c = 0; (c = getopt(argc, argv, "htvp:")) != -1; )
+    for (int c = 0; (c = getopt(argc, argv, "c:htvp:")) != -1; )
     {
         switch (c)
         {
-            fprintf(stderr, "c = %c\n", c);
+            case 'c':
+                xfree(conf_parser_ctx.config_file_path);
+                conf_parser_ctx.config_file_path = xstrdup(optarg);
+                break;
             case 'h':
                 printf("Help coming soon.\n");
                 exit(EXIT_SUCCESS);
@@ -173,8 +176,6 @@ main_foxbot(int argc, char **argv)
         }
         snprintf(buf, sizeof(buf), "Exiting due to %s", reason);
         do_quit(buf);
-        if (bot.flags & ~RUNTIME_TEST)
-            exit(EXIT_SUCCESS);
     }
 
     return 0;

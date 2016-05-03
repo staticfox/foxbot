@@ -50,11 +50,14 @@ delete_foxbot(void)
 void
 new_foxbot(int port)
 {
-    char buf[65536];
-    snprintf(buf, sizeof(buf), "-tp %d", port);
+    char s_port[16];
+
+    snprintf(s_port, sizeof(s_port), "%d", port);
+
     char *args[] = {
         PREFIX "/bin/foxbot",
-        buf
+        "-tp", s_port, "-c",
+        TESTDIST "/foxbot.conf"
     };
 
     main_foxbot(sizeof(args) / sizeof(*args), args);

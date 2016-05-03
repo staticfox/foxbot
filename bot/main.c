@@ -29,43 +29,41 @@
 int
 main(int argc, char **argv)
 {
-    for (;;)
+
+    void *handle;
+    union
     {
-        void *handle;
-        union
-        {
-            int (*f)(int, char **);
-            void *ptr;
-        } u;
+        int (*f)(int, char **);
+        void *ptr;
+    } u;
 
-        handle = dlopen(LIBDIR "/" PACKAGE "/libfoxbot.so", RTLD_NOW | RTLD_GLOBAL);
-        if (!handle)
-        {
-            fprintf(stderr, "Unable to open libfoxbot: %s\n", dlerror());
-            return -1;
-        }
+    handle = dlopen(LIBDIR "/" PACKAGE "/libfoxbot.so", RTLD_NOW | RTLD_GLOBAL);
+    if (!handle)
+    {
+        fprintf(stderr, "Unable to open libfoxbot: %s\n", dlerror());
+        return -1;
+    }
 
-        u.ptr = dlsym(handle, "main_foxbot");
-        if (!u.ptr)
-        {
-            fprintf(stderr, "Unable to start libfoxbot: %s\n", dlerror());
-            dlclose(handle);
-            return -1;
-        }
+    u.ptr = dlsym(handle, "main_foxbot");
+    if (!u.ptr)
+    {
+        fprintf(stderr, "Unable to start libfoxbot: %s\n", dlerror());
+        dlclose(handle);
+        return -1;
+    }
 
-        u.f(argc, argv);
+    u.f(argc, argv);
 
-        if (dlclose(handle))
-        {
-            fprintf(stderr, "Unable to close libfoxbot: %s\n", dlerror());
-            return -1;
-        }
+    if (dlclose(handle))
+    {
+        fprintf(stderr, "Unable to close libfoxbot: %s\n", dlerror());
+        return -1;
+    }
 
-        handle = dlopen(LIBDIR "/" PACKAGE "/libfoxbot.so", RTLD_NOW | RTLD_GLOBAL | RTLD_NOLOAD);
-        if (handle)
-        {
-            fprintf(stderr, "Unable to unload libfoxbot, aborting\n");
-            return -1;
-        }
+    handle = dlopen(LIBDIR "/" PACKAGE "/libfoxbot.so", RTLD_NOW | RTLD_GLOBAL | RTLD_NOLOAD);
+    if (handle)
+    {
+        fprintf(stderr, "Unable to unload libfoxbot, aborting\n");
+        return -1;
     }
 }

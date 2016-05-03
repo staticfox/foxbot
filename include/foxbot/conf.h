@@ -30,6 +30,7 @@
 
 struct conf_parser_context {
     unsigned int pass;
+    char *config_file_path;
     FILE *conf_file;
 };
 

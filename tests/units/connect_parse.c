@@ -43,6 +43,26 @@ START_TEST(connect)
 }
 END_TEST
 
+START_TEST(ircd_support)
+{
+    begin_test();
+
+    ck_assert(bot.ircd->supports.excepts);
+    ck_assert(bot.ircd->supports.invex);
+    ck_assert(bot.ircd->supports.knock);
+    ck_assert(bot.ircd->supports.whox);
+    ck_assert(strcmp(bot.ircd->network, "StaticFox") == 0);
+    ck_assert(strcmp(bot.ircd->supports.chan_types, "&#") == 0);
+    ck_assert(bot.ircd->nick_length == 30);
+    ck_assert(bot.ircd->channel_length == 50);
+    ck_assert(bot.ircd->topic_length == 390);
+    ck_assert(strcmp(bot.ircd->supports.chanop_modes, "ov") == 0);
+    ck_assert(strcmp(bot.ircd->supports.prefix, "@+") == 0);
+
+    end_test();
+}
+END_TEST
+
 void
 connect_parse_setup(Suite *s)
 {
@@ -50,6 +70,7 @@ connect_parse_setup(Suite *s)
 
     tcase_add_checked_fixture(tc, NULL, delete_foxbot);
     tcase_add_test(tc, connect);
+    tcase_add_test(tc, ircd_support);
 
     suite_add_tcase(s, tc);
 }
