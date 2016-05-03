@@ -53,6 +53,7 @@ enum check_commands {
 bool got_nick = false, got_user = false, connected = false;
 char *check_nick, *check_user;
 
+/* Simulate an introduction to the IRC server. Wheeeeee! */
 void
 do_burst(void)
 {
@@ -86,7 +87,10 @@ do_burst(void)
     fox_write(client_sock_fd, ":ircd.staticfox.net FOXBOT * :Not a real command :)\r\n");
 }
 
-/* Should we even bother parsing? */
+/* More or less only really needed for NICK and USER.
+ * The rest we can determine what was sent as we will
+ * be the ones sending the commands.
+ */
 static void
 parse_buffer(const char *buf)
 {
@@ -212,6 +216,8 @@ fox_read(int fd)
     memmove(inbuf, line_start, buf_used);
 }
 
+/* Function pointer as this starts as a
+ * thread from check_foxbot. */
 void *
 start_listener(void *unused)
 {
@@ -265,6 +271,10 @@ setup_test_server(void)
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = INADDR_ANY;
 
+    /* Try for 35 ports to bind to, if we run out of ports
+     * then oh well, the machine probably has bigger issues
+     * to deal with \o/
+     */
     for (int i = 0; i < 35; i++) {
         serv_addr.sin_port = htons(++nport);
         if (bind(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) >= 0) {
@@ -272,6 +282,8 @@ setup_test_server(void)
         }
     }
 
+    /* Shouldn't be here, but I guess we couldn't find an available
+     * port to bind to :( */
     fprintf(stderr, "[Server] Bind error: %s\n", strerror(errno));
     return -1;
 }
