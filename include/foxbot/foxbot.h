@@ -32,7 +32,8 @@
 #define MAX_IO_BUF 2048
 
 /* Runtime flags */
-#define RUNTIME_TEST    0x1
+#define RUNTIME_RUN     0x01
+#define RUNTIME_TEST    0x02
 
 enum commands {
     PRIVMSG,

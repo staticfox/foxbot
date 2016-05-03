@@ -141,6 +141,7 @@ main_foxbot(int argc, char **argv)
     bot.msg->from = xmalloc(sizeof(*bot.msg->from));
     bot.ircd = xmalloc(sizeof(*bot.ircd));
     *bot.msg = empty_msg;
+    bot.flags = RUNTIME_RUN;
 
     parse_opts(argc, argv);
     init_channels();
@@ -162,20 +163,17 @@ main_foxbot(int argc, char **argv)
     if (is_registered()) {
         char buf[MAX_IRC_BUF];
         const char *reason = "<unknown>";
-        bool dying = false;
         switch (quitting) {
         case 1:
-            dying = true;
             reason = "QUIT";
             break;
         case 2:
-            dying = true;
             reason = "SIGINT";
             break;
         }
         snprintf(buf, sizeof(buf), "Exiting due to %s", reason);
         do_quit(buf);
-        if (dying)
+        if (bot.flags & ~RUNTIME_TEST)
             exit(EXIT_SUCCESS);
     }
 
