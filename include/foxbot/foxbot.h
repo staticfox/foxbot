@@ -51,6 +51,7 @@ enum commands {
 struct bot_t {
     int fd;
     int flags;
+    int test_port;
     bool registered;
     bool modes[256];
     struct msg_t *msg;

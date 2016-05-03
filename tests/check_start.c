@@ -46,52 +46,45 @@ delete_foxbot(void)
 }
 
 void
-new_foxbot(void)
+new_foxbot(int port)
 {
+    char buf[65536];
+    snprintf(buf, sizeof(buf), "-tp %d", port);
     char *args[] = {
         PREFIX "/bin/foxbot",
-        "-t"
+        buf
     };
 
     main_foxbot(sizeof(args) / sizeof(*args), args);
 }
 
-void
+int
 new_testserver(void)
 {
-    int i = 0;
-    int fd;
+    int nport;
     int err;
 
-    /* Attempt a few times to free up the test port */
-    for (; i < 5; i++) {
-        if (system("fuser -k 43255/tcp") != -1) {
-            i = 0;
-            break;
-        }
-    }
-
-    if (i > 0)
-        fprintf(stderr, "[Test error] Unable to free port 43255. Test will probably fail now.\n");
-
-    if((fd = setup_test_server()) < 0) {
+    if((nport = setup_test_server()) < 0) {
         fprintf(stderr, "Unable to start socket server.\n");
-        return;
+        return -1;
     }
 
     err = pthread_create(&(tid[0]), NULL, start_listener, NULL);
 
     if(err != 0) {
         fprintf(stderr, "Thread error: %s\n", strerror(errno));
-        return;
+        return -1;
     }
+
+    return nport;
 }
 
 void
 begin_test(void)
 {
-    new_testserver();
-    new_foxbot();
+    int nport;
+    nport = new_testserver();
+    new_foxbot(nport);
 }
 
 void

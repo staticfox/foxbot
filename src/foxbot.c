@@ -93,14 +93,20 @@ foxbot_quit(void)
 static void
 parse_opts(int argc, char **argv)
 {
-    for (int c = 0; (c = getopt(argc, argv, "htv")) != -1; )
+    bool got_port = false;
+    for (int c = 0; (c = getopt(argc, argv, "htvp:")) != -1; )
     {
         switch (c)
         {
+            fprintf(stderr, "c = %c\n", c);
             case 'h':
                 printf("Help coming soon.\n");
                 exit(EXIT_SUCCESS);
                 break; /* shut up compiler */
+            case 'p':
+                bot.test_port = atoi(optarg);
+                got_port = true;
+                break;
             case 't':
                 bot.flags |= RUNTIME_TEST;
                 break;
@@ -108,11 +114,22 @@ parse_opts(int argc, char **argv)
                 printf("foxbot version 0.0.1\n");
                 exit(EXIT_SUCCESS);
                 break;
+            case '?':
+                if (optopt == 'p')
+                    fprintf(stderr, "Option -%c requires an argument.\n", optopt);
+                else if (isprint(optopt))
+                    fprintf(stderr, "Unknown option `-%c'.\n", optopt);
+                else
+                    fprintf(stderr, "Unknown option character `\\x%x'.\n", optopt);
+                 break;
             default:
                 printf("Invalid Option: -%c\n", c);
                 break;
         }
     }
+
+    if (!got_port)
+        bot.test_port = -1;
 }
 
 int
@@ -125,7 +142,6 @@ main_foxbot(int argc, char **argv)
     *bot.msg = empty_msg;
 
     parse_opts(argc, argv);
-
     init_channels();
     init_users();
     read_conf_file();

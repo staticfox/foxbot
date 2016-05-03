@@ -252,6 +252,7 @@ int
 setup_test_server(void)
 {
     struct sockaddr_in serv_addr;
+    int nport = 43210;
 
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -264,11 +265,14 @@ setup_test_server(void)
 
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = INADDR_ANY;
-    serv_addr.sin_port = htons(43255);
-    if (bind(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
-        fprintf(stderr, "[Server] Bind error: %s\n", strerror(errno));
-        return -1;
+
+    for (int i = 0; i < 35; i++) {
+        serv_addr.sin_port = htons(++nport);
+        if (bind(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) >= 0) {
+            return nport;
+        }
     }
 
-    return sockfd;
+    fprintf(stderr, "[Server] Bind error: %s\n", strerror(errno));
+    return -1;
 }

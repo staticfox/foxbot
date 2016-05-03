@@ -23,9 +23,9 @@
 #include <assert.h>
 #include <check.h>
 
-void new_foxbot(void);
+void new_foxbot(int port);
 void delete_foxbot(void);
-void new_testserver(void);
+int new_testserver(void);
 void begin_test(void);
 void end_test(void);
 
