@@ -1,4 +1,6 @@
 bot/foxbot
+bot/foxbot.conf
+
 ircd/foxbot
 
 src/foxbot.conf
