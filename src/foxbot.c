@@ -93,18 +93,15 @@ foxbot_quit(void)
 static void
 parse_opts(int argc, char **argv)
 {
-    fprintf(stderr, "in parse ops\n");
     for (int c = 0; (c = getopt(argc, argv, "htv")) != -1; )
     {
         switch (c)
         {
-            fprintf(stderr, "c = %c\n", c);
             case 'h':
                 printf("Help coming soon.\n");
                 exit(EXIT_SUCCESS);
                 break; /* shut up compiler */
             case 't':
-                fprintf(stderr, "Adding RUNTIME_TEST\n");
                 bot.flags |= RUNTIME_TEST;
                 break;
             case 'v':
