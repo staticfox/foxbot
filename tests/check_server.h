@@ -23,7 +23,7 @@
 #include <stdbool.h>
 
 int setup_test_server(void);
-void fox_write(int fd, char *line, ...);
+void fox_write(char *line, ...);
 void fox_read(int fd);
 void * start_listener(void *unused);
 void shutdown_test_server(void);
