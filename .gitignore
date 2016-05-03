@@ -1,3 +1,5 @@
+ircd/foxbot
+
 src/foxbot.conf
 src/config_lexer.c
 src/config_lexer.h
