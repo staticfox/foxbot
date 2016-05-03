@@ -162,16 +162,21 @@ main_foxbot(int argc, char **argv)
     if (is_registered()) {
         char buf[MAX_IRC_BUF];
         const char *reason = "<unknown>";
+        bool dying = false;
         switch (quitting) {
         case 1:
+            dying = true;
             reason = "QUIT";
             break;
         case 2:
+            dying = true;
             reason = "SIGINT";
             break;
         }
         snprintf(buf, sizeof(buf), "Exiting due to %s", reason);
         do_quit(buf);
+        if (dying)
+            exit(EXIT_SUCCESS);
     }
 
     return 0;
