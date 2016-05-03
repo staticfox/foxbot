@@ -1,5 +1,5 @@
 /*
- *   signal.c -- April 27 2016 15:02:57 EST
+ *   check_foxbot.h -- May 1 2016 9:18:05 EST
  *
  *   This file is part of the foxbot IRC bot
  *   Copyright (C) 2016 Matt Ullman (staticfox at staticfox dot net)
@@ -20,32 +20,14 @@
  *
  */
 
-#define _POSIX_C_SOURCE 201112L
+#include <assert.h>
+#include <check.h>
 
-#include <stdio.h>
-#include <string.h> /* for memset */
+void new_foxbot(int port);
+void delete_foxbot(void);
+int new_testserver(void);
+void begin_test(void);
+void end_test(void);
 
-#include <foxbot/foxbot.h>
-#include <foxbot/signal.h>
-
-static void
-sigint_handler(int sig)
-{
-    (void)sig;
-    quitting = 2;
-}
-
-void
-setup_signals(void)
-{
-    sigset_t sigs;
-    struct sigaction act;
-
-    memset(&act, 0, sizeof(act));
-    sigemptyset(&sigs);
-
-    act.sa_handler = sigint_handler;
-    sigaddset(&act.sa_mask, SIGINT);
-    sigaction(SIGINT, &act, 0);
-    sigaddset(&sigs, SIGINT);
-}
+/* Unit tests */
+void connect_parse_setup(Suite *);

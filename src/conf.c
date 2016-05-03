@@ -23,8 +23,8 @@
 #include <errno.h>
 #include <string.h>
 
-#include "conf.h"
-#include "foxbot.h"
+#include <foxbot/conf.h>
+#include <foxbot/foxbot.h>
 
 struct conf_parser_context conf_parser_ctx;
 struct botconfig_entry botconfig;
@@ -61,6 +61,17 @@ set_default_conf(void)
 }
 
 static void
+override_test_port(void)
+{
+    if (bot.test_port > -1) {
+        xfree(botconfig.port);
+        char buf[65535];
+        snprintf(buf, sizeof(buf), "%d", bot.test_port);
+        botconfig.port = xstrdup(buf);
+    }
+}
+
+static void
 read_conf(FILE *file)
 {
     set_default_conf();
@@ -70,6 +81,7 @@ read_conf(FILE *file)
     conf_parser_ctx.pass = 2;
     clear_conf();
     yyparse(file);
+    override_test_port();
 }
 
 void

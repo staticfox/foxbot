@@ -26,11 +26,11 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "channel.h"
-#include "foxbot.h"
-#include "message.h"
-#include "memory.h"
-#include "user.h"
+#include <foxbot/channel.h>
+#include <foxbot/foxbot.h>
+#include <foxbot/message.h>
+#include <foxbot/memory.h>
+#include <foxbot/user.h>
 
 void
 handle_mode(void)

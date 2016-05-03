@@ -1,34 +1,27 @@
 # foxbot automake file
 
 BUILT_SOURCES = config_parser.h
-CLEANFILES = config_lexer.[ch] config_parser.[ch]
+CLEANFILES = config_lexer.[ch] config_parser.[ch] libfoxbotconfigparser.a
 AM_YFLAGS = -d
 
-bin_PROGRAMS = foxbot
-foxbot_SOURCES = channel.c \
-                 channel.h \
-                 conf.c \
-                 conf.h \
-                 foxbot.c \
-                 foxbot.h \
-                 irc.c \
-                 irc.h \
-                 ircd.c \
-                 ircd.h \
-                 list.c \
-                 list.h \
-                 memory.c \
-                 memory.h \
-                 message.c \
-                 message.h \
-                 signal.c \
-                 signal.h \
-                 socket.c \
-                 socket.h \
-                 user.c \
-                 user.h
+AM_CPPFLAGS = $(LTDLINCL) -I$(top_srcdir)/include -Wall
+libfoxbot_la_LDFLAGS = -export-dynamic
+libfoxbot_la_LIBADD = $(LIBLTDL)
+libfoxbot_la_DEPENDENCIES = $(LTDLDEPS)
 
-foxbot_LDADD = libfoxbotconfigparser.a
-noinst_LIBRARIES = libfoxbotconfigparser.a
-libfoxbotconfigparser_a_SOURCES = config_lexer.l config_parser.y
-libfoxbotconfigparser_a_CFLAGS = -Wno-sign-compare
+foxbotdir = $(pkglibdir)
+foxbot_LTLIBRARIES = libfoxbot.la
+
+libfoxbot_la_SOURCES = channel.c \
+                 conf.c \
+                 foxbot.c \
+                 irc.c \
+                 ircd.c \
+                 list.c \
+                 memory.c \
+                 message.c \
+                 signal.c \
+                 socket.c \
+                 user.c \
+                 config_lexer.l \
+                 config_parser.y

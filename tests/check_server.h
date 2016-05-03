@@ -1,5 +1,5 @@
 /*
- *   foxbot.h -- April 27 2016 13:38:43 EST
+ *   check_server.h -- May 1 2016 9:39:18 EST
  *
  *   This file is part of the foxbot IRC bot
  *   Copyright (C) 2016 Matt Ullman (staticfox at staticfox dot net)
@@ -20,50 +20,18 @@
  *
  */
 
-#ifndef FOX_FOXBOT_H_
-#define FOX_FOXBOT_H_
-
-#include "ircd.h"
-
-#include <signal.h>
 #include <stdbool.h>
 
-#define MAX_IRC_BUF 512
-#define MAX_IO_BUF 2048
+int setup_test_server(void);
+void fox_write(char *line, ...);
+void fox_read(int fd);
+void * start_listener(void *unused);
+void shutdown_test_server(void);
+void delete_foxbot(void);
+void wait_for(const char *data);
 
-enum commands {
-    PRIVMSG,
-    NOTICE,
-    PING,
-    PONG,
-    JOIN,
-    PART,
-    QUIT,
-    MODE,
-    KICK,
-    ERROR,
-    NUMERIC,
-};
-
-struct bot_t {
-    int fd;
-    bool registered;
-    bool modes[256];
-    struct msg_t *msg;
-    struct user_t *user;
-    struct addrinfo *hil; /* Needed for reconnects */
-    struct ircd_t *ircd;
-};
-
-bool is_registered(void);
-void raw(char *fmt, ...);
-void privmsg(const char *target, const char *message);
-void join(const char *channel);
-void do_quit(const char *message);
-void do_error(char *line, ...);
-void parse_line(const char *line);
-
-extern volatile sig_atomic_t quitting;
-extern struct bot_t bot;
-
-#endif
+extern int tests_done;
+extern int client_sock_fd;
+extern int sockfd;
+bool got_nick, got_user;
+char *check_nick, *check_user;

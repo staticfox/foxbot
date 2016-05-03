@@ -24,11 +24,11 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "list.h"
-#include "foxbot.h"
-#include "message.h"
-#include "memory.h"
-#include "user.h"
+#include <foxbot/list.h>
+#include <foxbot/foxbot.h>
+#include <foxbot/message.h>
+#include <foxbot/memory.h>
+#include <foxbot/user.h>
 
 /** The global user cache. */
 static dlink_list *users;

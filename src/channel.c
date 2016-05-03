@@ -23,9 +23,9 @@
 #include <assert.h>
 #include <string.h>
 
-#include "channel.h"
-#include "foxbot.h"
-#include "memory.h"
+#include <foxbot/channel.h>
+#include <foxbot/foxbot.h>
+#include <foxbot/memory.h>
 
 /** Global channel cache */
 static dlink_list *channels;

@@ -26,9 +26,10 @@
 %option never-interactive
 
 %{
-#include "conf.h"
+#include <foxbot/conf.h>
+#include <foxbot/foxbot.h>
+
 #include "config_parser.h"
-#include "foxbot.h"
 
 #undef YY_INPUT
 #define YY_INPUT(buf, result, max_size) \

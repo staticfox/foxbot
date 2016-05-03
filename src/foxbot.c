@@ -20,17 +20,20 @@
  *
  */
 
+#include <ctype.h>
+#include <getopt.h>
 #include <stdarg.h>
+#include <string.h>
 
-#include "channel.h"
-#include "conf.h"
-#include "foxbot.h"
-#include "ircd.h"
-#include "list.h"
-#include "message.h"
-#include "signal.h"
-#include "socket.h"
-#include "user.h"
+#include <foxbot/channel.h>
+#include <foxbot/conf.h>
+#include <foxbot/foxbot.h>
+#include <foxbot/ircd.h>
+#include <foxbot/list.h>
+#include <foxbot/message.h>
+#include <foxbot/signal.h>
+#include <foxbot/socket.h>
+#include <foxbot/user.h>
 
 struct bot_t bot; /* That's me */
 volatile sig_atomic_t quitting;
@@ -82,15 +85,65 @@ do_error(char *line, ...)
         fprintf(stderr, "%s\n", buf);
 }
 
+void
+foxbot_quit(void)
+{
+    quitting = 1;
+}
+
+static void
+parse_opts(int argc, char **argv)
+{
+    bool got_port = false;
+    for (int c = 0; (c = getopt(argc, argv, "htvp:")) != -1; )
+    {
+        switch (c)
+        {
+            fprintf(stderr, "c = %c\n", c);
+            case 'h':
+                printf("Help coming soon.\n");
+                exit(EXIT_SUCCESS);
+                break; /* shut up compiler */
+            case 'p':
+                bot.test_port = atoi(optarg);
+                got_port = true;
+                break;
+            case 't':
+                bot.flags |= RUNTIME_TEST;
+                break;
+            case 'v':
+                printf("foxbot version 0.0.1\n");
+                exit(EXIT_SUCCESS);
+                break;
+            case '?':
+                if (optopt == 'p')
+                    fprintf(stderr, "Option -%c requires an argument.\n", optopt);
+                else if (isprint(optopt))
+                    fprintf(stderr, "Unknown option `-%c'.\n", optopt);
+                else
+                    fprintf(stderr, "Unknown option character `\\x%x'.\n", optopt);
+                 break;
+            default:
+                printf("Invalid Option: -%c\n", c);
+                break;
+        }
+    }
+
+    if (!got_port)
+        bot.test_port = -1;
+}
+
 int
-main(/*int argc, char **argv*/)
+main_foxbot(int argc, char **argv)
 {
     static const struct msg_t empty_msg;
     bot.msg = xmalloc(sizeof(*bot.msg));
     bot.msg->from = xmalloc(sizeof(*bot.msg->from));
     bot.ircd = xmalloc(sizeof(*bot.ircd));
     *bot.msg = empty_msg;
+    bot.flags = RUNTIME_RUN;
 
+    parse_opts(argc, argv);
     init_channels();
     init_users();
     read_conf_file();
@@ -99,6 +152,11 @@ main(/*int argc, char **argv*/)
     establish_link();
 
     while (!quitting) {
+        if ((bot.flags & RUNTIME_TEST)
+            && bot.msg->command
+            && (strcmp(bot.msg->command, "FOXBOT") == 0))
+            break;
+
         io();
     }
 
@@ -115,6 +173,8 @@ main(/*int argc, char **argv*/)
         }
         snprintf(buf, sizeof(buf), "Exiting due to %s", reason);
         do_quit(buf);
+        if (bot.flags & ~RUNTIME_TEST)
+            exit(EXIT_SUCCESS);
     }
 
     return 0;

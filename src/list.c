@@ -25,8 +25,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include "list.h"
-#include "memory.h"
+#include <foxbot/list.h>
+#include <foxbot/memory.h>
 
 dlink_list *
 dlist_create(void)

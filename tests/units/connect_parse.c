@@ -1,5 +1,5 @@
 /*
- *   signal.c -- April 27 2016 15:02:57 EST
+ *   connect_parse.c -- May 1 2016 19:42:39 EST
  *
  *   This file is part of the foxbot IRC bot
  *   Copyright (C) 2016 Matt Ullman (staticfox at staticfox dot net)
@@ -20,32 +20,36 @@
  *
  */
 
-#define _POSIX_C_SOURCE 201112L
-
+#include <stdint.h>
 #include <stdio.h>
-#include <string.h> /* for memset */
 
 #include <foxbot/foxbot.h>
-#include <foxbot/signal.h>
+#include <foxbot/list.h>
+#include <foxbot/user.h>
 
-static void
-sigint_handler(int sig)
+#include "../check_foxbot.h"
+#include "../check_server.h"
+
+START_TEST(connect)
 {
-    (void)sig;
-    quitting = 2;
+    begin_test();
+
+    ck_assert(strcmp(bot.user->nick, "foxbot") == 0);
+    ck_assert(strcmp(bot.user->ident, "~fox") == 0);
+    ck_assert(strcmp(bot.user->host, "127.0.0.1") == 0);
+    ck_assert(bot.modes[(uint8_t)'i']);
+
+    end_test();
 }
+END_TEST
 
 void
-setup_signals(void)
+connect_parse_setup(Suite *s)
 {
-    sigset_t sigs;
-    struct sigaction act;
+    TCase *tc = tcase_create("connect_parse");
 
-    memset(&act, 0, sizeof(act));
-    sigemptyset(&sigs);
+    tcase_add_checked_fixture(tc, NULL, delete_foxbot);
+    tcase_add_test(tc, connect);
 
-    act.sa_handler = sigint_handler;
-    sigaddset(&act.sa_mask, SIGINT);
-    sigaction(SIGINT, &act, 0);
-    sigaddset(&sigs, SIGINT);
+    suite_add_tcase(s, tc);
 }
