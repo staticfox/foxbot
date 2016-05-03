@@ -53,9 +53,8 @@ before_install:
     )
 
   - curl -fLSs http://ftp.gnu.org/gnu/automake/automake-1.14.tar.xz | tar xJ &&
-    (
-      cp automake-1.14/lib/tap-driver.sh ./build-aux
-    )
+    mkdir -p build-aux &&
+    cp automake-*/lib/tap-driver.sh build-aux
 
 script:
   - autoreconf -fvi
