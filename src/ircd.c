@@ -97,7 +97,7 @@ strip_prefix(const char *str, const char *prefix, char **suffix /* nullable */)
 static bool
 support_bool(const char *token, const char *word, bool *value)
 {
-    return !strcmp(token, word) && (*value = true);
+    return !strcmp(token, word) && ((*value = true));
 }
 
 static bool
