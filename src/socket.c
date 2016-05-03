@@ -124,9 +124,11 @@ raw(char *fmt, ...)
 void
 io(void)
 {
-    static char inbuf[MAX_IRC_BUF];
+    /* leave room for a null terminator just to be extra-safe, even though
+       it's not actually needed, and also to appease Coverity */
+    static char inbuf[MAX_IRC_BUF + 1];
     static size_t buf_used;
-    size_t buf_remain = sizeof(inbuf) - buf_used;
+    size_t buf_remain = sizeof(inbuf) - 1 - buf_used;
 
     if (buf_remain == 0) {
         fprintf(stderr, "Line exceeded buffer length\n");
