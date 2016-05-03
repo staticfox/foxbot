@@ -24,6 +24,7 @@
 #include <errno.h>
 #include <pthread.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include <foxbot/config.h>
 #include <foxbot/foxbot.h>
@@ -58,8 +59,20 @@ new_foxbot(void)
 void
 new_testserver(void)
 {
+    int i = 0;
     int fd;
     int err;
+
+    /* Attempt a few times to free up the test port */
+    for (; i < 5; i++) {
+        if (system("fuser -k 43255/tcp") != -1) {
+            i = 0;
+            break;
+        }
+    }
+
+    if (i > 0)
+        fprintf(stderr, "[Test error] Unable to free port 43255. Test will probably fail now.\n");
 
     if((fd = setup_test_server()) < 0) {
         fprintf(stderr, "Unable to start socket server.\n");
