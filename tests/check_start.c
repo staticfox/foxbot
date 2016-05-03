@@ -20,19 +20,21 @@
  *
  */
 
-#define _POSIX_C_SOURCE 201112L
 
 #include <errno.h>
 #include <pthread.h>
-#include <time.h>
 #include <stdio.h>
 
+#include <foxbot/config.h>
 #include <foxbot/foxbot.h>
+#include <foxbot/message.h>
+#include <foxbot/socket.h>
 
 #include "check_foxbot.h"
 #include "check_server.h"
 
-extern int main_foxbot();
+extern int main_foxbot(int argc, char **argv);
+extern void io();
 
 pthread_t tid[3];
 
@@ -45,7 +47,12 @@ delete_foxbot(void)
 void
 new_foxbot(void)
 {
-    pthread_create(&(tid[1]), NULL, (void *)main_foxbot, NULL);
+    char *args[] = {
+        PREFIX "/bin/foxbot",
+        "-t"
+    };
+
+    main_foxbot(sizeof(args) / sizeof(*args), args);
 }
 
 void
@@ -72,14 +79,6 @@ begin_test(void)
 {
     new_testserver();
     new_foxbot();
-
-    do
-    {
-        struct timespec tim;
-        tim.tv_sec  = 0;
-        tim.tv_nsec = 250000000L;
-        nanosleep(&tim , NULL);
-    } while (!bot.registered);
 }
 
 void
@@ -88,4 +87,14 @@ end_test(void)
     delete_foxbot();
     tests_done = 1;
     shutdown_test_server();
+}
+
+void
+wait_for(const char *data)
+{
+    for (;;) {
+        if (bot.msg->command && (strcmp(bot.msg->command, data) == 0))
+            return true;
+        io();
+    }
 }

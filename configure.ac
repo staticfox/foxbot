@@ -4,10 +4,18 @@ dnl Process this file with autoconf to produce a configure script.
 AC_PREREQ([2.68])
 AC_INIT(foxbot, 0.0.1, staticfox@staticfox.net)
 AC_CONFIG_AUX_DIR([build-aux])
-AC_CONFIG_FILES([Makefile src/Makefile tests/Makefile])
+AC_CONFIG_FILES([Makefile bot/Makefile src/Makefile tests/Makefile])
 AC_CONFIG_SRCDIR([src/foxbot.c])
 AC_CONFIG_HEADERS([include/foxbot/config.h])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign nostdinc subdir-objects])
+
+dnl Define directories
+AC_DEFINE_DIR([PREFIX],[prefix],[Set to prefix.])
+AC_DEFINE_DIR([SYSCONFDIR],[sysconfdir],[Set to sysconfdir.])
+AC_DEFINE_DIR([LIBDIR],[libdir],[Set to libdir.])
+AC_DEFINE_DIR([LIBEXECDIR],[libexecdir],[Set to libexecdir.])
+AC_DEFINE_DIR([DATADIR],[datadir],[Set to datadir.])
+AC_DEFINE_DIR([LOCALSTATEDIR],[localstatedir],[Set to localstatedir.])
 
 dnl Checks for programs.
 AC_PROG_CC_C99

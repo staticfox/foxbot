@@ -20,7 +20,9 @@
  *
  */
 
+#include <getopt.h>
 #include <stdarg.h>
+#include <string.h>
 
 #include <foxbot/channel.h>
 #include <foxbot/conf.h>
@@ -88,14 +90,44 @@ foxbot_quit(void)
     quitting = 1;
 }
 
+static void
+parse_opts(int argc, char **argv)
+{
+    fprintf(stderr, "in parse ops\n");
+    for (int c = 0; (c = getopt(argc, argv, "htv")) != -1; )
+    {
+        switch (c)
+        {
+            fprintf(stderr, "c = %c\n", c);
+            case 'h':
+                printf("Help coming soon.\n");
+                exit(EXIT_SUCCESS);
+                break; /* shut up compiler */
+            case 't':
+                fprintf(stderr, "Adding RUNTIME_TEST\n");
+                bot.flags |= RUNTIME_TEST;
+                break;
+            case 'v':
+                printf("foxbot version 0.0.1\n");
+                exit(EXIT_SUCCESS);
+                break;
+            default:
+                printf("Invalid Option: -%c\n", c);
+                break;
+        }
+    }
+}
+
 int
-main_foxbot(/*int argc, char **argv*/)
+main_foxbot(int argc, char **argv)
 {
     static const struct msg_t empty_msg;
     bot.msg = xmalloc(sizeof(*bot.msg));
     bot.msg->from = xmalloc(sizeof(*bot.msg->from));
     bot.ircd = xmalloc(sizeof(*bot.ircd));
     *bot.msg = empty_msg;
+
+    parse_opts(argc, argv);
 
     init_channels();
     init_users();
@@ -105,6 +137,11 @@ main_foxbot(/*int argc, char **argv*/)
     establish_link();
 
     while (!quitting) {
+        if ((bot.flags & RUNTIME_TEST)
+            && bot.msg->command
+            && (strcmp(bot.msg->command, "FOXBOT") == 0))
+            break;
+
         io();
     }
 

@@ -20,6 +20,7 @@
  *
  */
 
+#include <stdint.h>
 #include <stdio.h>
 
 #include <foxbot/foxbot.h>
@@ -36,6 +37,7 @@ START_TEST(connect)
     ck_assert(strcmp(bot.user->nick, "foxbot") == 0);
     ck_assert(strcmp(bot.user->ident, "~fox") == 0);
     ck_assert(strcmp(bot.user->host, "127.0.0.1") == 0);
+    ck_assert(bot.modes[(uint8_t)'i']);
 
     end_test();
 }

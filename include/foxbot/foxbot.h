@@ -31,6 +31,9 @@
 #define MAX_IRC_BUF 512
 #define MAX_IO_BUF 2048
 
+/* Runtime flags */
+#define RUNTIME_TEST    0x1
+
 enum commands {
     PRIVMSG,
     NOTICE,
@@ -47,6 +50,7 @@ enum commands {
 
 struct bot_t {
     int fd;
+    int flags;
     bool registered;
     bool modes[256];
     struct msg_t *msg;
@@ -63,7 +67,7 @@ void do_quit(const char *message);
 void do_error(char *line, ...);
 void parse_line(const char *line);
 void foxbot_quit(void);
-int main_foxbot(/*int argc, char **argv*/);
+int main_foxbot(int argc, char **argv);
 
 extern volatile sig_atomic_t quitting;
 extern struct bot_t bot;

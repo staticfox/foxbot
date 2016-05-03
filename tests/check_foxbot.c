@@ -21,14 +21,11 @@
  */
 
 #include <errno.h>
-#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "check_foxbot.h"
 #include "check_server.h"
-
-pthread_t tid[0];
 
 static void
 add_testcases(Suite *s)

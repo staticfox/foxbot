@@ -19,6 +19,9 @@
  *   Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
+#define _POSIX_C_SOURCE 201112L
+
+#include <time.h>
 
 #include <assert.h>
 #include <errno.h>
@@ -48,10 +51,10 @@ enum check_commands {
     USER
 };
 
-bool got_nick = false, got_user = false;
+bool got_nick = false, got_user = false, connected = false;
 char *check_nick, *check_user;
 
-static void
+void
 do_burst(void)
 {
     fox_write(client_sock_fd, ":ircd.staticfox.net NOTICE * :*** Ident disabled, not checking ident\r\n");
@@ -74,9 +77,14 @@ do_burst(void)
     fox_write(client_sock_fd, ":ircd.staticfox.net 372 %s :- Not an important MOTD\r\n", check_nick);
     fox_write(client_sock_fd, ":ircd.staticfox.net 376 %s :End of /MOTD command.\r\n", check_nick);
     fox_write(client_sock_fd, ":%s MODE %s :+i\r\n", check_nick, check_nick);
+
+    /* Needed to give the bot an idea of what it's n!u@h is */
     fox_write(client_sock_fd, ":%s!~%s@127.0.0.1 JOIN #unit_test\r\n", check_nick, check_user);
-    fox_write(client_sock_fd, ":ircd.staticfox.net 353 %s = #chat :%s staticfox xofcitats @ChanServ\r\n", check_nick, check_nick);
-    fox_write(client_sock_fd, ":ircd.staticfox.net 366 %s #chat :End of /NAMES list.\r\n", check_nick);
+    fox_write(client_sock_fd, ":ircd.staticfox.net 353 %s = #unit_test :%s\r\n", check_nick, check_nick);
+    fox_write(client_sock_fd, ":ircd.staticfox.net 366 %s #unit_test :End of /NAMES list.\r\n", check_nick);
+
+    /* Used as a reference point to know when the spam has stopped */
+    fox_write(client_sock_fd, ":ircd.staticfox.net FOXBOT * :Not a real command :)\r\n");
 }
 
 /* Should we even bother parsing? */
@@ -120,24 +128,32 @@ parse_buffer(const char *buf)
 end:
     xfree(tofree);
 
-    if (got_nick && got_user)
+    if (got_nick && got_user && !connected) {
+        connected = true;
         do_burst();
+    }
 
 }
 
 void
 fox_write(int fd, char *line, ...)
 {
-    char buf[MAX_IO_BUF] = {0};
+    char buf[MAX_IRC_BUF] = {0};
     ssize_t writeval;
     int n;
 
     va_list ap;
     va_start(ap, line);
-    vsnprintf(buf, MAX_IO_BUF, line, ap);
+    vsnprintf(buf, MAX_IRC_BUF, line, ap);
     va_end(ap);
 
     writeval = strlen(buf);
+
+    /* This is mostly for burst spam control */
+    struct timespec tim;
+    tim.tv_sec  = 0;
+    tim.tv_nsec = 250000L;
+    nanosleep(&tim , NULL);
 
     n = write(fd, buf, writeval);
 

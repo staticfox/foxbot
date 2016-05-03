@@ -28,6 +28,7 @@ void fox_read(int fd);
 void * start_listener(void *unused);
 void shutdown_test_server(void);
 void delete_foxbot(void);
+void wait_for(const char *data);
 
 extern int tests_done;
 extern int client_sock_fd;

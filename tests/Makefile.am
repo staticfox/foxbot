@@ -14,5 +14,5 @@ check_foxbot_SOURCES = check_foxbot.c \
                        check_foxbot.h \
                        check_server.c \
                        check_server.h \
-                       start.c \
+                       check_start.c \
                        units/connect_parse.c
