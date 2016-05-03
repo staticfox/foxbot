@@ -16,6 +16,8 @@ ltmain.sh
 
 m4/
 
+build-aux/
+
 *.[ao]
 *.la
 *.libs/
