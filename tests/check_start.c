@@ -94,7 +94,7 @@ wait_for(const char *data)
 {
     for (;;) {
         if (bot.msg->command && (strcmp(bot.msg->command, data) == 0))
-            return true;
+            break;
         io();
     }
 }
