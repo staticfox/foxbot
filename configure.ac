@@ -39,7 +39,7 @@ AX_CHECK_COMPILE_FLAG([-std=c99], [AX_APPEND_FLAG([-std=c99])])
 
 dnl Checks for header files.
 AC_CHECK_HEADERS([malloc.h netdb.h stdlib.h string.h sys/socket.h unistd.h])
-AC_CHECK_HEADERS([fcntl.h], [], [AC_MSG_ERROR([Could not find fcntl.h.])])
+AC_CHECK_HEADERS([fcntl.h], [], [AC_MSG_ERROR([cannot find fcntl.h.])])
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL
@@ -50,6 +50,7 @@ dnl Checks for library functions.
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_CHECK_FUNCS([malloc_usable_size memchr memmove memset socket strcspn strerror strstr])
+AC_SEARCH_LIBS([dlopen], [dl dld], [], [AC_MSG_ERROR([cannot find function: dlopen])])
 
 dnl debugging information
 AC_MSG_CHECKING(whether to enable debugging symbols)
