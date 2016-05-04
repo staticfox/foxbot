@@ -104,6 +104,15 @@ START_TEST(ircd_invalid_cmd)
 }
 END_TEST
 
+START_TEST(ircd_error)
+{
+    begin_test();
+    write_and_wait("ERROR :Closing Link: 127.0.0.1 (Quit: tests!)");
+    ck_assert(quitting == 1);
+    end_test();
+}
+END_TEST
+
 void
 connect_parse_setup(Suite *s)
 {
@@ -115,6 +124,7 @@ connect_parse_setup(Suite *s)
     tcase_add_test(tc, ircd_ping_pong);
     tcase_add_test(tc, ircd_unknown_cmd);
     tcase_add_test(tc, ircd_invalid_cmd);
+    tcase_add_test(tc, ircd_error);
 
     suite_add_tcase(s, tc);
 }
