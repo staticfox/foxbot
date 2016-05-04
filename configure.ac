@@ -18,6 +18,7 @@ AC_DEFINE_DIR([DATADIR],[datadir],[Set to datadir.])
 AC_DEFINE_DIR([LOCALSTATEDIR],[localstatedir],[Set to localstatedir.])
 
 dnl Checks for programs.
+AC_PROG_AWK
 AC_PROG_CC_C99
 AC_PROG_RANLIB
 AC_PROG_YACC
@@ -38,6 +39,8 @@ AX_CHECK_COMPILE_FLAG([$WERROR -Wall],
   [AX_APPEND_FLAG([-Wall], [AM_CFLAGS])])
 AX_CHECK_COMPILE_FLAG([$WERROR -Wextra],
   [AX_APPEND_FLAG([-Wextra], [AM_CFLAGS])])
+AX_CHECK_COMPILE_FLAG([$WERROR -pedantic],
+  [AX_APPEND_FLAG([-pedantic], [AM_CFLAGS])])
 
 dnl Checks for header files.
 AC_CHECK_HEADERS([malloc.h netdb.h stdlib.h string.h sys/socket.h unistd.h])
@@ -85,7 +88,8 @@ fi
 
 dnl Check for libcheck
 PKG_CHECK_MODULES([CHECK], [check], [HAVE_CHECK=1], [HAVE_CHECK=0])
+AX_CHECK_COMPILE_FLAG([$WERROR -Wno-gnu-zero-variadic-macro-arguments],
+  [AX_APPEND_FLAG([-Wno-gnu-zero-variadic-macro-arguments], [CHECK_CFLAGS])])
 AC_REQUIRE_AUX_FILE([tap-driver.sh])
-AC_PROG_AWK
 
 AC_OUTPUT
