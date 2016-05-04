@@ -156,7 +156,7 @@ main_foxbot(int argc, char **argv)
         io();
     }
 
-    if (bot.registered) {
+    if (bot.registered && !(bot.flags & RUNTIME_TEST)) {
         char buf[MAX_IRC_BUF];
         const char *reason = "<unknown>";
         switch (quitting) {
