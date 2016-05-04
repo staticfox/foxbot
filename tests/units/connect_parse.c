@@ -95,6 +95,11 @@ START_TEST(ircd_invalid_cmd)
     write_and_wait("ASDF ASDF");
     ck_assert(bot.msg->from == NULL);
     ck_assert(bot.msg->command == NULL);
+    ck_assert(bot.msg->is_invalid);
+
+    write_and_wait("ASDF ASDF ASDF ASDF");
+    ck_assert(bot.msg->is_invalid);
+
     end_test();
 }
 END_TEST
