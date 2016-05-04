@@ -1,5 +1,3 @@
-AUTOMAKE_OPTIONS = foreign
-
 bin_PROGRAMS = foxbot
 
 AM_CPPFLAGS = $(LTDLINCL) -I$(top_srcdir)/include -Wall

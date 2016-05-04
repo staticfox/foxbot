@@ -1,7 +1,5 @@
 # tests Automake file
 
-AUTOMAKE_OPTIONS = foreign
-
 TESTS = check_foxbot
 check_PROGRAMS = check_foxbot
 
