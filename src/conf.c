@@ -94,7 +94,7 @@ read_conf_file(void)
     if (conf_parser_ctx.config_file_path != NULL)
         filename = conf_parser_ctx.config_file_path;
     else
-        filename = "foxbot.conf";
+        filename = SYSCONFDIR "/foxbot.conf";
 
     if ((conf_parser_ctx.conf_file = fopen(filename, "r")) == NULL) {
         do_error("Unable to read %s: %s", filename, strerror(errno));
