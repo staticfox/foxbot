@@ -59,6 +59,10 @@ START_TEST(ircd_support_check)
     ck_assert(strcmp(bot.ircd->supports.chanop_modes, "ov") == 0);
     ck_assert(strcmp(bot.ircd->supports.prefix, "@+") == 0);
 
+    send_broken_uint_value();
+
+    ck_assert(bot.ircd->nick_length == 30);
+
     end_test();
 }
 END_TEST

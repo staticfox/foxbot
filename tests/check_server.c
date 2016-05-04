@@ -87,6 +87,12 @@ do_burst(void)
     fox_write(":ircd.staticfox.net FOXBOT * :Not a real command :)\r\n");
 }
 
+void
+send_broken_uint_value(void)
+{
+    fox_write(":ircd.staticfox.net 005 %s NICKLEN=-30 :are supported by this server\r\n", check_nick);
+}
+
 /* More or less only really needed for NICK and USER.
  * The rest we can determine what was sent as we will
  * be the ones sending the commands.
