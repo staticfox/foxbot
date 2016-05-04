@@ -31,7 +31,6 @@
 
 #include <foxbot/config.h>
 #include <foxbot/foxbot.h>
-#include <foxbot/message.h>
 #include <foxbot/socket.h>
 
 #include "check_foxbot.h"
@@ -158,6 +157,20 @@ wait_for_command(enum commands cmd)
     }
 
     fprintf(stderr, "WAIT_FOR_COMMAND FAILED: %d\n", cmd);
+    ck_assert(0);
+    return;
+}
+
+void
+wait_for_numeric(unsigned int numeric)
+{
+    for (int i = 0; i < 900000; i++) {
+        if (bot.msg->numeric == numeric)
+            return;
+        io();
+    }
+
+    fprintf(stderr, "WAIT_FOR_NUMERIC FAILED: %d\n", numeric);
     ck_assert(0);
     return;
 }

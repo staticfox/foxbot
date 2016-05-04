@@ -25,6 +25,7 @@
 
 #include <foxbot/foxbot.h>
 #include <foxbot/list.h>
+#include <foxbot/socket.h>
 #include <foxbot/user.h>
 
 #include "../check_foxbot.h"
@@ -79,6 +80,15 @@ START_TEST(ircd_ping_pong)
 }
 END_TEST
 
+START_TEST(ircd_unknown_cmd)
+{
+    begin_test();
+    sockwrite("ASDF\r\n");
+    wait_for_numeric(421);
+    end_test();
+}
+END_TEST
+
 void
 connect_parse_setup(Suite *s)
 {
@@ -88,6 +98,7 @@ connect_parse_setup(Suite *s)
     tcase_add_test(tc, connect_check);
     tcase_add_test(tc, ircd_support_check);
     tcase_add_test(tc, ircd_ping_pong);
+    tcase_add_test(tc, ircd_unknown_cmd);
 
     suite_add_tcase(s, tc);
 }

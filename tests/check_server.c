@@ -121,6 +121,8 @@ parse_buffer(const char *buf)
                 cmd = CHECK_USER;
             else if (strcmp(token, "PONG") == 0)
                 cmd = CHECK_PONG;
+            else if (strcmp(token, "ASDF") == 0)
+                fox_write(":ircd.staticfox.net 421 %s ASDF :Unknown command\r\n", check_nick);
             break;
         case 1:
             if (cmd == CHECK_NICK) {
