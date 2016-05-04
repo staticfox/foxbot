@@ -22,6 +22,7 @@
 
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include <foxbot/channel.h>
 #include <foxbot/foxbot.h>
@@ -83,6 +84,14 @@ START_TEST(channel_part_check)
     ck_assert(dlist_length(chptr2->users) == 1);
 
     write_and_wait(":test_user1!~test@255.255.255.255 JOIN #unit_test2");
+    write_and_wait(":test_user1!~test@255.255.255.255 JOIN #unit_test2");
+
+    for (;;) {
+        if (strcmp(last_buffer, "PRIVMSG #unit_test :Attempting to rejoin test_user1 to #unit_test2.") == 0)
+            break;
+    }
+
+    ck_assert(dlist_length(chptr2->users) == 2);
 
     snprintf(ibuf, sizeof(ibuf), ":%s!%s@%s PART #unit_test2",
         bot.user->nick, bot.user->ident, bot.user->host);
@@ -107,6 +116,7 @@ START_TEST(channel_quit_check)
     struct channel_t *chptr, *chptr2;
     struct user_t *uptr, *uptr2;
     char ibuf[MAX_IRC_BUF];
+    char quitbuf[MAX_IRC_BUF];
 
     ck_assert((chptr = find_channel("#unit_test")) != NULL);
     ck_assert((uptr = channel_get_user(chptr, bot.user)) != NULL);
@@ -141,7 +151,10 @@ START_TEST(channel_quit_check)
     ck_assert(dlist_length(chptr2->users) == 1);
     ck_assert(get_user_by_nick("test_user2") == NULL);
 
-    do_quit("End of test!");
+    /* Generate a random hex value to ensure test validity */
+    snprintf(quitbuf, sizeof(quitbuf), "unit test : %08x", rand());
+    do_quit(quitbuf);
+    wait_for("ERROR :Closing Link: 127.0.0.1 (Quit: %s)", quitbuf);
 
     end_test();
 }

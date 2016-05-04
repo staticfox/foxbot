@@ -39,5 +39,4 @@ void send_broken_uint_value(void);
 extern int tests_done;
 extern int client_sock_fd;
 extern int sockfd;
-bool got_nick, got_user;
-char *check_nick, *check_user;
+extern char *last_buffer;

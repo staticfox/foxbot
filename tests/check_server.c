@@ -50,11 +50,13 @@ enum check_commands {
     CHECK_INVALID,
     CHECK_NICK,
     CHECK_USER,
-    CHECK_PONG
+    CHECK_PONG,
+    CHECK_QUIT
 };
 
 bool got_nick = false, got_user = false, connected = false;
 char *check_nick, *check_user;
+char *last_buffer;
 
 /* Simulate an introduction to the IRC server. Wheeeeee! */
 void
@@ -107,10 +109,14 @@ parse_buffer(const char *buf)
     unsigned int i = 0, ii;
     int params = 1;
     char *token, *string, *tofree;
+    static char *l_params = NULL;
 
     for (ii = 0; buf[ii] != '\0'; ii++)
         if (buf[ii] == ' ')
             params++;
+
+    xfree(last_buffer);
+    last_buffer = xstrdup(buf);
 
     tofree = string = xstrdup(buf);
 
@@ -125,6 +131,8 @@ parse_buffer(const char *buf)
                 cmd = CHECK_PONG;
             else if (strcmp(token, "ASDF") == 0)
                 fox_write(":ircd.staticfox.net 421 %s ASDF :Unknown command\r\n", check_nick);
+            else if (strcmp(token, "QUIT") == 0)
+                cmd = CHECK_QUIT;
             break;
         case 1:
             if (cmd == CHECK_NICK) {
@@ -145,6 +153,17 @@ parse_buffer(const char *buf)
         i++;
     }
 
+    if (params > 2) {
+        size_t len = 0;
+        if (cmd == CHECK_QUIT)
+            len = 6;
+        if (strlen(buf) > len)
+            l_params = xstrdup(buf + len);
+   }
+
+    if (cmd == CHECK_QUIT)
+        fox_write("ERROR :Closing Link: 127.0.0.1 (Quit: %s)\r\n", l_params);
+
 end:
     xfree(tofree);
 
@@ -152,6 +171,9 @@ end:
         connected = true;
         do_burst();
     }
+
+    xfree(l_params);
+    l_params = NULL;
 
 }
 

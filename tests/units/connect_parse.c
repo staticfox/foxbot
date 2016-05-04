@@ -61,6 +61,7 @@ START_TEST(ircd_support_check)
     ck_assert(strcmp(bot.ircd->supports.prefix, "@+") == 0);
 
     send_broken_uint_value();
+    wait_for(":ircd.staticfox.net 005 %s NICKLEN=-30 :are supported by this server", bot.user->nick);
 
     ck_assert(bot.ircd->nick_length == 30);
 
