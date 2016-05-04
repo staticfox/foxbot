@@ -54,12 +54,11 @@ install:
     fi
 
   # test system
-  - wget https://github.com/libcheck/check/archive/master.zip &&
-    unzip -qq master &&
+  - curl -fLSs https://github.com/libcheck/check/files/71408/check-0.10.0.tar.gz | tar xz &&
     (
       cd check-* &&
-      autoreconf -fi &&
-      ./configure --prefix="$HOME" && make install;
+      ./configure --prefix="$HOME" &&
+      make install;
     ) &&
     rm -rf check-*
 
