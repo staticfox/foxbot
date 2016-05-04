@@ -43,7 +43,7 @@ addons:
     build_command:   "make"
     branch_pattern: coverity_scan
 
-before_install:
+install:
   - if [ "$TRAVIS_OS_NAME" = osx ]; then
       curl -fLSs http://ftpmirror.gnu.org/autoconf-archive/autoconf-archive-2016.03.20.tar.xz | tar xJ &&
       (
