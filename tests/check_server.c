@@ -45,9 +45,10 @@ int client_sock_fd = 0;
 int sockfd = 0;
 
 enum check_commands {
-    INVALID,
-    NICK,
-    USER
+    CHECK_INVALID,
+    CHECK_NICK,
+    CHECK_USER,
+    CHECK_PONG
 };
 
 bool got_nick = false, got_user = false, connected = false;
@@ -100,7 +101,7 @@ send_broken_uint_value(void)
 static void
 parse_buffer(const char *buf)
 {
-    enum check_commands cmd = INVALID;
+    enum check_commands cmd = CHECK_INVALID;
     unsigned int i = 0, ii;
     int params = 1;
     char *token, *string, *tofree;
@@ -115,18 +116,24 @@ parse_buffer(const char *buf)
         switch(i) {
         case 0:
             if (strcmp(token, "NICK") == 0)
-                cmd = NICK;
+                cmd = CHECK_NICK;
             else if (strcmp(token, "USER") == 0)
-                cmd = USER;
+                cmd = CHECK_USER;
+            else if (strcmp(token, "PONG") == 0)
+                cmd = CHECK_PONG;
             break;
         case 1:
-            if (cmd == NICK) {
+            if (cmd == CHECK_NICK) {
                 check_nick = xstrdup(token);
                 got_nick = true;
                 goto end;
-            } else if (cmd == USER) {
+            } else if (cmd == CHECK_USER) {
                 check_user = xstrdup(token);
                 got_user = true;
+                goto end;
+            } else if (cmd == CHECK_PONG) {
+                if (strcmp(token, ":ircd.staticfox.net") == 0)
+                    fox_write("PONG :ircd.staticfox.net\r\n");
                 goto end;
             }
             break;

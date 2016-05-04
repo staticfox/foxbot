@@ -24,6 +24,7 @@
 
 #include <errno.h>
 #include <pthread.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -125,4 +126,24 @@ write_and_wait(char *data)
 
     fprintf(stderr, "READ FAILED: %s\n", data);
     ck_assert(0);
+}
+
+void
+wait_for(char *line, ...)
+{
+    char buf[MAX_IRC_BUF] = {0};
+    va_list ap;
+    va_start(ap, line);
+    vsnprintf(buf, MAX_IRC_BUF, line, ap);
+    va_end(ap);
+
+    bool found = false;
+
+    while (!found) {
+        if (strcmp(bot.msg->buffer, buf) == 0)
+            return;
+        io();
+    }
+
+    return;
 }

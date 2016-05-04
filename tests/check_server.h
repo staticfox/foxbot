@@ -29,6 +29,7 @@ void * start_listener(void *unused);
 void shutdown_test_server(void);
 void delete_foxbot(void);
 void write_and_wait(char *data);
+void wait_for(char *line, ...);
 void send_broken_uint_value(void);
 
 extern int tests_done;

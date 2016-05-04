@@ -67,6 +67,18 @@ START_TEST(ircd_support_check)
 }
 END_TEST
 
+START_TEST(ircd_ping_pong)
+{
+    begin_test();
+
+    write_and_wait("PING :ircd.staticfox.net");
+
+    wait_for("PONG :%s", bot.ircd->name);
+
+    end_test();
+}
+END_TEST
+
 void
 connect_parse_setup(Suite *s)
 {
@@ -75,6 +87,7 @@ connect_parse_setup(Suite *s)
     tcase_add_checked_fixture(tc, NULL, delete_foxbot);
     tcase_add_test(tc, connect_check);
     tcase_add_test(tc, ircd_support_check);
+    tcase_add_test(tc, ircd_ping_pong);
 
     suite_add_tcase(s, tc);
 }
