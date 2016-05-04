@@ -185,7 +185,7 @@ wait_for_last_buf(char *line, ...)
     vsnprintf(buf, MAX_IRC_BUF, line, ap);
     va_end(ap);
 
-    for (int i = 0; i < 10000000; i++) {
+    for (int i = 0; i < 100000000; i++) {
         if (strcmp(last_buffer, buf) == 0)
             return;
     }
