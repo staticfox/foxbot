@@ -89,6 +89,16 @@ START_TEST(ircd_unknown_cmd)
 }
 END_TEST
 
+START_TEST(ircd_invalid_cmd)
+{
+    begin_test();
+    write_and_wait("ASDF ASDF");
+    ck_assert(bot.msg->from == NULL);
+    ck_assert(bot.msg->command == NULL);
+    end_test();
+}
+END_TEST
+
 void
 connect_parse_setup(Suite *s)
 {
@@ -99,6 +109,7 @@ connect_parse_setup(Suite *s)
     tcase_add_test(tc, ircd_support_check);
     tcase_add_test(tc, ircd_ping_pong);
     tcase_add_test(tc, ircd_unknown_cmd);
+    tcase_add_test(tc, ircd_invalid_cmd);
 
     suite_add_tcase(s, tc);
 }
