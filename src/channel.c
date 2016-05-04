@@ -40,7 +40,9 @@ init_channels(void)
 struct channel_t *
 create_channel(const char *name)
 {
+    static const struct channel_t empty_channel;
     struct channel_t *channel = xmalloc(sizeof(*channel));
+    *channel = empty_channel;
     channel->name = xstrdup(name);
     channel->users = dlist_create();
 
