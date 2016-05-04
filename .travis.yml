@@ -15,7 +15,7 @@ matrix:
   include:
     - os: linux
       compiler: gcc
-      env: BUILD_TYPE=coverage CFLAGS=--coverage LDFLAGS=--coverage
+      env: BUILD_TYPE=coverage
       addons:
         apt:
           packages:
@@ -60,7 +60,8 @@ before_install:
       cd check-* &&
       autoreconf -fi &&
       ./configure --prefix="$HOME" && make install;
-    )
+    ) &&
+    rm -rf check-*
 
   - curl -fLSs http://ftp.gnu.org/gnu/automake/automake-1.14.tar.xz | tar xJ &&
     mkdir -p build-aux &&
@@ -70,6 +71,13 @@ before_install:
   - if [ "$BUILD_TYPE" = coverage ]; then
       gem install coveralls-lcov ;
       lcov --directory . --zerocounters ;
+    fi
+
+before_script:
+    # must set these flags after installation to avoid running coverage on
+    # other dependencies like libcheck
+  - if [ "$BUILD_TYPE" = coverage ]; then
+      export CFLAGS=--coverage LDFLAGS=--coverage;
     fi
 
 after_success:
