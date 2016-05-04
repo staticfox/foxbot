@@ -39,6 +39,7 @@ int yylex(void);
 %token HOST
 %token IDENT
 %token NICK
+%token DEBUG_CHANNEL
 %token PORT
 %token REALNAME
 %token STRING
@@ -57,6 +58,7 @@ bot_item:  bot_nick |
            bot_ident |
            bot_host |
            bot_port |
+           bot_debug_channel |
            bot_channel |
            bot_realname |
            error ';' ;
@@ -96,6 +98,15 @@ bot_port: PORT '=' STRING ';'
     xfree(botconfig.port);
     botconfig.port = xstrdup(yylval.string);
 };
+
+bot_debug_channel: DEBUG_CHANNEL '=' STRING ';'
+{
+    if (conf_parser_ctx.pass != 2)
+        break;
+
+    xfree(botconfig.debug_channel);
+    botconfig.debug_channel = xstrdup(yylval.string);
+}
 
 bot_channel: CHANNEL '=' STRING ';'
 {

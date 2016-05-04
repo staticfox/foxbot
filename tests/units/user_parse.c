@@ -24,6 +24,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#include <foxbot/conf.h>
 #include <foxbot/foxbot.h>
 #include <foxbot/message.h>
 #include <foxbot/user.h>
@@ -48,10 +49,8 @@ START_TEST(user_mode_check)
 
     write_and_wait(":UNKNOWN MODE UNKNOWN :+i");
 
-    for (;;) {
-        if (strcmp(last_buffer, "PRIVMSG #unit_test :Received mode change for another user? :UNKNOWN MODE UNKNOWN :+i") == 0)
-            break;
-    }
+    wait_for_last_buf("PRIVMSG %s :Received mode change for another user? :UNKNOWN MODE UNKNOWN :+i",
+                      botconfig.debug_channel);
 
     ck_assert(!(bot.modes[(uint8_t)'i']));
 

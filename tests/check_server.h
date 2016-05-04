@@ -34,6 +34,7 @@ void write_and_wait(char *data);
 void wait_for(char *line, ...);
 void wait_for_command(enum commands cmd);
 void wait_for_numeric(unsigned int numeric);
+void wait_for_last_buf(char *line, ...);
 void send_broken_uint_value(void);
 
 extern int tests_done;

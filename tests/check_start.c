@@ -175,3 +175,18 @@ wait_for_numeric(unsigned int numeric)
     ck_assert(0);
     return;
 }
+
+void
+wait_for_last_buf(char *line, ...)
+{
+    char buf[MAX_IRC_BUF] = {0};
+    va_list ap;
+    va_start(ap, line);
+    vsnprintf(buf, MAX_IRC_BUF, line, ap);
+    va_end(ap);
+
+    for (;;) {
+        if (strcmp(last_buffer, buf) == 0)
+            break;
+    }
+}

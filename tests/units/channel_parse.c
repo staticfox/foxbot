@@ -25,6 +25,7 @@
 #include <stdlib.h>
 
 #include <foxbot/channel.h>
+#include <foxbot/conf.h>
 #include <foxbot/foxbot.h>
 #include <foxbot/list.h>
 #include <foxbot/memory.h>
@@ -41,8 +42,11 @@ START_TEST(simple_channel_check)
     struct user_t *uptr; /* me */
 
     /* Test us joining */
-    ck_assert(channel_count() == 1);
+    ck_assert(channel_count() == 2);
     ck_assert((chptr = find_channel("#unit_test")) != NULL);
+    ck_assert(dlist_length(chptr->users) == 1);
+    ck_assert((uptr = channel_get_user(chptr, bot.user)) != NULL);
+    ck_assert((chptr = find_channel(botconfig.debug_channel)) != NULL);
     ck_assert(dlist_length(chptr->users) == 1);
     ck_assert((uptr = channel_get_user(chptr, bot.user)) != NULL);
     end_test();
@@ -56,25 +60,27 @@ START_TEST(channel_part_check)
     struct user_t *uptr, *uptr2;
     char ibuf[MAX_IRC_BUF];
 
-    ck_assert((chptr = find_channel("#unit_test")) != NULL);
+    ck_assert(botconfig.channel && botconfig.debug_channel);
+
+    ck_assert((chptr = find_channel(botconfig.channel)) != NULL);
     ck_assert((uptr = channel_get_user(chptr, bot.user)) != NULL);
 
     /* Introduce a new user */
     write_and_wait(":test_user1!~test@255.255.255.255 JOIN #unit_test");
-    ck_assert(channel_count() == 1);
+    ck_assert(channel_count() == 2);
     ck_assert(dlist_length(chptr->users) == 2);
     ck_assert((uptr2 = get_user_by_nick("test_user1")) != NULL);
     ck_assert(channel_get_user(chptr, uptr2) != NULL);
 
     write_and_wait(":test_user1!~test@255.255.255.255 PART #unit_test");
-    ck_assert(channel_count() == 1);
+    ck_assert(channel_count() == 2);
     ck_assert(dlist_length(chptr->users) == 1);
     ck_assert(get_user_by_nick("test_user1") == NULL);
 
     write_and_wait(":test_user1!~test@255.255.255.255 JOIN #unit_test");
 
     snprintf(ibuf, sizeof(ibuf), ":%s!%s@%s JOIN #unit_test2",
-        bot.user->nick, bot.user->ident, bot.user->host);
+             bot.user->nick, bot.user->ident, bot.user->host);
 
     write_and_wait(ibuf);
 
@@ -87,24 +93,22 @@ START_TEST(channel_part_check)
     write_and_wait(":test_user1!~test@255.255.255.255 JOIN #unit_test2");
     write_and_wait(":test_user1!~test@255.255.255.255 JOIN #unit_test2");
 
-    for (;;) {
-        if (strcmp(last_buffer, "PRIVMSG #unit_test :Attempting to rejoin test_user1 to #unit_test2.") == 0)
-            break;
-    }
+    wait_for_last_buf("PRIVMSG %s :Attempting to rejoin test_user1 to #unit_test2.",
+                      botconfig.debug_channel);
 
     ck_assert(dlist_length(chptr2->users) == 2);
 
     snprintf(ibuf, sizeof(ibuf), ":%s!%s@%s PART #unit_test2",
-        bot.user->nick, bot.user->ident, bot.user->host);
+             bot.user->nick, bot.user->ident, bot.user->host);
 
     write_and_wait(ibuf);
 
     snprintf(ibuf, sizeof(ibuf), ":%s!%s@%s PART #unit_test",
-        bot.user->nick, bot.user->ident, bot.user->host);
+             bot.user->nick, bot.user->ident, bot.user->host);
 
     write_and_wait(ibuf);
 
-    ck_assert(channel_count() == 0);
+    ck_assert(channel_count() == 1);
     ck_assert(find_channel("#unit_test") == NULL);
     end_test();
 }
@@ -136,10 +140,10 @@ START_TEST(channel_quit_check)
     ck_assert(get_user_by_nick("test_user2") == NULL);
 
     snprintf(ibuf, sizeof(ibuf), ":%s!%s@%s JOIN #unit_test2",
-        bot.user->nick, bot.user->ident, bot.user->host);
+             bot.user->nick, bot.user->ident, bot.user->host);
 
     write_and_wait(ibuf);
-    ck_assert(channel_count() == 2);
+    ck_assert(channel_count() == 3);
     write_and_wait(":test_user2!~test@255.255.255.255 JOIN #unit_test");
     write_and_wait(":test_user2!~test@255.255.255.255 JOIN #unit_test2");
     ck_assert((uptr2 = get_user_by_nick("test_user2")) != NULL);
@@ -193,15 +197,12 @@ START_TEST(channel_unknown_exists)
     char buf[MAX_IRC_BUF];
     struct channel_t *chptr = xcalloc(1, sizeof(*chptr));
     chptr->name = xstrdup("shouldn't be here");
-    snprintf(buf, sizeof(buf), "PRIVMSG #unit_test :Received unknown channel struct for %p (%s)",
-            (void *)chptr, chptr->name);
+    snprintf(buf, sizeof(buf), "PRIVMSG %s :Received unknown channel struct for %p (%s)",
+             botconfig.debug_channel, (void *)chptr, chptr->name);
     delete_channel_s(chptr);
     ck_assert(chptr);
     ck_assert(chptr->name);
-    for (;;) {
-        if (strcmp(last_buffer, buf) == 0)
-            break;
-    }
+    wait_for_last_buf(buf);
     end_test();
 }
 END_TEST

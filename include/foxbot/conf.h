@@ -38,6 +38,7 @@ struct botconfig_entry {
     char *ident;
     char *host;
     char *port;
+    char *debug_channel;
     char *channel;
     char *realname;
 };

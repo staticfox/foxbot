@@ -74,8 +74,8 @@ do_error(char *line, ...)
     vsnprintf(buf, MAX_IO_BUF, line, ap);
     va_end(ap);
 
-    if (bot.registered)
-        privmsg(botconfig.channel, buf);
+    if (bot.registered && botconfig.debug_channel)
+        privmsg(botconfig.debug_channel, buf);
     else
         fprintf(stderr, "%s\n", buf);
 }

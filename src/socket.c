@@ -68,24 +68,12 @@ create_and_bind(void)
 int
 establish_link(void)
 {
-    int status, flags;
+    int status;
 
     status = connect(bot.fd, bot.hil->ai_addr, bot.hil->ai_addrlen);
     if (status == -1) {
         do_error(strerror(errno));
         exit(EXIT_FAILURE);
-    }
-
-    if (bot.nonblocking) {
-
-        if(-1 == (flags = fcntl(bot.fd, F_GETFL, 0)))
-            flags = 0;
-
-        if(fcntl(bot.fd, F_SETFL, flags | O_NONBLOCK) == -1) {
-            do_error(strerror(errno));
-            exit(EXIT_FAILURE);
-        }
-
     }
 
     raw("NICK %s\n", botconfig.nick);
@@ -153,7 +141,8 @@ io(void)
         return;
 
     if (rv < 0) {
-        fprintf(stderr, "Read error: %s\n", strerror(errno));
+        if (errno != EINTR)
+            fprintf(stderr, "Read error: %s\n", strerror(errno));
         quitting = 1;
         return;
     }

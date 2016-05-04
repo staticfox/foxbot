@@ -44,6 +44,8 @@ clear_conf(void)
     botconfig.host = NULL;
     xfree(botconfig.port);
     botconfig.port = NULL;
+    xfree(botconfig.debug_channel);
+    botconfig.debug_channel = NULL;
     xfree(botconfig.channel);
     botconfig.channel = NULL;
     xfree(botconfig.realname);
@@ -58,7 +60,6 @@ set_default_conf(void)
     botconfig.ident = xstrdup("foxbot");
     botconfig.host = xstrdup("misconfigured.host");
     botconfig.port = xstrdup("-4");
-    botconfig.channel = xstrdup("#misconfigured");
     botconfig.realname = xstrdup(":3");
 }
 

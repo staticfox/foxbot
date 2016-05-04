@@ -37,7 +37,11 @@ void
 parse_rpl_welcome(void)
 {
     bot.registered = true;
-    join(botconfig.channel);
+    if (botconfig.channel)
+        join(botconfig.channel);
+
+    if (botconfig.debug_channel)
+        join(botconfig.debug_channel);
 
     /* That's me! */
     make_me(bot.msg->target);

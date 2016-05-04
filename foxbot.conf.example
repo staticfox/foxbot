@@ -14,5 +14,6 @@ bot {
     host = "misconfigured.network";
     port = "-4";
     channel = "#misconfigured";
+    debug_channel = "#foxbot_logging";
     realname = ":3";
 };

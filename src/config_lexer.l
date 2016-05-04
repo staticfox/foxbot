@@ -80,6 +80,7 @@ STRING   \"[^\"\n]*[\"\n]
 
 bot      { return BOT;       }
 channel  { return CHANNEL;   }
+debug_channel { return DEBUG_CHANNEL; }
 host     { return HOST;      }
 ident    { return IDENT;     }
 nick     { return NICK;      }

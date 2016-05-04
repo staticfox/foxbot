@@ -36,6 +36,7 @@
 #include <time.h>
 #include <unistd.h>
 
+#include <foxbot/conf.h>
 #include <foxbot/memory.h>
 #include <foxbot/message.h>
 #include <foxbot/foxbot.h>
@@ -51,7 +52,8 @@ enum check_commands {
     CHECK_NICK,
     CHECK_USER,
     CHECK_PONG,
-    CHECK_QUIT
+    CHECK_QUIT,
+    CHECK_JOIN
 };
 
 bool got_nick = false, got_user = false, connected = false;
@@ -84,9 +86,12 @@ do_burst(void)
     fox_write(":%s MODE %s :+i\r\n", check_nick, check_nick);
 
     /* Needed to give the bot an idea of what it's n!u@h is */
-    fox_write(":%s!~%s@127.0.0.1 JOIN #unit_test\r\n", check_nick, check_user);
-    fox_write(":ircd.staticfox.net 353 %s = #unit_test :%s\r\n", check_nick, check_nick);
-    fox_write(":ircd.staticfox.net 366 %s #unit_test :End of /NAMES list.\r\n", check_nick);
+    fox_write(":%s!~%s@127.0.0.1 JOIN %s\r\n", check_nick, check_user, botconfig.channel);
+    fox_write(":ircd.staticfox.net 353 %s = %s :%s\r\n", check_nick, botconfig.channel, check_nick);
+    fox_write(":ircd.staticfox.net 366 %s %s :End of /NAMES list.\r\n", check_nick, botconfig.channel);
+    fox_write(":%s!~%s@127.0.0.1 JOIN %s\r\n", check_nick, check_user, botconfig.debug_channel);
+    fox_write(":ircd.staticfox.net 353 %s = %s :%s\r\n", check_nick, botconfig.debug_channel, check_nick);
+    fox_write(":ircd.staticfox.net 366 %s %s :End of /NAMES list.\r\n", check_nick, botconfig.debug_channel);
 
     /* Used as a reference point to know when the spam has stopped */
     fox_write(":ircd.staticfox.net FOXBOT * :Not a real command :)\r\n");
@@ -133,6 +138,8 @@ parse_buffer(const char *buf)
                 fox_write(":ircd.staticfox.net 421 %s ASDF :Unknown command\r\n", check_nick);
             else if (strcmp(token, "QUIT") == 0)
                 cmd = CHECK_QUIT;
+            else if (strcmp(token, "JOIN") == 0)
+                cmd = CHECK_JOIN;
             break;
         case 1:
             if (cmd == CHECK_NICK) {
@@ -146,6 +153,9 @@ parse_buffer(const char *buf)
             } else if (cmd == CHECK_PONG) {
                 if (strcmp(token, ":ircd.staticfox.net") == 0)
                     fox_write("PONG :ircd.staticfox.net\r\n");
+                goto end;
+            } else if (cmd == CHECK_JOIN) {
+                fox_write(":%s!~%s@127.0.0.1 JOIN %s\r\n", check_nick, check_user, token);
                 goto end;
             }
             break;
