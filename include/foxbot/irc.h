@@ -25,6 +25,7 @@
 
 void handle_quit(void);
 void handle_join(void);
+void handle_kick(void);
 void handle_part(void);
 void handle_mode(void);
 

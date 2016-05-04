@@ -134,6 +134,9 @@ hook_literal(void)
     case PART:
         handle_part();
         break;
+    case KICK:
+        handle_kick();
+        break;
     case MODE:
         handle_mode();
         break;

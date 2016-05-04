@@ -123,6 +123,40 @@ handle_part(void)
 }
 
 void
+handle_kick(void)
+{
+    /* Extra parsing required */
+    char *victim_s = strtok(bot.msg->params, ":");
+    /* char *kick_reason = strtok(NULL, ":"); */
+    /* ^ Will be useful for the hook system */
+
+    /* Remove the trailing space */
+    assert(strlen(victim_s) > 1);
+    victim_s[strlen(victim_s) - 1] = 0;
+
+    struct channel_t *channel = NULL;
+    channel = find_channel(bot.msg->target);
+
+    if (channel == NULL) {
+        do_error("Received KICK for an unknown channel %s", bot.msg->target);
+        return;
+    }
+
+    struct user_t *victim = NULL;
+    victim = get_user_by_nick(victim_s);
+
+    if (victim == NULL) {
+        do_error("Received KICK for an unknown user %s", victim_s);
+        return;
+    }
+
+    if (victim == bot.user)
+        delete_channel_s(channel);
+    else
+        channel_remove_user(channel, victim);
+}
+
+void
 handle_quit(void)
 {
     assert(bot.msg->from != NULL);

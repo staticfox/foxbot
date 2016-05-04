@@ -104,7 +104,7 @@ sockwrite(const char *buf)
 void
 raw(char *fmt, ...)
 {
-    char sbuf[MAX_IRC_BUF] = { 0 };
+    char sbuf[MAX_IRC_BUF] = {0};
     va_list ap;
     va_start(ap, fmt);
     vsnprintf(sbuf, MAX_IRC_BUF, fmt, ap);
