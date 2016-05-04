@@ -74,12 +74,16 @@ establish_link(void)
         exit(EXIT_FAILURE);
     }
 
-    if(-1 == (flags = fcntl(bot.fd, F_GETFL, 0)))
-        flags = 0;
+    if (bot.nonblocking) {
 
-    if(fcntl(bot.fd, F_SETFL, flags | O_NONBLOCK) == -1) {
-        do_error(strerror(errno));
-        exit(EXIT_FAILURE);
+        if(-1 == (flags = fcntl(bot.fd, F_GETFL, 0)))
+            flags = 0;
+
+        if(fcntl(bot.fd, F_SETFL, flags | O_NONBLOCK) == -1) {
+            do_error(strerror(errno));
+            exit(EXIT_FAILURE);
+        }
+
     }
 
     raw("NICK %s\n", botconfig.nick);
