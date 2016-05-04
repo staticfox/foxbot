@@ -141,6 +141,8 @@ START_TEST(channel_quit_check)
     ck_assert(dlist_length(chptr2->users) == 1);
     ck_assert(get_user_by_nick("test_user2") == NULL);
 
+    do_quit("End of test!");
+
     end_test();
 }
 END_TEST
