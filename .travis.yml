@@ -64,7 +64,7 @@ before_install:
     mkdir -p build-aux &&
     cp automake-*/lib/tap-driver.sh build-aux
 
-  - [ "$BUILD_TYPE" != coverage ] || lcov --directory . --zerocounters
+  - '[ "$BUILD_TYPE" != coverage ] || lcov --directory . --zerocounters'
 
 after_success:
     - |
