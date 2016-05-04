@@ -4,8 +4,6 @@ BUILT_SOURCES = config_parser.h
 CLEANFILES = config_lexer.[ch] config_parser.[ch]
 AM_YFLAGS = -d
 
-AM_CPPFLAGS = -I$(top_srcdir)/include -Wall
-
 noinst_LIBRARIES = libfoxbot.a libfoxbotaux.a
 
 libfoxbot_a_SOURCES = channel.c \

@@ -27,10 +27,17 @@ AM_PROG_LEX
 dnl m4 directrory
 AC_CONFIG_MACRO_DIR([m4])
 
+AC_SUBST([AM_CPPFLAGS], ['-I$(top_srcdir)/include'])
+AC_SUBST([AM_CFLAGS])
+
 dnl Enable warnings.
-AX_CFLAGS_WARN_ALL
-AX_CHECK_COMPILE_FLAG([-Wextra], [AX_APPEND_FLAG([-Wextra])])
-AX_CHECK_COMPILE_FLAG([-std=c99], [AX_APPEND_FLAG([-std=c99])])
+AX_CHECK_COMPILE_FLAG([-Werror], [WERROR=-Werror], [WERROR=])
+AX_CHECK_COMPILE_FLAG([$WERROR -std=c99],
+  [AX_APPEND_FLAG([-std=c99], [AM_CFLAGS])])
+AX_CHECK_COMPILE_FLAG([$WERROR -Wall],
+  [AX_APPEND_FLAG([-Wall], [AM_CFLAGS])])
+AX_CHECK_COMPILE_FLAG([$WERROR -Wextra],
+  [AX_APPEND_FLAG([-Wextra], [AM_CFLAGS])])
 
 dnl Checks for header files.
 AC_CHECK_HEADERS([malloc.h netdb.h stdlib.h string.h sys/socket.h unistd.h])
@@ -51,11 +58,10 @@ AC_MSG_CHECKING(whether to enable debugging symbols)
 AC_ARG_ENABLE([debug],
 [AS_HELP_STRING([--enable-debug], [Turn on debugging])],
 [
-  debug=true
+  AX_APPEND_FLAG([-O0])
   AC_MSG_RESULT(yes)
 ],
 [
-  debug=false
   AC_MSG_RESULT(no)
 ])
 
@@ -64,20 +70,12 @@ AC_MSG_CHECKING(whether to enable memory debugging spam)
 AC_ARG_ENABLE([memdebug],
 [AS_HELP_STRING([--enable-memdebug], [Print memory debugging information])],
 [
-  memdebug=true
   AC_DEFINE([WANT_MEMDEBUG], [1], [Print out memory debugging information])
   AC_MSG_RESULT(yes)
 ],
 [
-  memdebug=false
   AC_MSG_RESULT(no)
 ])
-
-AM_CONDITIONAL([MEMDEBUG], [test "$memdebug" = true])
-
-if test "$debug" = true; then
-  AX_APPEND_FLAG([-O0])
-fi
 
 dnl check for pkg-config
 if test m4_ifdef([PKG_CHECK_MODULES], [yes], [no]) == no; then
