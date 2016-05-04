@@ -60,11 +60,13 @@ before_install:
       cd check-* &&
       autoreconf -fi &&
       ./configure --prefix="$HOME" && make install;
+      rm -rf check-* ;
     )
 
   - curl -fLSs http://ftp.gnu.org/gnu/automake/automake-1.14.tar.xz | tar xJ &&
     mkdir -p build-aux &&
-    cp automake-*/lib/tap-driver.sh build-aux
+    cp automake-*/lib/tap-driver.sh build-aux &&
+    rm -rf automake-*
 
   - if [ "$BUILD_TYPE" = coverage ]; then
       gem install coveralls-lcov ;
