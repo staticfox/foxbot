@@ -95,6 +95,6 @@ after_success:
 
 script:
   - autoreconf -fvi
-  - ./configure
+  - CFLAGS="$CFLAGS -Werror" ./configure
   - make
   - make check
