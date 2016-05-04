@@ -96,6 +96,7 @@ reset_message(void)
     xfree(bot.msg->params);
     bot.msg->params = NULL;
 
+    bot.msg->from = NULL;
     bot.msg->from_server = false;
 }
 
