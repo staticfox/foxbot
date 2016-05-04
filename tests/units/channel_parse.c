@@ -147,6 +147,32 @@ START_TEST(channel_quit_check)
 }
 END_TEST
 
+START_TEST(channel_unknown_join_check)
+{
+    begin_test();
+    write_and_wait(":ircd.staticfox.net JOIN #wat");
+    ck_assert(bot.msg->from_server == true);
+    ck_assert(find_channel("#wat") == NULL);
+    write_and_wait(":unknown_user!~test@255.255.255.255 JOIN #unknown");
+    ck_assert(bot.msg->from != bot.user);
+    ck_assert(find_channel("#unknown") == NULL);
+    end_test();
+}
+END_TEST
+
+START_TEST(channel_unknown_part_check)
+{
+    begin_test();
+    write_and_wait(":ircd.staticfox.net PART #wat :...");
+    ck_assert(bot.msg->from_server == true);
+    ck_assert(find_channel("#wat") == NULL);
+    write_and_wait(":unknown_user!~test@255.255.255.255 PART #unknown :...");
+    ck_assert(bot.msg->from != bot.user);
+    ck_assert(find_channel("#unknown") == NULL);
+    end_test();
+}
+END_TEST
+
 void
 channel_parse_setup(Suite *s)
 {
@@ -156,6 +182,8 @@ channel_parse_setup(Suite *s)
     tcase_add_test(tc, simple_channel_check);
     tcase_add_test(tc, channel_part_check);
     tcase_add_test(tc, channel_quit_check);
+    tcase_add_test(tc, channel_unknown_join_check);
+    tcase_add_test(tc, channel_unknown_part_check);
 
     suite_add_tcase(s, tc);
 }
