@@ -27,6 +27,7 @@
 #include <foxbot/channel.h>
 #include <foxbot/foxbot.h>
 #include <foxbot/list.h>
+#include <foxbot/memory.h>
 #include <foxbot/message.h>
 #include <foxbot/user.h>
 
@@ -186,6 +187,25 @@ START_TEST(channel_unknown_part_check)
 }
 END_TEST
 
+START_TEST(channel_unknown_exists)
+{
+    begin_test();
+    char buf[MAX_IRC_BUF];
+    struct channel_t *chptr = xcalloc(1, sizeof(*chptr));
+    chptr->name = xstrdup("shouldn't be here");
+    snprintf(buf, sizeof(buf), "PRIVMSG #unit_test :Received unknown channel struct for %p (%s)",
+            (void *)chptr, chptr->name);
+    delete_channel_s(chptr);
+    ck_assert(chptr);
+    ck_assert(chptr->name);
+    for (;;) {
+        if (strcmp(last_buffer, buf) == 0)
+            break;
+    }
+    end_test();
+}
+END_TEST
+
 void
 channel_parse_setup(Suite *s)
 {
@@ -197,6 +217,7 @@ channel_parse_setup(Suite *s)
     tcase_add_test(tc, channel_quit_check);
     tcase_add_test(tc, channel_unknown_join_check);
     tcase_add_test(tc, channel_unknown_part_check);
+    tcase_add_test(tc, channel_unknown_exists);
 
     suite_add_tcase(s, tc);
 }

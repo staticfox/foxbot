@@ -139,7 +139,7 @@ delete_channel_s(struct channel_t *channel)
     }
 
     /* Should never be here */
-    assert(0);
+    do_error("Received unknown channel struct for %p (%s)", channel, channel->name);
 }
 
 struct channel_t *
