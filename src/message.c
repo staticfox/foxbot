@@ -251,4 +251,11 @@ parse_line(const char *line)
 
 end:
     xfree(tofree);
+
+    /* Incase we get a message from an unknown user */
+    if (!bot.msg->from_server
+        && bot.msg->from
+        && bot.msg->from != bot.user
+        && bot.msg->from->number_of_channels == 0)
+        delete_user_by_struct(bot.msg->from);
 }
