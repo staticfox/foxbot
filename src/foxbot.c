@@ -20,6 +20,8 @@
  *
  */
 
+#include <config.h>
+
 #include <ctype.h>
 #include <getopt.h>
 #include <stdarg.h>

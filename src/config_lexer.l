@@ -26,6 +26,9 @@
 %option never-interactive
 
 %{
+
+#include "config.h"
+
 #include <foxbot/conf.h>
 #include <foxbot/foxbot.h>
 

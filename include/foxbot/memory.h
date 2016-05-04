@@ -25,8 +25,6 @@
 
 #include <stdlib.h>
 
-#include "config.h"
-
 void * xmalloc(size_t bytes);
 void * xcalloc(size_t n, size_t s);
 void * xrealloc(void *x, size_t y);

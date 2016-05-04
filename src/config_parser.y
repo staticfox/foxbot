@@ -21,6 +21,8 @@
  */
 
 %{
+#include "config.h"
+
 #include <foxbot/conf.h>
 #include <foxbot/memory.h>
 

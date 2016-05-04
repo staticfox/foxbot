@@ -22,6 +22,8 @@
 
 #define _POSIX_C_SOURCE 201112L
 
+#include <config.h>
+
 #include <errno.h>
 #include <pthread.h>
 #include <stdarg.h>
@@ -29,7 +31,6 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include <foxbot/config.h>
 #include <foxbot/foxbot.h>
 #include <foxbot/socket.h>
 

@@ -6,7 +6,7 @@ AC_INIT(foxbot, 0.0.1, staticfox@staticfox.net)
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_FILES([Makefile bot/Makefile src/Makefile tests/Makefile])
 AC_CONFIG_SRCDIR([src/foxbot.c])
-AC_CONFIG_HEADERS([include/foxbot/config.h])
+AC_CONFIG_HEADERS([include/config.h])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign nostdinc subdir-objects])
 
 dnl Define directories

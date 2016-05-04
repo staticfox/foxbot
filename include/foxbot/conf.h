@@ -25,7 +25,6 @@
 
 #include <stdio.h>
 
-#include "config.h"
 #include "memory.h"
 
 struct conf_parser_context {
