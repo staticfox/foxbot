@@ -60,8 +60,9 @@ before_install:
       cd check-* &&
       autoreconf -fi &&
       ./configure --prefix="$HOME" && make install;
-      rm -rf check-* ;
     )
+
+  - rm -rf check-*
 
   - curl -fLSs http://ftp.gnu.org/gnu/automake/automake-1.14.tar.xz | tar xJ &&
     mkdir -p build-aux &&
