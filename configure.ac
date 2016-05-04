@@ -24,9 +24,7 @@ AM_PROG_AR
 AM_PROG_LEX
 
 dnl initialize libtool
-LT_CONFIG_LTDL_DIR([libltdl])
-LT_INIT([dlopen disable-static])
-LTDL_INIT([recursive convenience])
+LT_INIT([dlopen])
 LIBTOOL="$LIBTOOL --silent"
 
 dnl m4 directrory
@@ -50,7 +48,6 @@ dnl Checks for library functions.
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_CHECK_FUNCS([malloc_usable_size memchr memmove memset socket strcspn strerror strstr])
-AC_SEARCH_LIBS([dlopen], [dl dld], [], [AC_MSG_ERROR([cannot find function: dlopen])])
 
 dnl debugging information
 AC_MSG_CHECKING(whether to enable debugging symbols)

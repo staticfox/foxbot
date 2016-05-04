@@ -1,7 +1,7 @@
 bin_PROGRAMS = foxbot
 
-AM_CPPFLAGS = $(LTDLINCL) -I$(top_srcdir)/include -Wall
+AM_CPPFLAGS = -I$(top_srcdir)/include -Wall
 
-foxbot_LDFLAGS = -export-dynamic $(LDL)
+foxbot_LDADD = $(top_srcdir)/src/libfoxbot.la
 
 foxbot_SOURCES = main.c
