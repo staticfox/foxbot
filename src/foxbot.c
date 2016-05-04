@@ -38,13 +38,6 @@
 struct bot_t bot; /* That's me */
 volatile sig_atomic_t quitting;
 
-/* External helper functions */
-bool
-is_registered(void)
-{
-    return bot.registered;
-}
-
 /* IRC related socket helpers */
 void
 privmsg(const char *target, const char *message)
@@ -163,7 +156,7 @@ main_foxbot(int argc, char **argv)
         io();
     }
 
-    if (is_registered()) {
+    if (bot.registered) {
         char buf[MAX_IRC_BUF];
         const char *reason = "<unknown>";
         switch (quitting) {
