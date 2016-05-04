@@ -43,18 +43,19 @@ AX_CHECK_COMPILE_FLAG([$WERROR -pedantic],
   [AX_APPEND_FLAG([-pedantic], [AM_CFLAGS])])
 
 dnl Checks for header files.
-AC_CHECK_HEADERS([malloc.h netdb.h stdlib.h string.h sys/socket.h unistd.h])
+AC_CHECK_HEADERS([malloc.h netdb.h stdlib.h string.h sys/socket.h unistd.h limits.h])
 AC_CHECK_HEADERS([fcntl.h], [], [AC_MSG_ERROR([cannot find fcntl.h.])])
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL
 AC_TYPE_SIZE_T
 AC_TYPE_SSIZE_T
+AC_TYPE_UINT8_T
 
 dnl Checks for library functions.
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
-AC_CHECK_FUNCS([malloc_usable_size memchr memmove memset socket strcspn strerror strstr])
+AC_CHECK_FUNCS([malloc_usable_size memchr memmove memset socket strchr strcspn strerror strtol strstr])
 
 dnl debugging information
 AC_MSG_CHECKING(whether to enable debugging symbols)
@@ -86,8 +87,16 @@ if test m4_ifdef([PKG_CHECK_MODULES], [yes], [no]) == no; then
 Please install it via your system's package manager or visit pkg-config.freedesktop.org])
 fi
 
-dnl Check for libcheck
-PKG_CHECK_MODULES([CHECK], [check], [HAVE_CHECK=1], [HAVE_CHECK=0])
+dnl Check for libcheck and netinet/in.h
+PKG_CHECK_MODULES([CHECK], [check],
+[
+  HAVE_CHECK=1
+  AC_CHECK_HEADERS([netinet/in.h], [], [AC_MSG_ERROR([cannot find netinet/in.h.])])
+],
+[
+  HAVE_CHECK=0
+])
+
 AX_CHECK_COMPILE_FLAG([$WERROR -Wno-gnu-zero-variadic-macro-arguments],
   [AX_APPEND_FLAG([-Wno-gnu-zero-variadic-macro-arguments], [CHECK_CFLAGS])])
 AC_REQUIRE_AUX_FILE([tap-driver.sh])
