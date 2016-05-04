@@ -40,7 +40,7 @@
 extern int main_foxbot(int argc, char **argv);
 extern void io();
 
-pthread_t tid[3];
+static pthread_t tid;
 
 void
 delete_foxbot(void)
@@ -75,7 +75,7 @@ new_testserver(void)
         return -1;
     }
 
-    err = pthread_create(&(tid[0]), NULL, start_listener, NULL);
+    err = pthread_create(&tid, NULL, start_listener, NULL);
 
     /* Brief moment to start the listener */
     struct timespec tim;
