@@ -56,9 +56,6 @@ struct user_t * get_user_by_nick(const char *nick);
     modified by this process. */
 struct user_t * get_nuh(char *src);
 
-/** Delete a user by nick from the global user cache. */
-void delete_user_by_nick(const char *nick);
-
 /** Delete a user from the global user cache if we already have the user's
     struct. */
 void delete_user_by_struct(struct user_t *user);
