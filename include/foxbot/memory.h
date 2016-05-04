@@ -33,5 +33,6 @@ void * xrealloc(void *x, size_t y);
 void   xfree(void *x);
 void * xstrdup(const char *s);
 void   outofmemory(void);
+void   display_oom(void);
 
 #endif

@@ -133,10 +133,16 @@ xstrdup(const char *s)
 }
 
 void
+display_oom(void)
+{
+    fprintf(stderr, "Out of memory! x.x\n");
+    fflush(stderr);
+}
+
+void
 outofmemory(void)
 {
     alive = 0;
-    fprintf(stderr, "Out of memory! x.x\n");
-    fflush(stderr);
+    display_oom();
     abort();
 }
