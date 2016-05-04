@@ -240,10 +240,9 @@ start_listener(void *unused)
 {
     (void)unused;
 
-    struct sockaddr_in cli_addr;
+    static const struct sockaddr_in sockaddr_in_empty;
+    struct sockaddr_in cli_addr = sockaddr_in_empty;
     socklen_t clilen;
-
-    memset(&cli_addr, 0, sizeof(cli_addr));
 
     listen(sockfd, 5);
     clilen = sizeof(cli_addr);
