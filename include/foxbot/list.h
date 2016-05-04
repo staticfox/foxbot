@@ -28,6 +28,7 @@
 #define FOX_LIST_H_
 
 #define DLINK_FOREACH(pos, head) for (pos = (head); pos != NULL; pos = pos->next)
+#define DLINK_FOREACH_SAFE(pos, n, head) for (pos = (head), n = pos ? pos->next : NULL; pos != NULL; pos = n, n = pos ? pos->next : NULL)
 #define dlist_length(list) (list)->length
 
 typedef struct _dlink_node dlink_node;
