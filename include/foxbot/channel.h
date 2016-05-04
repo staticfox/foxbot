@@ -58,9 +58,6 @@ struct user_t * channel_get_user(struct channel_t *channel, struct user_t *user)
     channel's struct. */
 void delete_channel_s(struct channel_t *channel);
 
-/** Delete a channel by name from the global channel cache. */
-void delete_channel(const char *name);
-
 /** Look up a channel by name in the global channel cache. */
 struct channel_t * find_channel(const char *name);
 
