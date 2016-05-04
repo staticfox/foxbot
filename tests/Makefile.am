@@ -6,7 +6,7 @@ check_PROGRAMS = check_foxbot
 LOG_DRIVER = env AM_TAP_AWK='$(AWK)' $(SHELL) $(top_srcdir)/build-aux/tap-driver.sh
 
 check_foxbot_CFLAGS = -I$(top_srcdir)/include -Wall -DTESTDIST=\"$(abs_top_srcdir)/tests/dist\" @CHECK_CFLAGS@
-check_foxbot_LDADD = $(top_builddir)/src/libfoxbot.a @CHECK_LIBS@
+check_foxbot_LDADD = $(top_builddir)/src/libfoxbot.a $(top_builddir)/src/libfoxbotaux.a @CHECK_LIBS@
 
 check_foxbot_SOURCES = check_foxbot.c \
                        check_foxbot.h \
