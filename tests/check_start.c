@@ -185,8 +185,12 @@ wait_for_last_buf(char *line, ...)
     vsnprintf(buf, MAX_IRC_BUF, line, ap);
     va_end(ap);
 
-    for (;;) {
+    for (int i = 0; i < 10000000; i++) {
         if (strcmp(last_buffer, buf) == 0)
-            break;
+            return;
     }
+
+    fprintf(stderr, "WAIT_FOR_LAST_BUF FAILED: %s\n", buf);
+    ck_assert(0);
+    return;
 }

@@ -280,10 +280,49 @@ START_TEST(channel_kick_me)
     /* we get kicked from #unit_test */
     write_and_wait(":test_user1!~test@255.255.255.255 KICK #unit_test foxbot :Bye.");
     ck_assert((chptr = find_channel("#unit_test")) == NULL);
+    ck_assert((chptr2 = find_channel("#test_spam")) != NULL);
     ck_assert(channel_count() == 1);
     ck_assert(user_count() == 1);
     ck_assert(get_user_by_nick("test_user1") == NULL);
     ck_assert(get_user_by_nick("test_user2") == NULL);
+
+    end_test();
+}
+END_TEST
+
+START_TEST(channel_unknown_kick_chan)
+{
+    begin_test();
+
+    write_and_wait(":test_user1!~test@255.255.255.255 KICK #unknown test_user2 :Bye.");
+    wait_for_last_buf("PRIVMSG %s :Received KICK for an unknown channel #unknown",
+                      botconfig.debug_channel);
+
+    ck_assert(find_channel("#unknown") == NULL);
+    ck_assert(get_user_by_nick("test_user1") == NULL);
+    ck_assert(get_user_by_nick("test_user2") == NULL);
+
+    end_test();
+}
+END_TEST
+
+START_TEST(channel_unknown_kick_target)
+{
+    begin_test();
+    struct channel_t *chptr;
+
+    ck_assert((chptr = find_channel("#unit_test")) != NULL);
+    write_and_wait(":test_user1!~test@255.255.255.255 JOIN #unit_test");
+    ck_assert(dlist_length(chptr->users) == 2);
+    ck_assert(user_count() == 2);
+    write_and_wait(":test_user1!~test@255.255.255.255 KICK #unit_test test_user2 :Bye.");
+    wait_for_last_buf("PRIVMSG %s :Received KICK for an unknown user test_user2",
+                      botconfig.debug_channel);
+
+    ck_assert(get_user_by_nick("test_user1") != NULL);
+    ck_assert(get_user_by_nick("test_user2") == NULL);
+    ck_assert(dlist_length(chptr->users) == 2);
+    ck_assert(user_count() == 2);
 
     end_test();
 }
@@ -303,6 +342,8 @@ channel_parse_setup(Suite *s)
     tcase_add_test(tc, channel_unknown_exists);
     tcase_add_test(tc, channel_kick_user);
     tcase_add_test(tc, channel_kick_me);
+    tcase_add_test(tc, channel_unknown_kick_chan);
+    tcase_add_test(tc, channel_unknown_kick_target);
 
     suite_add_tcase(s, tc);
 }
