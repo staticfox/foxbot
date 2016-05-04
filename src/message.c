@@ -98,6 +98,7 @@ reset_message(void)
 
     bot.msg->from = NULL;
     bot.msg->from_server = false;
+    bot.msg->is_invalid = false;
 }
 
 void
@@ -193,6 +194,7 @@ parse_line(const char *line)
                 raw(tmp);
                 goto end;
             } else {
+                bot.msg->is_invalid = true;
                 do_error("(2) Invalid line detected. Skipping... %s", line);
                 goto end;
             }
