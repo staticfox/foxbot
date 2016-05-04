@@ -62,8 +62,6 @@ before_install:
       ./configure --prefix="$HOME" && make install;
     )
 
-  - rm -rf check-*
-
   - curl -fLSs http://ftp.gnu.org/gnu/automake/automake-1.14.tar.xz | tar xJ &&
     mkdir -p build-aux &&
     cp automake-*/lib/tap-driver.sh build-aux &&
@@ -79,7 +77,7 @@ after_success:
           if [ "$BUILD_TYPE" = coverage ]; then
               ls -l /usr/bin|grep gcov
               lcov --directory . --capture --output-file coverage.info --gcov-tool /usr/bin/gcov-4.6 || exit 1
-              lcov --remove coverage.info '/usr/*' 'tests/*' 'src/config_lexer.c' 'src/config_parser.c' 'check-master/' 'automake-1.14/' 'automake-*' --output-file coverage.info || exit 1
+              lcov --remove coverage.info '/usr/*' 'tests/*' 'src/config_lexer.c' 'src/config_parser.c' 'check-master/*' 'automake-1.14/*' 'automake-*' --output-file coverage.info || exit 1
               lcov --list coverage.info || exit 1
               coveralls-lcov coverage.info || exit 1
           else
