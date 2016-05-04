@@ -6,10 +6,9 @@ AM_YFLAGS = -d
 
 AM_CPPFLAGS = -I$(top_srcdir)/include -Wall
 
-foxbotdir = $(pkglibdir)
-foxbot_LTLIBRARIES = libfoxbot.la
+noinst_LIBRARIES = libfoxbot.a
 
-libfoxbot_la_SOURCES = channel.c \
+libfoxbot_a_SOURCES = channel.c \
                  conf.c \
                  foxbot.c \
                  irc.c \

@@ -19,13 +19,10 @@ AC_DEFINE_DIR([LOCALSTATEDIR],[localstatedir],[Set to localstatedir.])
 
 dnl Checks for programs.
 AC_PROG_CC_C99
+AC_PROG_RANLIB
 AC_PROG_YACC
 AM_PROG_AR
 AM_PROG_LEX
-
-dnl initialize libtool
-LT_INIT([dlopen])
-LIBTOOL="$LIBTOOL --silent"
 
 dnl m4 directrory
 AC_CONFIG_MACRO_DIR([m4])
