@@ -40,6 +40,9 @@ void init_users(void);
 /** Create our user struct at 001 */
 void make_me(const char *nick);
 
+/** Returns the amount of users within the cache */
+int user_count(void);
+
 /** Set the user and hostname given the struct */
 void set_uh(struct user_t *user, char *src);
 

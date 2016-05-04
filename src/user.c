@@ -54,6 +54,12 @@ make_me(const char *nick)
     dlink_insert(users, user);
 }
 
+int
+user_count(void)
+{
+    return dlist_length(users);
+}
+
 void
 set_uh(struct user_t *user, char *src)
 {

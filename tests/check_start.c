@@ -107,11 +107,22 @@ end_test(void)
 }
 
 void
-wait_for(const char *data)
+write_and_wait(char *data)
 {
-    for (;;) {
-        if (bot.msg->command && (strcmp(bot.msg->command, data) == 0))
-            break;
+    char buf[MAX_IRC_BUF];
+
+    snprintf(buf, sizeof(buf), "%s\r\n", data);
+
+    fox_write(buf);
+
+    /* Enough to determine whether it will never hit
+     * but not enough to timeout libcheck. */
+    for (int i = 0; i < 900000; i++) {
         io();
+        if (bot.msg->buffer && (strcmp(bot.msg->buffer, data) == 0))
+            return;
     }
+
+    fprintf(stderr, "READ FAILED: %s\n", data);
+    ck_assert(0);
 }

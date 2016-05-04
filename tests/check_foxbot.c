@@ -31,6 +31,7 @@ static void
 add_testcases(Suite *s)
 {
     connect_parse_setup(s);
+    channel_parse_setup(s);
 }
 
 int

@@ -39,6 +39,9 @@ void init_channels(void);
 /** Create a `#channel_t` from the name. */
 struct channel_t * create_channel(const char *name);
 
+/** Returns the amount of channels within the cache */
+int channel_count(void);
+
 /** Add a `#user_t` to a channel. */
 void add_user_to_channel(struct channel_t *channel, struct user_t *user);
 

@@ -30,7 +30,7 @@
 #include "../check_foxbot.h"
 #include "../check_server.h"
 
-START_TEST(connect)
+START_TEST(connect_check)
 {
     begin_test();
 
@@ -43,7 +43,7 @@ START_TEST(connect)
 }
 END_TEST
 
-START_TEST(ircd_support)
+START_TEST(ircd_support_check)
 {
     begin_test();
 
@@ -69,8 +69,8 @@ connect_parse_setup(Suite *s)
     TCase *tc = tcase_create("connect_parse");
 
     tcase_add_checked_fixture(tc, NULL, delete_foxbot);
-    tcase_add_test(tc, connect);
-    tcase_add_test(tc, ircd_support);
+    tcase_add_test(tc, connect_check);
+    tcase_add_test(tc, ircd_support_check);
 
     suite_add_tcase(s, tc);
 }

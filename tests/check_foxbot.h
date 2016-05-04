@@ -30,4 +30,5 @@ void begin_test(void);
 void end_test(void);
 
 /* Unit tests */
-void connect_parse_setup(Suite *);
+void connect_parse_setup(Suite *s);
+void channel_parse_setup(Suite *s);

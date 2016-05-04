@@ -51,6 +51,12 @@ create_channel(const char *name)
     return channel;
 }
 
+int
+channel_count(void)
+{
+    return dlist_length(channels);
+}
+
 void
 add_user_to_channel(struct channel_t *channel, struct user_t *user)
 {
@@ -144,7 +150,7 @@ delete_channel_s(struct channel_t *channel)
     dlink_node *node = NULL, *u_node = NULL;
     struct user_t *user = NULL;
 
-    if ((node = dlink_find(channels, channel))) {
+    if ((node = dlink_find(channels, channel)) != NULL) {
         xfree(channel->name);
         xfree(channel->modes);
 
