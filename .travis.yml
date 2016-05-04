@@ -20,6 +20,8 @@ matrix:
         apt:
           packages:
             - lcov
+            - autoconf-archive
+            - texinfo # test system
     - os: linux
       compiler: clang
     - os: osx
