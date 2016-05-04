@@ -30,6 +30,7 @@ void shutdown_test_server(void);
 void delete_foxbot(void);
 void write_and_wait(char *data);
 void wait_for(char *line, ...);
+void wait_for_command(enum commands cmd);
 void send_broken_uint_value(void);
 
 extern int tests_done;

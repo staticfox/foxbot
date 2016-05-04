@@ -137,13 +137,27 @@ wait_for(char *line, ...)
     vsnprintf(buf, MAX_IRC_BUF, line, ap);
     va_end(ap);
 
-    bool found = false;
-
-    while (!found) {
+    for (int i = 0; i < 900000; i++) {
         if (strcmp(bot.msg->buffer, buf) == 0)
             return;
         io();
     }
 
+    fprintf(stderr, "WAIT_FOR FAILED: %s\n", buf);
+    ck_assert(0);
+    return;
+}
+
+void
+wait_for_command(enum commands cmd)
+{
+    for (int i = 0; i < 900000; i++) {
+        if (bot.msg->ctype == cmd)
+            return;
+        io();
+    }
+
+    fprintf(stderr, "WAIT_FOR_COMMAND FAILED: %d\n", cmd);
+    ck_assert(0);
     return;
 }

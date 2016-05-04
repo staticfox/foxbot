@@ -185,6 +185,7 @@ parse_line(const char *line)
                 size_t n = strlen(line);
                 char tmp[MAX_IRC_BUF];
                 memcpy(tmp, line, n);
+                bot.msg->ctype = PING;
                 tmp[1] = 'O';
                 tmp[n] = '\n';
                 tmp[n + 1] = '\0';

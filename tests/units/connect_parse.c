@@ -73,7 +73,7 @@ START_TEST(ircd_ping_pong)
 
     write_and_wait("PING :ircd.staticfox.net");
 
-    wait_for("PONG :%s", bot.ircd->name);
+    wait_for_command(PING);
 
     end_test();
 }
