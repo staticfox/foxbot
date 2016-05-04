@@ -80,7 +80,7 @@ new_testserver(void)
     /* Brief moment to start the listener */
     struct timespec tim;
     tim.tv_sec  = 0;
-    tim.tv_nsec = 500000L;
+    tim.tv_nsec = 900000L;
     nanosleep(&tim , NULL);
 
     if(err != 0) {

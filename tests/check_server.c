@@ -274,6 +274,7 @@ setup_test_server(void)
 {
     struct sockaddr_in serv_addr;
     int nport = 43210;
+    int set = 1;
 
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -282,18 +283,27 @@ setup_test_server(void)
        return -1;
     }
 
+    /* This tells the kernel that we are willing to reuse the socket
+     * regardless if there is lingering information.
+     * Fixes https://github.com/staticfox/foxbot/issues/17
+     */
+    if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &set, sizeof(set)) == -1) {
+        fprintf(stderr, "[Server] setsockopt error: %s\n", strerror(errno));
+        return -1;
+    }
+
     memset(&serv_addr, 0, sizeof(serv_addr));
 
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = INADDR_ANY;
 
-    /* Try for 35 ports to bind to, if we run out of ports
+    /* Try for 75 ports to bind to, if we run out of ports
      * then oh well, the machine probably has bigger issues
      * to deal with \o/
      */
-    for (int i = 0; i < 35; i++) {
+    for (int i = 0; i < 75; i++) {
         serv_addr.sin_port = htons(++nport);
-        if (bind(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) >= 0) {
+        if (bind(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) >= 0) {
             return nport;
         }
     }
