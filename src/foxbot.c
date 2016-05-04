@@ -120,7 +120,8 @@ parse_opts(int argc, char **argv)
                     fprintf(stderr, "Unknown option `-%c'.\n", optopt);
                 else
                     fprintf(stderr, "Unknown option character `\\x%x'.\n", optopt);
-                 break;
+                exit(EXIT_SUCCESS);
+                break;
             default:
                 printf("Invalid Option: -%c\n", c);
                 break;
