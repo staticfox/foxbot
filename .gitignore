@@ -52,3 +52,7 @@ tests/*.log
 tests/check_foxbot
 tests/*.trs
 tests/units/.dirstamp
+
+*.gcda
+*.gcno
+coverage.info
