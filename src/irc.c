@@ -143,7 +143,7 @@ handle_kick(void)
     }
 
     struct user_t *victim = NULL;
-    victim = get_user_by_nick(victim_s);
+    victim = find_nick(victim_s);
 
     if (victim == NULL) {
         do_error("Received KICK for an unknown user %s", victim_s);

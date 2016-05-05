@@ -257,5 +257,5 @@ end:
         && bot.msg->from
         && bot.msg->from != bot.user
         && bot.msg->from->number_of_channels == 0)
-        delete_user_by_struct(bot.msg->from);
+        delete_user(bot.msg->from);
 }

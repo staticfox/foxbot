@@ -50,7 +50,7 @@ void set_uh(struct user_t *user, char *src);
 struct user_t * make_nuh(const char *n, const char *u, const char *h);
 
 /** Look up a user by nick in the global user cache. */
-struct user_t * get_user_by_nick(const char *nick);
+struct user_t * find_nick(const char *nick);
 
 /** Parse the nick, ident, and hostname (NUH) from a string.  The string is
     modified by this process. */
@@ -58,6 +58,6 @@ struct user_t * get_nuh(char *src);
 
 /** Delete a user from the global user cache if we already have the user's
     struct. */
-void delete_user_by_struct(struct user_t *user);
+void delete_user(struct user_t *user);
 
 #endif

@@ -100,7 +100,7 @@ channel_remove_user(struct channel_t *channel, struct user_t *user)
     }
 
     if (--user->number_of_channels == 0 && user != bot.user)
-        delete_user_by_struct(user);
+        delete_user(user);
 }
 
 /* This function should really be renamed to
@@ -128,7 +128,7 @@ delete_channel_s(struct channel_t *channel)
         DLINK_FOREACH_SAFE(u_node, u_next_node, channel->users->head) {
             struct user_t *user = u_node->data;
             if (--user->number_of_channels == 0 && user != bot.user)
-                delete_user_by_struct(user);
+                delete_user(user);
             dlink_delete(u_node, channel->users);
         }
 

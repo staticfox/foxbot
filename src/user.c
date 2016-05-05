@@ -100,7 +100,7 @@ make_nuh(const char *n, const char *u, const char *h)
 }
 
 struct user_t *
-get_user_by_nick(const char *nick)
+find_nick(const char *nick)
 {
     dlink_node *node = NULL;
     DLINK_FOREACH(node, users->head)
@@ -110,7 +110,7 @@ get_user_by_nick(const char *nick)
 }
 
 void
-delete_user_by_struct(struct user_t *user)
+delete_user(struct user_t *user)
 {
     dlink_node *node = NULL;
 
@@ -138,7 +138,7 @@ get_nuh(char *src)
     const char *nick = strtok(src, "!");
     if (!nick) goto fail;
 
-    struct user_t *user = get_user_by_nick(nick);
+    struct user_t *user = find_nick(nick);
     if (user != NULL)
         return user;
 
