@@ -90,41 +90,39 @@ static void
 parse_opts(int argc, char **argv)
 {
     bool got_port = false;
-    for (int c = 0; (c = getopt(argc, argv, "c:htvp:")) != -1; )
-    {
-        switch (c)
-        {
-            case 'c':
-                xfree(conf_parser_ctx.config_file_path);
-                conf_parser_ctx.config_file_path = xstrdup(optarg);
-                break;
-            case 'h':
-                printf("Help coming soon.\n");
-                exit(EXIT_SUCCESS);
-                break; /* shut up compiler */
-            case 'p':
-                bot.test_port = atoi(optarg);
-                got_port = true;
-                break;
-            case 't':
-                bot.flags |= RUNTIME_TEST;
-                break;
-            case 'v':
-                printf("foxbot version 0.0.1\n");
-                exit(EXIT_SUCCESS);
-                break;
-            case '?':
-                if (optopt == 'p')
-                    fprintf(stderr, "Option -%c requires an argument.\n", optopt);
-                else if (isprint(optopt))
-                    fprintf(stderr, "Unknown option `-%c'.\n", optopt);
-                else
-                    fprintf(stderr, "Unknown option character `\\x%x'.\n", optopt);
-                exit(EXIT_SUCCESS);
-                break;
-            default:
-                printf("Invalid Option: -%c\n", c);
-                break;
+    for (int c = 0; (c = getopt(argc, argv, "c:htvp:")) != -1; ) {
+        switch (c) {
+        case 'c':
+            xfree(conf_parser_ctx.config_file_path);
+            conf_parser_ctx.config_file_path = xstrdup(optarg);
+            break;
+        case 'h':
+            printf("Help coming soon.\n");
+            exit(EXIT_SUCCESS);
+            break; /* shut up compiler */
+        case 'p':
+            bot.test_port = atoi(optarg);
+            got_port = true;
+            break;
+        case 't':
+            bot.flags |= RUNTIME_TEST;
+            break;
+        case 'v':
+            printf("foxbot version 0.0.1\n");
+            exit(EXIT_SUCCESS);
+            break;
+        case '?':
+            if (optopt == 'p')
+                fprintf(stderr, "Option -%c requires an argument.\n", optopt);
+            else if (isprint(optopt))
+                fprintf(stderr, "Unknown option `-%c'.\n", optopt);
+            else
+                fprintf(stderr, "Unknown option character `\\x%x'.\n", optopt);
+            exit(EXIT_SUCCESS);
+            break;
+        default:
+            printf("Invalid Option: -%c\n", c);
+            break;
         }
     }
 
@@ -152,8 +150,8 @@ main_foxbot(int argc, char **argv)
 
     while (!quitting) {
         if ((bot.flags & RUNTIME_TEST)
-            && bot.msg->command
-            && (strcmp(bot.msg->command, "FOXBOT") == 0))
+                && bot.msg->command
+                && (strcmp(bot.msg->command, "FOXBOT") == 0))
             break;
 
         io();

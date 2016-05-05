@@ -169,7 +169,7 @@ parse_buffer(const char *buf)
             len = 6;
         if (strlen(buf) > len)
             l_params = xstrdup(buf + len);
-   }
+    }
 
     if (cmd == CHECK_QUIT)
         fox_write("ERROR :Closing Link: 127.0.0.1 (Quit: %s)\r\n", l_params);
@@ -210,8 +210,8 @@ fox_write(char *line, ...)
     n = write(client_sock_fd, buf, writeval);
 
     if (n < 0) {
-       fprintf(stderr, "[Server] Write error: %s\n", strerror(errno));
-       exit(EXIT_FAILURE);
+        fprintf(stderr, "[Server] Write error: %s\n", strerror(errno));
+        exit(EXIT_FAILURE);
     }
 }
 
@@ -282,8 +282,8 @@ start_listener(void *unused)
     client_sock_fd = accept(sockfd, (struct sockaddr *)&cli_addr, &clilen);
 
     if (client_sock_fd < 0) {
-       fprintf(stderr, "[Server] Accept error: %s\n", strerror(errno));
-       exit(EXIT_FAILURE);
+        fprintf(stderr, "[Server] Accept error: %s\n", strerror(errno));
+        exit(EXIT_FAILURE);
     }
 
     while(!tests_done) {
@@ -311,8 +311,8 @@ setup_test_server(void)
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
 
     if (sockfd < 0) {
-       fprintf(stderr, "[Server] Socket error: %s", strerror(errno));
-       return -1;
+        fprintf(stderr, "[Server] Socket error: %s", strerror(errno));
+        return -1;
     }
 
     /* This tells the kernel that we are willing to reuse the socket

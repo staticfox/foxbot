@@ -65,7 +65,7 @@ handle_mode(void)
             }
         }
 
-    return;
+        return;
     }
 
     /* TODO: Channel mode parser */
