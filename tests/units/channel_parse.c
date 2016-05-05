@@ -201,6 +201,8 @@ START_TEST(channel_unknown_exists)
     ck_assert(chptr->name);
     wait_for_last_buf("PRIVMSG %s :Received unknown channel struct for %p (%s)",
                       botconfig.debug_channel, (void *)chptr, chptr->name);
+    xfree(chptr->name);
+    xfree(chptr);
     end_test();
 }
 END_TEST
