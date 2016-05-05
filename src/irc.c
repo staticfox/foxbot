@@ -157,6 +157,17 @@ handle_kick(void)
 }
 
 void
+handle_nick(void)
+{
+    if (bot.msg->from_server == true)
+        return;
+
+    memmove(bot.msg->target, bot.msg->target+1, strlen(bot.msg->target));
+    xfree(bot.msg->from->nick);
+    bot.msg->from->nick = xstrdup(bot.msg->target);
+}
+
+void
 handle_quit(void)
 {
     assert(bot.msg->from != NULL);

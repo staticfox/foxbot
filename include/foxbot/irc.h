@@ -28,5 +28,6 @@ void handle_join(void);
 void handle_kick(void);
 void handle_part(void);
 void handle_mode(void);
+void handle_nick(void);
 
 #endif

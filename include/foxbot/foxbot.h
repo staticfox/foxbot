@@ -47,6 +47,7 @@ enum commands {
     KICK,
     ERROR,
     NUMERIC,
+    NICK,
 };
 
 struct bot_t {

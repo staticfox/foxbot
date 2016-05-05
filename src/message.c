@@ -76,6 +76,7 @@ set_command_enum(void)
     if (do_set_enum("MODE",    MODE)   ) return;
     if (do_set_enum("KICK",    KICK)   ) return;
     if (do_set_enum("ERROR",   ERROR)  ) return;
+    if (do_set_enum("NICK",    NICK)   ) return;
 
     do_error("Unhandled command: %s", bot.msg->command);
 }
@@ -142,6 +143,9 @@ hook_literal(void)
         break;
     case QUIT:
         handle_quit();
+        break;
+    case NICK:
+        handle_nick();
         break;
     default:
         break;
@@ -243,7 +247,7 @@ parse_line(const char *line)
         size_t len = strlen(bot.msg->source + 1) + 1 + strlen(bot.msg->command) + 1 + strlen(bot.msg->target) + 3;
         if (strlen(line) > len)
             bot.msg->params = xstrdup(line + len);
-        else if (bot.msg->ctype != JOIN && bot.msg->ctype != PART)
+        else if (bot.msg->ctype != JOIN && bot.msg->ctype != PART && bot.msg->ctype != NICK)
             do_error("Received command with no arguments: (%zu) > %zu - Command: %s\n", strlen(line), len, bot.msg->command);
     }
 
