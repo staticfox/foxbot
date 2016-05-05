@@ -41,7 +41,8 @@
 static void ccomment(void);
 
 static int
-conf_yy_input(char *lbuf, unsigned int max_size) {
+conf_yy_input(char *lbuf, unsigned int max_size)
+{
     return !fgets(lbuf, max_size, conf_parser_ctx.conf_file) ? 0 : strlen(lbuf);
 }
 
@@ -92,7 +93,8 @@ realname      { return T_REALNAME;      }
 %%
 
 static void
-ccomment(void) {
+ccomment(void)
+{
     int c;
     do {
         c = input();
