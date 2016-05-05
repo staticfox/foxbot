@@ -47,15 +47,15 @@ conf_yy_input(char *lbuf, unsigned int max_size) {
 
 %}
 
-WS        [[:space:]]*
-COMMENT   ("//"|"#").*
-STRING   \"[^\"\n]*[\"\n]
+T_WS        [[:space:]]*
+T_COMMENT   ("//"|"#").*
+T_STRING    \"[^\"\n]*[\"\n]
 %%
 
 "/*"            { ccomment(); }
-{WS}            ;
-{COMMENT}       ;
-{STRING}        {   if (yytext[yyleng - 2] == '\\')
+{T_WS}          ;
+{T_COMMENT}     ;
+{T_STRING}      {   if (yytext[yyleng - 2] == '\\')
                     {
                         yyless(yyleng - 1);  /* Return last quote */
                         yymore();  /* Append next string */
@@ -73,25 +73,26 @@ STRING   \"[^\"\n]*[\"\n]
                             }
 
                             yylval.string[j] = '\0';
-                            return STRING;
+                            return T_STRING;
                         }
                     }
                 }
 
-bot      { return BOT;       }
-channel  { return CHANNEL;   }
-debug_channel { return DEBUG_CHANNEL; }
-host     { return HOST;      }
-ident    { return IDENT;     }
-nick     { return NICK;      }
-port     { return PORT;      }
-realname { return REALNAME;  }
+bot           { return T_BOT;           }
+channel       { return T_CHANNEL;       }
+debug_channel { return T_DEBUG_CHANNEL; }
+host          { return T_HOST;          }
+ident         { return T_IDENT;         }
+nick          { return T_NICK;          }
+port          { return T_PORT;          }
+realname      { return T_REALNAME;      }
 
-.        { return yytext[0]; }
-<<EOF>>  { yyterminate();    }
+.             { return yytext[0];       }
+<<EOF>>       { yyterminate();          }
 %%
 
-static void ccomment(void) {
+static void
+ccomment(void) {
     int c;
     do {
         c = input();

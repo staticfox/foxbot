@@ -34,24 +34,24 @@ int yylex(void);
     char *string;
 }
 
-%token BOT
-%token CHANNEL
-%token HOST
-%token IDENT
-%token NICK
-%token DEBUG_CHANNEL
-%token PORT
-%token REALNAME
-%token STRING
+%token T_BOT
+%token T_CHANNEL
+%token T_HOST
+%token T_IDENT
+%token T_NICK
+%token T_DEBUG_CHANNEL
+%token T_PORT
+%token T_REALNAME
+%token T_STRING
 
-%type <string> STRING
+%type <string> T_STRING
 %%
 
 conf: | conf conf_item;
 conf_item: bot_entry | error ';' | error '}' ;
 
 /* Bot config */
-bot_entry: BOT  '{' bot_items '}' ';' ;
+bot_entry: T_BOT  '{' bot_items '}' ';' ;
 
 bot_items: bot_items bot_item | bot_item;
 bot_item:  bot_nick |
@@ -63,7 +63,7 @@ bot_item:  bot_nick |
            bot_realname |
            error ';' ;
 
-bot_nick: NICK '=' STRING ';'
+bot_nick: T_NICK '=' T_STRING ';'
 {
     if (conf_parser_ctx.pass != 2)
         break;
@@ -72,7 +72,7 @@ bot_nick: NICK '=' STRING ';'
     botconfig.nick = xstrdup(yylval.string);
 };
 
-bot_ident: IDENT '=' STRING ';'
+bot_ident: T_IDENT '=' T_STRING ';'
 {
     if (conf_parser_ctx.pass != 2)
         break;
@@ -81,7 +81,7 @@ bot_ident: IDENT '=' STRING ';'
     botconfig.ident = xstrdup(yylval.string);
 };
 
-bot_host: HOST '=' STRING ';'
+bot_host: T_HOST '=' T_STRING ';'
 {
     if (conf_parser_ctx.pass != 2)
         break;
@@ -90,7 +90,7 @@ bot_host: HOST '=' STRING ';'
     botconfig.host = xstrdup(yylval.string);
 };
 
-bot_port: PORT '=' STRING ';'
+bot_port: T_PORT '=' T_STRING ';'
 {
     if (conf_parser_ctx.pass != 2)
         break;
@@ -99,7 +99,7 @@ bot_port: PORT '=' STRING ';'
     botconfig.port = xstrdup(yylval.string);
 };
 
-bot_debug_channel: DEBUG_CHANNEL '=' STRING ';'
+bot_debug_channel: T_DEBUG_CHANNEL '=' T_STRING ';'
 {
     if (conf_parser_ctx.pass != 2)
         break;
@@ -108,7 +108,7 @@ bot_debug_channel: DEBUG_CHANNEL '=' STRING ';'
     botconfig.debug_channel = xstrdup(yylval.string);
 }
 
-bot_channel: CHANNEL '=' STRING ';'
+bot_channel: T_CHANNEL '=' T_STRING ';'
 {
     if (conf_parser_ctx.pass != 2)
         break;
@@ -117,7 +117,7 @@ bot_channel: CHANNEL '=' STRING ';'
     botconfig.channel = xstrdup(yylval.string);
 };
 
-bot_realname: REALNAME '=' STRING ';'
+bot_realname: T_REALNAME '=' T_STRING ';'
 {
     if (conf_parser_ctx.pass != 2)
         break;
