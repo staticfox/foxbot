@@ -24,8 +24,10 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#include <foxbot/channel.h>
 #include <foxbot/conf.h>
 #include <foxbot/foxbot.h>
+#include <foxbot/list.h>
 #include <foxbot/message.h>
 #include <foxbot/user.h>
 
@@ -58,6 +60,73 @@ START_TEST(user_mode_check)
 }
 END_TEST
 
+START_TEST(user_nick)
+{
+    begin_test();
+    struct channel_t *chptr;
+    struct user_t *uptr;
+
+    ck_assert((chptr = find_channel("#unit_test")) != NULL);
+
+    write_and_wait(":test_user1!~test@255.255.255.255 JOIN #unit_test");
+    ck_assert(dlist_length(chptr->users) == 2);
+    ck_assert(user_count() == 2);
+    ck_assert((uptr = find_nick("test_user1")) != NULL);
+    ck_assert(channel_get_user(chptr, uptr) != NULL);
+
+    write_and_wait(":test_user1!~test@255.255.255.255 NICK :newnick1");
+    ck_assert(find_nick("newnick1") == uptr);
+    ck_assert(dlist_length(chptr->users) == 2);
+    ck_assert(user_count() == 2);
+    ck_assert(channel_get_user(chptr, uptr) != NULL);
+
+    end_test();
+}
+END_TEST
+
+START_TEST(user_nick_me)
+{
+    begin_test();
+    struct channel_t *chptr;
+    struct user_t *uptr;
+    char buf[MAX_IRC_BUF];
+
+    ck_assert((chptr = find_channel("#unit_test")) != NULL);
+
+    ck_assert(dlist_length(chptr->users) == 1);
+    ck_assert(user_count() == 1);
+    ck_assert((uptr = find_nick(bot.user->nick)) != NULL);
+    ck_assert(channel_get_user(chptr, uptr) != NULL);
+
+    snprintf(buf, sizeof(buf), ":%s!%s@127.0.0.1 NICK :newme",
+             bot.user->nick, bot.user->ident);
+
+    write_and_wait(buf);
+    ck_assert(find_nick("newme") == uptr);
+    ck_assert(dlist_length(chptr->users) == 1);
+    ck_assert(user_count() == 1);
+    ck_assert(channel_get_user(chptr, uptr) != NULL);
+    ck_assert(strcmp(bot.user->nick, "newme") == 0);
+
+    end_test();
+}
+END_TEST
+
+START_TEST(user_nick_server)
+{
+    begin_test();
+    char buf[MAX_IRC_BUF];
+
+    snprintf(buf, sizeof(buf), ":%s NICK :newserver", bot.ircd->name);
+    write_and_wait(buf);
+
+    /* baka */
+    ck_assert(strcmp(bot.ircd->name, "newserver") != 0);
+
+    end_test();
+}
+END_TEST
+
 void
 user_parse_setup(Suite *s)
 {
@@ -65,6 +134,9 @@ user_parse_setup(Suite *s)
 
     tcase_add_checked_fixture(tc, NULL, delete_foxbot);
     tcase_add_test(tc, user_mode_check);
+    tcase_add_test(tc, user_nick);
+    tcase_add_test(tc, user_nick_me);
+    tcase_add_test(tc, user_nick_server);
 
     suite_add_tcase(s, tc);
 }
