@@ -23,6 +23,10 @@
 #ifndef FOX_SIGNAL_H_
 #define FOX_SIGNAL_H_
 
+#include <signal.h>
+
+extern volatile sig_atomic_t quit_signal;
+
 void setup_signals(void);
 
 #endif

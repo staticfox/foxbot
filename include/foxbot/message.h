@@ -44,6 +44,6 @@ void hook_numeric(void);
 void hook_literal(void);
 void call_hooks(void);
 char * fox_strsep(char **stringp, const char *delim);
-void parse_line(const char *line);
+bool parse_line(const char *line);
 
 #endif

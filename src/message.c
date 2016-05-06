@@ -24,6 +24,7 @@
 
 #include <assert.h>
 #include <ctype.h>
+#include <stdbool.h>
 #include <string.h>
 
 #include <foxbot/conf.h>
@@ -173,9 +174,10 @@ fox_strsep(char **stringp, const char *delim)
     return p;
 }
 
-void
+bool
 parse_line(const char *line)
 {
+    bool quitting = false;
     unsigned int i = 0, ii;
     int params = 1;
     char *token, *string, *tofree;
@@ -220,7 +222,7 @@ parse_line(const char *line)
                     bot.msg->from = user;
             } else {
                 if (strcmp(token, "ERROR") == 0) {
-                    quitting = 1;
+                    quitting = true;
                     goto end;
                 }
                 bot.msg->is_invalid = true;
@@ -262,4 +264,5 @@ end:
             && bot.msg->from != bot.user
             && bot.msg->from->number_of_channels == 0)
         delete_user(bot.msg->from);
+    return !quitting;
 }

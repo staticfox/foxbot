@@ -38,7 +38,6 @@
 #include <foxbot/user.h>
 
 struct bot_t bot; /* That's me */
-volatile sig_atomic_t quitting;
 
 /* IRC related socket helpers */
 void
@@ -78,12 +77,6 @@ do_error(char *line, ...)
         privmsg(botconfig.debug_channel, buf);
     else
         fprintf(stderr, "%s\n", buf);
-}
-
-void
-foxbot_quit(void)
-{
-    quitting = 1;
 }
 
 static void
@@ -168,21 +161,22 @@ quit_foxbot(void)
     xfree(bot.ircd);
     static const struct bot_t BOT_EMPTY;
     bot = BOT_EMPTY;
-    quitting = 0;
+    quit_signal = 0;
 }
 
 enum bot_status
 exec_foxbot(void)
 {
-    if (quitting == 2)
+    if (quit_signal) {
         bot.quit_reason = "SIGINT";
-    if (quitting)
         return BS_QUIT;
+    }
     if ((bot.flags & RUNTIME_TEST)
             && bot.msg->command
             && (strcmp(bot.msg->command, "FOXBOT") == 0))
         return BS_PAUSED;
 
-    io();
+    if (!io())
+        return BS_QUIT;
     return BS_RUNNING;
 }

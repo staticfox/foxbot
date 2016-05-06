@@ -22,16 +22,17 @@
 
 #define _POSIX_C_SOURCE 201112L
 
-#include <stdio.h>
+#include <signal.h>
 
-#include <foxbot/foxbot.h>
 #include <foxbot/signal.h>
+
+volatile sig_atomic_t quit_signal;
 
 static void
 sigint_handler(int sig)
 {
     (void)sig;
-    quitting = 2;
+    quit_signal = 1;
 }
 
 void

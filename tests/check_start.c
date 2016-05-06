@@ -42,7 +42,7 @@ static pthread_t tid;
 void
 delete_foxbot(void)
 {
-    foxbot_quit();
+    quit_foxbot();
 }
 
 void
@@ -106,7 +106,7 @@ end_test(void)
     shutdown_test_server();
 }
 
-void
+bool
 write_and_wait(char *data)
 {
     char buf[MAX_IRC_BUF];
@@ -118,9 +118,10 @@ write_and_wait(char *data)
     /* Enough to determine whether it will never hit
      * but not enough to timeout libcheck. */
     for (int i = 0; i < 900000; i++) {
-        io();
-        if (bot.msg->buffer && (strcmp(bot.msg->buffer, data) == 0))
-            return;
+        const bool keep_going = io();
+        if (!keep_going || (bot.msg->buffer &&
+                            (strcmp(bot.msg->buffer, data) == 0)))
+            return keep_going;
     }
 
     fprintf(stderr, "READ FAILED: %s\n", data);

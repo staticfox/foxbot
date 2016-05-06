@@ -53,7 +53,8 @@ enum commands {
 enum bot_status {
     BS_RUNNING,
     BS_QUIT,
-    BS_PAUSED                           /* only occurs during testing */
+    BS_PAUSED,                          /* only occurs during testing */
+    BS_ERRORED
 };
 
 struct bot_t {
@@ -76,13 +77,10 @@ void privmsg(const char *target, const char *message);
 void join(const char *channel);
 void do_quit(const char *message);
 void do_error(char *line, ...);
-void parse_line(const char *line);
-void foxbot_quit(void);
 void init_foxbot(int argc, char **argv);
 enum bot_status exec_foxbot(void);
 void quit_foxbot(void);
 
-extern volatile sig_atomic_t quitting;
 extern struct bot_t bot;
 
 #endif

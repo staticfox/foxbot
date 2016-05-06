@@ -37,6 +37,7 @@
 
 #include <foxbot/conf.h>
 #include <foxbot/foxbot.h>
+#include <foxbot/message.h>
 #include <foxbot/socket.h>
 
 void
@@ -98,8 +99,7 @@ sockwrite(const char *buf)
 
     if (retval == -1) {
         fprintf(stderr, "Write error: %s\n", strerror(errno));
-        quitting = 1;
-        return;
+        exit(EXIT_FAILURE); /* rip */
     }
 
     /* Warn? */
@@ -123,7 +123,7 @@ raw(char *fmt, ...)
 }
 
 /* Main IO loop */
-void
+bool
 io(void)
 {
     static char inbuf[MAX_IRC_BUF];
@@ -132,27 +132,24 @@ io(void)
 
     if (buf_remain == 0) {
         fprintf(stderr, "Line exceeded buffer length\n");
-        quitting = 1;
-        return;
+        return false;
     }
 
     ssize_t rv = recv(bot.fd, inbuf + buf_used, buf_remain, 0);
 
     if (rv == 0) {
         fprintf(stderr, "Remote host closed the connection\n");
-        quitting = 1;
-        return;
+        return false;
     }
 
     /* no data for now, call back when the socket is readable */
     if (rv < 0 && (errno == EAGAIN || errno == EWOULDBLOCK))
-        return;
+        return true;
 
     if (rv < 0) {
         if (errno != EINTR)
             fprintf(stderr, "Read error: %s\n", strerror(errno));
-        quitting = 1;
-        return;
+        return false;
     }
 
     buf_used += rv;
@@ -162,14 +159,15 @@ io(void)
      */
     char *line_start = inbuf;
     char *line_end;
-    while ((line_end = memchr(line_start, '\n', buf_used))) {
+    bool quitting = false;
+    while (!quitting && (line_end = memchr(line_start, '\n', buf_used))) {
         *line_end = '\0';
         if (strlen(line_start) > 0 && line_end[-1] == '\r')
             line_end[-1] = '\0';
         /* Straight out of RFC */
         assert(strlen(line_start) <= MAX_IRC_BUF);
         printf(">> %s\n", line_start);
-        parse_line(line_start);
+        quitting = !parse_line(line_start);
         ++line_end;
         buf_used -= line_end - line_start;
         line_start = line_end;
@@ -177,4 +175,5 @@ io(void)
 
     /* Shift buffer down so the unprocessed data is at the start */
     memmove(inbuf, line_start, buf_used);
+    return !quitting;
 }
