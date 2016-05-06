@@ -153,8 +153,10 @@ parse_buffer(const char *buf)
                 got_user = true;
                 goto end;
             } else if (cmd == CHECK_PONG) {
-                if (strcmp(token, ":ircd.staticfox.net") == 0)
-                    fox_write("PONG :ircd.staticfox.net\r\n");
+                if (strcmp(token, ":ircd.staticfox.net") != 0) {
+                    fprintf(stderr, "invalid PONG message\n");
+                    exit(EXIT_FAILURE);
+                }
                 goto end;
             } else if (cmd == CHECK_JOIN) {
                 fox_write(":%s!~%s@127.0.0.1 JOIN %s\r\n", check_nick, check_user, token);
