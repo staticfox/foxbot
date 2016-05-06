@@ -2,7 +2,7 @@
  *   rope.h -- May 6 2016 05:03:02 EDT
  *
  *   This file is part of the foxbot IRC bot
- *   Copyright (C) 2016 Matt Ullman (staticfox at staticfox dot net)
+ *   Copyright (C) 2016 Fylwind Ruzkelt (fyl@wolfpa.ws)
  *
  *   This program is FREE software. You can redistribute it and/or
  *   modify it under the terms of the GNU General Public License

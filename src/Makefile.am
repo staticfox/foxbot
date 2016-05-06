@@ -14,6 +14,7 @@ libfoxbot_a_SOURCES = channel.c \
                  list.c \
                  memory.c \
                  message.c \
+                 rope.c \
                  signal.c \
                  socket.c \
                  user.c
