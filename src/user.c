@@ -56,7 +56,7 @@ make_me(const char *nick)
     dlink_insert(users, user);
 }
 
-int
+size_t
 user_count(void)
 {
     return dlist_length(users);

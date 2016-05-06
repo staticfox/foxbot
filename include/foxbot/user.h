@@ -23,6 +23,8 @@
 #ifndef FOX_USER_H_
 #define FOX_USER_H_
 
+#include <stddef.h>
+
 #include "list.h"
 
 /** A user object.  The object owns the 3 member strings. */
@@ -41,7 +43,7 @@ void init_users(void);
 void make_me(const char *nick);
 
 /** Returns the amount of users within the cache */
-int user_count(void);
+size_t user_count(void);
 
 /** Set the user and hostname given the struct */
 void set_uh(struct user_t *user, char *src);

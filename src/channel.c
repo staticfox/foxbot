@@ -53,7 +53,7 @@ create_channel(const char *name)
     return channel;
 }
 
-int
+size_t
 channel_count(void)
 {
     return dlist_length(channels);

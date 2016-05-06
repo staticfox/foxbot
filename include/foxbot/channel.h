@@ -23,6 +23,8 @@
 #ifndef FOX_CHANNEL_H_
 #define FOX_CHANNEL_H_
 
+#include <stddef.h>
+
 #include "list.h"
 #include "user.h"
 
@@ -40,7 +42,7 @@ void init_channels(void);
 struct channel_t * create_channel(const char *name);
 
 /** Returns the amount of channels within the cache */
-int channel_count(void);
+size_t channel_count(void);
 
 /** Add a `#user_t` to a channel. */
 void add_user_to_channel(struct channel_t *channel, struct user_t *user);
