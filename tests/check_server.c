@@ -65,10 +65,12 @@ void
 wait_for_server_notification(void)
 {
     char c;
+    SPAM_DEBUG
     if (read(notification_pipe[0], &c, 1) < 1) {
         fprintf(stderr, "Read error: %s\n", strerror(errno));
         exit(EXIT_FAILURE);
     }
+    SPAM_DEBUG
 }
 
 static void

@@ -49,18 +49,20 @@ void
 new_foxbot(int port)
 {
     char s_port[16];
-
+    SPAM_DEBUG
     snprintf(s_port, sizeof(s_port), "%d", port);
-
+    SPAM_DEBUG
     char *args[] = {
         PREFIX "/bin/foxbot",
         "-tp", s_port, "-c",
         TESTDIST "/foxbot.conf",
         NULL /* C standard requires argv[argc] == NULL */
     };
-
+    SPAM_DEBUG
     init_foxbot(sizeof(args) / sizeof(*args) - 1, args);
+    SPAM_DEBUG
     yield_to_bot();
+    SPAM_DEBUG
 }
 
 int
@@ -97,13 +99,20 @@ void
 begin_test(void)
 {
     int nport;
+    SPAM_DEBUG
     nport = new_testserver();
+    SPAM_DEBUG
     new_foxbot(nport);
+    SPAM_DEBUG
     yield_to_server();
+    SPAM_DEBUG
     do_burst();
+    SPAM_DEBUG
     /* Need to do this a few times to process the channel joins */
     yield_to_server();
+    SPAM_DEBUG
     yield_to_server();
+    SPAM_DEBUG
 }
 
 void
@@ -120,7 +129,9 @@ end_test(void)
 static void
 send_pause(const char *msg)
 {
+    SPAM_DEBUG
     fox_write("#%s\r\n", msg);
+    SPAM_DEBUG
 }
 
 static enum bot_status
@@ -134,7 +145,9 @@ exec_bot(void)
 enum bot_status
 yield_to_bot(void)
 {
+    SPAM_DEBUG
     send_pause("");
+    SPAM_DEBUG
     return exec_bot();
 }
 
@@ -142,10 +155,13 @@ void
 yield_to_server(void)
 {
     send_pause("#");
+    SPAM_DEBUG
     /* Unlike yield_to_bot, we force the bot to run even if it wants to
        quit otherwise wait_for_server_notification could get stuck */
     while (exec_bot() != BS_PAUSED);
+    SPAM_DEBUG
     wait_for_server_notification();
+    SPAM_DEBUG
 }
 
 enum bot_status
@@ -153,6 +169,7 @@ write_and_wait(const char *data)
 {
     fox_write("%s\r\n", data);
     const enum bot_status status = yield_to_bot();
+    ck_assert_ptr_ne(bot.msg->buffer, NULL);
     ck_assert_str_eq(bot.msg->buffer, data);
     return status;
 }
@@ -167,6 +184,7 @@ wait_for(const char *line, ...)
     va_end(ap);
 
     yield_to_server();
+    ck_assert_ptr_ne(bot.msg->buffer, NULL);
     ck_assert_str_eq(bot.msg->buffer, buf);
 }
 

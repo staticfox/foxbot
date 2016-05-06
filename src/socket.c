@@ -123,6 +123,7 @@ raw(char *fmt, ...)
     va_end(ap);
 
     printf("<< %s", sbuf);
+    fflush(stdout);
     sockwrite(sbuf);
 }
 

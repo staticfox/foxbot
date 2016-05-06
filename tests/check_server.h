@@ -107,3 +107,4 @@ void wait_for_last_buf(const char *line, ...);
 void send_broken_uint_value(void);
 
 extern char *last_buffer;
+#define SPAM_DEBUG fprintf(stderr, "%d:%s\n", __LINE__, __FILE__); fflush(stdout);

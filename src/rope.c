@@ -80,6 +80,8 @@ clear_rope(rope *r)
 void
 append_tsrope(tsrope *r, struct rope_segment *s)
 {
+    assert(r != NULL);
+    assert(s != NULL);
     pthread_mutex_lock(&r->_mutex);
     append_rope(&r->_rope, s);
     /* I think pthread_cond_signal should be safe here, but I'm using
@@ -100,6 +102,7 @@ shift_tsrope(tsrope *r)
 struct rope_segment *
 waitshift_tsrope(tsrope *r)
 {
+    assert(r != NULL);
     pthread_mutex_lock(&r->_mutex);
     struct rope_segment *s;
     while (!(s = shift_rope(&r->_rope))) {
