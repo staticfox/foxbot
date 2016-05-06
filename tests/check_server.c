@@ -85,7 +85,7 @@ do_burst(void)
     fox_write(":ircd.staticfox.net 376 %s :End of /MOTD command.\r\n", check_nick);
     fox_write(":%s MODE %s :+i\r\n", check_nick, check_nick);
 
-    /* Needed to give the bot an idea of what it's n!u@h is */
+    /* Needed to give the bot an idea of what its n!u@h is */
     fox_write(":%s!~%s@127.0.0.1 JOIN %s\r\n", check_nick, check_user, botconfig.channel);
     fox_write(":ircd.staticfox.net 353 %s = %s :%s\r\n", check_nick, botconfig.channel, check_nick);
     fox_write(":ircd.staticfox.net 366 %s %s :End of /NAMES list.\r\n", check_nick, botconfig.channel);
