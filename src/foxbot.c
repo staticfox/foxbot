@@ -133,11 +133,11 @@ parse_opts(int argc, char **argv)
 int
 main_foxbot(int argc, char **argv)
 {
-    static const struct msg_t empty_msg;
+    static const struct msg_t MSG_EMPTY;
     bot.msg = xmalloc(sizeof(*bot.msg));
+    *bot.msg = MSG_EMPTY;
     bot.msg->from = xmalloc(sizeof(*bot.msg->from));
     bot.ircd = xmalloc(sizeof(*bot.ircd));
-    *bot.msg = empty_msg;
     bot.flags = RUNTIME_RUN;
 
     parse_opts(argc, argv);
