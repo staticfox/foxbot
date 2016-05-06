@@ -93,6 +93,15 @@ after_success:
       echo "No coverage for this build";
     fi
 
+after_failure:
+  - if [ -f tests/test-suite.log ]; then
+      cat tests/test-suite.log;
+    else
+      echo "Could not make it to check system";
+      echo "Working dir (`pwd`)";
+      ls -lahtr;
+    fi
+
 script:
   - autoreconf -fvi
   - CFLAGS="$CFLAGS -Werror" ./configure
