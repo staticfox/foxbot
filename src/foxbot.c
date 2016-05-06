@@ -158,6 +158,8 @@ quit_foxbot(void)
         snprintf(buf, sizeof(buf), "Exiting due to %s", reason);
         do_quit(buf);
     }
+
+    clear_channels();
 }
 
 enum bot_status

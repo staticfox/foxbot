@@ -34,6 +34,9 @@ struct channel_t {
     dlink_list users;
 };
 
+/** Clear the global channel cache. */
+void clear_channels(void);
+
 /** Create a `#channel_t` from the name. */
 struct channel_t * create_channel(const char *name);
 

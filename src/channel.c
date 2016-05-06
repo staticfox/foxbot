@@ -32,6 +32,13 @@
 /** Global channel cache */
 static dlink_list channels;
 
+void
+clear_channels(void)
+{
+    DLINK_FOREACH(node, dlist_head(&channels))
+        delete_channel_s(dlink_data(node));
+}
+
 struct channel_t *
 create_channel(const char *name)
 {
