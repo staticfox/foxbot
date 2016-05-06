@@ -44,10 +44,10 @@ START_TEST(simple_channel_check)
     /* Test us joining */
     ck_assert(channel_count() == 2);
     ck_assert((chptr = find_channel("#unit_test")) != NULL);
-    ck_assert(dlist_length(chptr->users) == 1);
+    ck_assert(dlist_length(&chptr->users) == 1);
     ck_assert((uptr = channel_get_user(chptr, bot.user)) != NULL);
     ck_assert((chptr = find_channel(botconfig.debug_channel)) != NULL);
-    ck_assert(dlist_length(chptr->users) == 1);
+    ck_assert(dlist_length(&chptr->users) == 1);
     ck_assert((uptr = channel_get_user(chptr, bot.user)) != NULL);
     end_test();
 }
@@ -68,13 +68,13 @@ START_TEST(channel_part_check)
     /* Introduce a new user */
     write_and_wait(":test_user1!~test@255.255.255.255 JOIN #unit_test");
     ck_assert(channel_count() == 2);
-    ck_assert(dlist_length(chptr->users) == 2);
+    ck_assert(dlist_length(&chptr->users) == 2);
     ck_assert((uptr2 = find_nick("test_user1")) != NULL);
     ck_assert(channel_get_user(chptr, uptr2) != NULL);
 
     write_and_wait(":test_user1!~test@255.255.255.255 PART #unit_test");
     ck_assert(channel_count() == 2);
-    ck_assert(dlist_length(chptr->users) == 1);
+    ck_assert(dlist_length(&chptr->users) == 1);
     ck_assert(find_nick("test_user1") == NULL);
 
     write_and_wait(":test_user1!~test@255.255.255.255 JOIN #unit_test");
@@ -88,7 +88,7 @@ START_TEST(channel_part_check)
     ck_assert((chptr2 = find_channel("#unit_test2")) != NULL);
     write_and_wait(":test_user1!~test@255.255.255.255 PART #unit_test2");
     ck_assert(find_nick("test_user1") != NULL);
-    ck_assert(dlist_length(chptr2->users) == 1);
+    ck_assert(dlist_length(&chptr2->users) == 1);
 
     write_and_wait(":test_user1!~test@255.255.255.255 JOIN #unit_test2");
     write_and_wait(":test_user1!~test@255.255.255.255 JOIN #unit_test2");
@@ -96,7 +96,7 @@ START_TEST(channel_part_check)
     wait_for_last_buf("PRIVMSG %s :Attempting to rejoin test_user1 to #unit_test2.",
                       botconfig.debug_channel);
 
-    ck_assert(dlist_length(chptr2->users) == 2);
+    ck_assert(dlist_length(&chptr2->users) == 2);
 
     snprintf(ibuf, sizeof(ibuf), ":%s!%s@%s PART #unit_test2",
              bot.user->nick, bot.user->ident, bot.user->host);
@@ -129,13 +129,13 @@ START_TEST(channel_quit_check)
     /* Introduce a new user */
     write_and_wait(":test_user1!~test@255.255.255.255 JOIN #unit_test");
     write_and_wait(":test_user2!~test@255.255.255.255 JOIN #unit_test");
-    ck_assert(dlist_length(chptr->users) == 3);
+    ck_assert(dlist_length(&chptr->users) == 3);
     ck_assert(user_count() == 3);
     ck_assert((uptr2 = find_nick("test_user2")) != NULL);
     ck_assert(channel_get_user(chptr, uptr2) != NULL);
 
     write_and_wait(":test_user2!~test@255.255.255.255 QUIT :l8r");
-    ck_assert(dlist_length(chptr->users) == 2);
+    ck_assert(dlist_length(&chptr->users) == 2);
     ck_assert(user_count() == 2);
     ck_assert(find_nick("test_user2") == NULL);
 
@@ -152,8 +152,8 @@ START_TEST(channel_quit_check)
 
     write_and_wait(":test_user2!~test@255.255.255.255 QUIT :l8r");
     ck_assert(user_count() == 2);
-    ck_assert(dlist_length(chptr->users) == 2);
-    ck_assert(dlist_length(chptr2->users) == 1);
+    ck_assert(dlist_length(&chptr->users) == 2);
+    ck_assert(dlist_length(&chptr2->users) == 1);
     ck_assert(find_nick("test_user2") == NULL);
 
     /* Generate a random hex value to ensure test validity */
@@ -220,7 +220,7 @@ START_TEST(channel_kick_user)
     /* Introduce a new user */
     write_and_wait(":test_user1!~test@255.255.255.255 JOIN #unit_test");
     write_and_wait(":test_user2!~test@255.255.255.255 JOIN #unit_test");
-    ck_assert(dlist_length(chptr->users) == 3);
+    ck_assert(dlist_length(&chptr->users) == 3);
     ck_assert(user_count() == 3);
     ck_assert((uptr2 = find_nick("test_user1")) != NULL);
     ck_assert((uptr3 = find_nick("test_user2")) != NULL);
@@ -229,29 +229,29 @@ START_TEST(channel_kick_user)
 
     /* test_user1 kicks test_user2 */
     write_and_wait(":test_user1!~test@255.255.255.255 KICK #unit_test test_user2 :Bye.");
-    ck_assert(dlist_length(chptr->users) == 2);
+    ck_assert(dlist_length(&chptr->users) == 2);
     ck_assert(user_count() == 2);
     ck_assert(find_nick("test_user2") == NULL);
 
     /* test_user2 comes back */
     write_and_wait(":test_user2!~test@255.255.255.255 JOIN #unit_test");
-    ck_assert(dlist_length(chptr->users) == 3);
+    ck_assert(dlist_length(&chptr->users) == 3);
     ck_assert(user_count() == 3);
     ck_assert((uptr3 = find_nick("test_user2")) != NULL);
     ck_assert(channel_get_user(chptr, uptr3) != NULL);
 
     /* test_user2 joins another channel we are in */
     write_and_wait(":test_user2!~test@255.255.255.255 JOIN #test_spam");
-    ck_assert(dlist_length(chptr2->users) == 2);
-    ck_assert(dlist_length(chptr->users) == 3);
+    ck_assert(dlist_length(&chptr2->users) == 2);
+    ck_assert(dlist_length(&chptr->users) == 3);
     ck_assert(user_count() == 3);
     ck_assert(channel_get_user(chptr2, uptr3) != NULL);
 
     /* test_user1 rekicks test_user2, but we should still have info
      * on test_user2 since they are in #test_spam */
     write_and_wait(":test_user1!~test@255.255.255.255 KICK #unit_test test_user2 :Bye.");
-    ck_assert(dlist_length(chptr->users) == 2);
-    ck_assert(dlist_length(chptr2->users) == 2);
+    ck_assert(dlist_length(&chptr->users) == 2);
+    ck_assert(dlist_length(&chptr2->users) == 2);
     ck_assert(user_count() == 3);
     ck_assert((uptr3 = find_nick("test_user2")) != NULL);
     ck_assert(uptr3->nick != NULL);
@@ -272,7 +272,7 @@ START_TEST(channel_kick_me)
 
     write_and_wait(":test_user1!~test@255.255.255.255 JOIN #unit_test");
     write_and_wait(":test_user2!~test@255.255.255.255 JOIN #unit_test");
-    ck_assert(dlist_length(chptr->users) == 3);
+    ck_assert(dlist_length(&chptr->users) == 3);
     ck_assert(user_count() == 3);
     ck_assert((uptr2 = find_nick("test_user1")) != NULL);
     ck_assert((uptr3 = find_nick("test_user2")) != NULL);
@@ -315,7 +315,7 @@ START_TEST(channel_unknown_kick_target)
 
     ck_assert((chptr = find_channel("#unit_test")) != NULL);
     write_and_wait(":test_user1!~test@255.255.255.255 JOIN #unit_test");
-    ck_assert(dlist_length(chptr->users) == 2);
+    ck_assert(dlist_length(&chptr->users) == 2);
     ck_assert(user_count() == 2);
     write_and_wait(":test_user1!~test@255.255.255.255 KICK #unit_test test_user2 :Bye.");
     wait_for_last_buf("PRIVMSG %s :Received KICK for an unknown user test_user2",
@@ -323,7 +323,7 @@ START_TEST(channel_unknown_kick_target)
 
     ck_assert(find_nick("test_user1") != NULL);
     ck_assert(find_nick("test_user2") == NULL);
-    ck_assert(dlist_length(chptr->users) == 2);
+    ck_assert(dlist_length(&chptr->users) == 2);
     ck_assert(user_count() == 2);
 
     end_test();

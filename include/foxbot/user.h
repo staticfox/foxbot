@@ -32,12 +32,8 @@ struct user_t {
     char *nick;
     char *ident;
     char *host;
-    int number_of_channels;
+    size_t number_of_channels;
 };
-
-/** Initialize the global user cache.  Must be called before any of the
-    functions in this module. */
-void init_users(void);
 
 /** Create our user struct at 001 */
 void make_me(const char *nick);
@@ -53,6 +49,9 @@ struct user_t * make_nuh(const char *n, const char *u, const char *h);
 
 /** Look up a user by nick in the global user cache. */
 struct user_t * find_nick(const char *nick);
+
+/** Delete a user. */
+void delete_user(struct user_t *user);
 
 /** Parse the nick, ident, and hostname (NUH) from a string.  The string is
     modified by this process. */

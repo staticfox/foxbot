@@ -69,14 +69,14 @@ START_TEST(user_nick)
     ck_assert((chptr = find_channel("#unit_test")) != NULL);
 
     write_and_wait(":test_user1!~test@255.255.255.255 JOIN #unit_test");
-    ck_assert(dlist_length(chptr->users) == 2);
+    ck_assert(dlist_length(&chptr->users) == 2);
     ck_assert(user_count() == 2);
     ck_assert((uptr = find_nick("test_user1")) != NULL);
     ck_assert(channel_get_user(chptr, uptr) != NULL);
 
     write_and_wait(":test_user1!~test@255.255.255.255 NICK :newnick1");
     ck_assert(find_nick("newnick1") == uptr);
-    ck_assert(dlist_length(chptr->users) == 2);
+    ck_assert(dlist_length(&chptr->users) == 2);
     ck_assert(user_count() == 2);
     ck_assert(channel_get_user(chptr, uptr) != NULL);
 
@@ -93,7 +93,7 @@ START_TEST(user_nick_me)
 
     ck_assert((chptr = find_channel("#unit_test")) != NULL);
 
-    ck_assert(dlist_length(chptr->users) == 1);
+    ck_assert(dlist_length(&chptr->users) == 1);
     ck_assert(user_count() == 1);
     ck_assert((uptr = find_nick(bot.user->nick)) != NULL);
     ck_assert(channel_get_user(chptr, uptr) != NULL);
@@ -103,7 +103,7 @@ START_TEST(user_nick_me)
 
     write_and_wait(buf);
     ck_assert(find_nick("newme") == uptr);
-    ck_assert(dlist_length(chptr->users) == 1);
+    ck_assert(dlist_length(&chptr->users) == 1);
     ck_assert(user_count() == 1);
     ck_assert(channel_get_user(chptr, uptr) != NULL);
     ck_assert(strcmp(bot.user->nick, "newme") == 0);

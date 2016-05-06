@@ -33,14 +33,7 @@
 #include <foxbot/user.h>
 
 /** The global user cache. */
-static dlink_list *users;
-
-void
-init_users(void)
-{
-    if (!users)
-        users = dlist_create();
-}
+static dlink_list users;
 
 void
 make_me(const char *nick)
@@ -53,13 +46,13 @@ make_me(const char *nick)
 
     bot.user = user;
 
-    dlink_insert(users, user);
+    dlink_insert(&users, user);
 }
 
 size_t
 user_count(void)
 {
-    return dlist_length(users);
+    return dlist_length(&users);
 }
 
 void
@@ -94,7 +87,7 @@ make_nuh(const char *n, const char *u, const char *h)
     user->host  = xstrdup(h);
     user->number_of_channels = 0;
 
-    dlink_insert(users, user);
+    dlink_insert(&users, user);
 
     return user;
 }
@@ -102,10 +95,9 @@ make_nuh(const char *n, const char *u, const char *h)
 struct user_t *
 find_nick(const char *nick)
 {
-    dlink_node *node = NULL;
-    DLINK_FOREACH(node, users->head)
-        if (strcmp(((struct user_t *)node->data)->nick, nick) == 0)
-            return (struct user_t *)node->data;
+    DLINK_FOREACH(node, dlist_head(&users))
+        if (strcmp(((struct user_t *)dlink_data(node))->nick, nick) == 0)
+            return (struct user_t *)dlink_data(node);
     return NULL;
 }
 
@@ -114,14 +106,14 @@ delete_user(struct user_t *user)
 {
     dlink_node *node = NULL;
 
-    if ((node = dlink_find(users, user))) {
+    if ((node = dlink_find(&users, user))) {
         if (bot.msg->from == user)
             bot.msg->from = NULL;
         xfree(user->nick);
         xfree(user->ident);
         xfree(user->host);
         xfree(user);
-        dlink_delete(node, users);
+        dlink_delete(node, &users);
         return;
     }
 

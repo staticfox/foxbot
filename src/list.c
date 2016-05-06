@@ -30,15 +30,6 @@
 #include <foxbot/list.h>
 #include <foxbot/memory.h>
 
-dlink_list *
-dlist_create(void)
-{
-    static const dlink_list empty_list;
-    dlink_list *l = xmalloc(sizeof(dlink_list));
-    *l = empty_list;
-    return l;
-}
-
 void
 dlink_insert(dlink_list *list, void *data)
 {
@@ -75,11 +66,10 @@ dlink_delete(dlink_node *m, dlink_list *list)
 }
 
 dlink_node *
-dlink_find(dlink_list *list, void *data)
+dlink_find(const dlink_list *list, void *data)
 {
-    dlink_node *node = NULL;
-    DLINK_FOREACH(node, list->head)
-        if (node->data == data)
+    DLINK_FOREACH(node, dlist_head(list))
+        if (dlink_data(node) == data)
             return node;
 
     return NULL;

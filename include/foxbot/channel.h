@@ -31,12 +31,8 @@
 struct channel_t {
     char *name;
     char *modes;
-    dlink_list *users;
+    dlink_list users;
 };
-
-/** Initialize the global channel cache.  Must be called before any of the
-    functions in this module. */
-void init_channels(void);
 
 /** Create a `#channel_t` from the name. */
 struct channel_t * create_channel(const char *name);

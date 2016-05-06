@@ -30,25 +30,17 @@
 #include <foxbot/memory.h>
 
 /** Global channel cache */
-static dlink_list *channels;
-
-void
-init_channels(void)
-{
-    if (!channels)
-        channels = dlist_create();
-}
+static dlink_list channels;
 
 struct channel_t *
 create_channel(const char *name)
 {
-    static const struct channel_t empty_channel;
+    static const struct channel_t CHANNEL_EMPTY;
     struct channel_t *channel = xmalloc(sizeof(*channel));
-    *channel = empty_channel;
+    *channel = CHANNEL_EMPTY;
     channel->name = xstrdup(name);
-    channel->users = dlist_create();
 
-    dlink_insert(channels, channel);
+    dlink_insert(&channels, channel);
 
     return channel;
 }
@@ -56,14 +48,13 @@ create_channel(const char *name)
 size_t
 channel_count(void)
 {
-    return dlist_length(channels);
+    return dlist_length(&channels);
 }
 
 void
 add_user_to_channel(struct channel_t *channel, struct user_t *user)
 {
     assert(channel != NULL);
-    assert(channel->users != NULL);
     assert(user != NULL);
 
     if (channel_get_user(channel, user) != NULL) {
@@ -72,17 +63,15 @@ add_user_to_channel(struct channel_t *channel, struct user_t *user)
     }
 
     user->number_of_channels++;
-    dlink_insert(channel->users, user);
+    dlink_insert(&channel->users, user);
 }
 
 struct user_t *
 channel_get_user(struct channel_t *channel, struct user_t *user)
 {
-    dlink_node *node = NULL;
-
-    DLINK_FOREACH(node, channel->users->head)
-        if (((struct user_t *)node->data) == user)
-            return (struct user_t *)node->data;
+    DLINK_FOREACH(node, dlist_head(&channel->users))
+        if (((struct user_t *)dlink_data(node)) == user)
+            return (struct user_t *)dlink_data(node);
 
     return NULL;
 }
@@ -90,11 +79,9 @@ channel_get_user(struct channel_t *channel, struct user_t *user)
 void
 channel_remove_user(struct channel_t *channel, struct user_t *user)
 {
-    dlink_node *u_node = NULL;
-
-    DLINK_FOREACH(u_node, channel->users->head) {
-        if (((struct user_t *)u_node->data) == user) {
-            dlink_delete(u_node, channel->users);
+    DLINK_FOREACH(u_node, dlist_head(&channel->users)) {
+        if (((struct user_t *)dlink_data(u_node)) == user) {
+            dlink_delete(u_node, &channel->users);
             break;
         }
     }
@@ -108,32 +95,30 @@ channel_remove_user(struct channel_t *channel, struct user_t *user)
 void
 channel_quit_user(struct user_t *user)
 {
-    dlink_node *node = NULL;
-
-    DLINK_FOREACH(node, channels->head)
-        channel_remove_user(((struct channel_t *)node->data), user);
+    DLINK_FOREACH(node, dlist_head(&channels))
+        channel_remove_user(((struct channel_t *)dlink_data(node)), user);
 }
 
 void
 delete_channel_s(struct channel_t *channel)
 {
-    dlink_node *node = NULL, *u_node = NULL, *u_next_node;
+    dlink_node *node = NULL;
 
-    if ((node = dlink_find(channels, channel)) != NULL) {
+    if ((node = dlink_find(&channels, channel)) != NULL) {
         xfree(channel->name);
         xfree(channel->modes);
 
         /* Remove users from the channel. Also delete
          * their cache entry if need be */
-        DLINK_FOREACH_SAFE(u_node, u_next_node, channel->users->head) {
-            struct user_t *user = u_node->data;
+        DLINK_FOREACH(u_node, dlist_head(&channel->users)) {
+            struct user_t *user = dlink_data(u_node);
             if (--user->number_of_channels == 0 && user != bot.user)
                 delete_user(user);
-            dlink_delete(u_node, channel->users);
+            dlink_delete(u_node, &channel->users);
         }
 
         xfree(channel);
-        dlink_delete(node, channels);
+        dlink_delete(node, &channels);
         return;
     }
 
@@ -144,9 +129,8 @@ delete_channel_s(struct channel_t *channel)
 struct channel_t *
 find_channel(const char *name)
 {
-    dlink_node *node = NULL;
-    DLINK_FOREACH(node, channels->head)
-        if (strcmp(((struct channel_t *)node->data)->name, name) == 0)
-            return (struct channel_t *)node->data;
+    DLINK_FOREACH(node, dlist_head(&channels))
+        if (strcmp(((struct channel_t *)dlink_data(node))->name, name) == 0)
+            return (struct channel_t *)dlink_data(node);
     return NULL;
 }

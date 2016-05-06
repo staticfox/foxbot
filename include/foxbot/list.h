@@ -27,28 +27,37 @@
 #ifndef FOX_LIST_H_
 #define FOX_LIST_H_
 
-#define DLINK_FOREACH(pos, head) for (pos = (head); pos != NULL; pos = pos->next)
-#define DLINK_FOREACH_SAFE(pos, n, head) for (pos = (head), n = pos ? pos->next : NULL; pos != NULL; pos = n, n = pos ? pos->next : NULL)
-#define dlist_length(list) (list)->length
+#include <stddef.h>
 
-typedef struct _dlink_node dlink_node;
-typedef struct _dlink_list dlink_list;
+/** Loop forward over a linked list starting at the given `head` node with a
+  * new local variable named `pos`.  The current node can be deleted without
+  * disrupting the loop. */
+#define DLINK_FOREACH(pos, head) \
+    for (dlink_node *pos = (head), *_##pos##_next = pos ? dlink_next(pos) : NULL; \
+         pos; pos = _##pos##_next, _##pos##_next = pos ? dlink_next(pos) : NULL)
 
-struct _dlink_node {
+typedef struct dlink_node_ dlink_node;
+
+struct dlink_node_ {
     void *data;
     dlink_node *prev;
     dlink_node *next;
 };
 
-struct _dlink_list {
+typedef struct {
     dlink_node *head;
     dlink_node *tail;
-    unsigned length;
-};
+    size_t length;
+} dlink_list;
 
+static inline size_t dlist_length(const dlink_list *list) { return list->length; }
+static inline dlink_node *dlist_head(const dlink_list *list) { return list->head; }
+static inline dlink_node *dlist_tail(const dlink_list *list) { return list->tail; }
+static inline void *dlink_data(const dlink_node *node) { return node->data; }
+static inline dlink_node *dlink_prev(const dlink_node *node) { return node->prev; }
+static inline dlink_node *dlink_next(const dlink_node *node) { return node->next; }
 void dlink_insert(dlink_list *list, void *data);
 void dlink_delete(dlink_node *m, dlink_list *list);
-dlink_list * dlist_create(void);
-dlink_node * dlink_find(dlink_list *list, void *data);
+dlink_node *dlink_find(const dlink_list *list, void *data);
 
 #endif

@@ -141,8 +141,6 @@ main_foxbot(int argc, char **argv)
     bot.flags = RUNTIME_RUN;
 
     parse_opts(argc, argv);
-    init_channels();
-    init_users();
     read_conf_file();
     setup_signals();
     create_and_bind();
