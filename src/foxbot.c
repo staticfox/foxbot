@@ -161,6 +161,14 @@ quit_foxbot(void)
 
     clear_channels();
     destroy_socket();
+
+    if (bot.msg)
+        xfree(bot.msg->from);
+    xfree(bot.msg);
+    xfree(bot.ircd);
+    static const struct bot_t BOT_EMPTY;
+    bot = BOT_EMPTY;
+    quitting = 0;
 }
 
 enum bot_status
