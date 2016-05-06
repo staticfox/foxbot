@@ -110,7 +110,7 @@ START_TEST(ircd_error)
     begin_test();
     ck_assert_int_eq(
         write_and_wait("ERROR :Closing Link: 127.0.0.1 (Quit: tests!)"),
-        false);
+        BS_QUIT);
     end_test();
 }
 END_TEST

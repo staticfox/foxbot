@@ -24,7 +24,9 @@
 #define FOX_FOXBOT_H_
 
 #include "ircd.h"
+#include "socket.h"
 
+#define MAX_IRC_BUF 512
 #include <signal.h>
 #include <stdbool.h>
 
@@ -58,7 +60,7 @@ enum bot_status {
 };
 
 struct bot_t {
-    int fd;
+    io_state io;
     int flags;
     int test_port;
     bool registered;

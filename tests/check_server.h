@@ -20,17 +20,15 @@
  *
  */
 
-#include <stdbool.h>
-
+#include <foxbot/foxbot.h>
 #include <foxbot/message.h>
 
 int setup_test_server(void);
 void fox_write(char *line, ...);
-void fox_read(int fd);
 void * start_listener(void *unused);
 void shutdown_test_server(void);
 void delete_foxbot(void);
-bool write_and_wait(char *data);
+enum bot_status write_and_wait(char *data);
 void wait_for(char *line, ...);
 void wait_for_command(enum commands cmd);
 void wait_for_numeric(unsigned int numeric);

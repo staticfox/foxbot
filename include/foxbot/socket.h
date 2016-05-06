@@ -24,12 +24,35 @@
 #define FOX_SOCKET_H_
 
 #include <stdbool.h>
+#include <stddef.h>
+
+typedef struct {
+    char *_buf, *_line_start;
+    size_t _buf_size, _buf_used;
+    int _fd;
+} io_state;
+
+enum io_readline_status {
+    IRS_OK,
+    IRS_CLOSED,
+    IRS_NOBUFS,
+    IRS_ERROR
+};
 
 void create_socket(void);
 void destroy_socket(void);
 void establish_link(void);
 void sockwrite(const char *buf);
 void raw(char *fmt, ...);
-bool io(void);
+void init_io(io_state *io, int fd, size_t buf_size);
+void reset_io(io_state *io);
+int get_io_fd(const io_state *io);
+
+/** The returned buffer can be modified but must not be freed. */
+enum io_readline_status io_readline(io_state *io, char **line);
+
+/** Simpler version of `io_readline` that prints a message with the given
+    `prefix` and returns `NULL` if an error occurs. */
+char *io_simple_readline(io_state *io, const char *prefix);
 
 #endif

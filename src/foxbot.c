@@ -175,8 +175,12 @@ exec_foxbot(void)
             && bot.msg->command
             && (strcmp(bot.msg->command, "FOXBOT") == 0))
         return BS_PAUSED;
-
-    if (!io())
+    const char *const line = io_simple_readline(&bot.io, "");
+    if (!line)
+        return BS_ERRORED;
+    printf(">> %s\n", line);
+    fflush(stdout);
+    if (!parse_line(line))
         return BS_QUIT;
     return BS_RUNNING;
 }

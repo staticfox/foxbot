@@ -106,7 +106,20 @@ end_test(void)
     shutdown_test_server();
 }
 
-bool
+static enum bot_status
+io(void)
+{
+    const char *const line = io_simple_readline(&bot.io, "");
+    if (!line)
+        return BS_ERRORED;
+    printf(">> %s\n", line);
+    fflush(stdout);
+    if (!parse_line(line))
+        return BS_QUIT;
+    return BS_RUNNING;
+}
+
+enum bot_status
 write_and_wait(char *data)
 {
     char buf[MAX_IRC_BUF];
@@ -118,10 +131,10 @@ write_and_wait(char *data)
     /* Enough to determine whether it will never hit
      * but not enough to timeout libcheck. */
     for (int i = 0; i < 900000; i++) {
-        const bool keep_going = io();
-        if (!keep_going || (bot.msg->buffer &&
-                            (strcmp(bot.msg->buffer, data) == 0)))
-            return keep_going;
+        const enum bot_status status = io();
+        if (status || (bot.msg->buffer &&
+                       (strcmp(bot.msg->buffer, data) == 0)))
+            return status;
     }
 
     fprintf(stderr, "READ FAILED: %s\n", data);

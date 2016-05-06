@@ -217,56 +217,6 @@ fox_write(char *line, ...)
     }
 }
 
-void
-fox_read(int fd)
-{
-    static char inbuf[MAX_IRC_BUF];
-    static size_t buf_used;
-    size_t buf_remain = sizeof(inbuf) - buf_used;
-
-    if (buf_remain == 0) {
-        fprintf(stderr, "[Server] Line exceeded buffer length\n");
-        tests_done = 1;
-        return;
-    }
-
-    ssize_t rv = recv(fd, inbuf + buf_used, buf_remain, 0);
-
-    if (rv == 0) {
-        fprintf(stderr, "[Server] Remote host closed the connection\n");
-        tests_done = 1;
-        return;
-    }
-
-    if (rv < 0 && (errno == EAGAIN || errno == EWOULDBLOCK))
-        return;
-
-    if (rv < 0) {
-        fprintf(stderr, "[Server] Read error: %s\n", strerror(errno));
-        tests_done = 1;
-        return;
-    }
-
-    buf_used += rv;
-
-    char *line_start = inbuf;
-    char *line_end;
-    while ((line_end = memchr(line_start, '\n', buf_used))) {
-        *line_end = '\0';
-
-        if (strlen(line_start) > 0 && line_end[-1] == '\r')
-            line_end[-1] = '\0';
-
-        assert(strlen(line_start) <= MAX_IRC_BUF);
-        parse_buffer(line_start);
-        ++line_end;
-        buf_used -= line_end - line_start;
-        line_start = line_end;
-    }
-
-    memmove(inbuf, line_start, buf_used);
-}
-
 /* Function pointer as this starts as a
  * thread from check_foxbot. */
 void *
@@ -287,9 +237,13 @@ start_listener(void *unused)
         exit(EXIT_FAILURE);
     }
 
-    while(!tests_done) {
-        fox_read(client_sock_fd);
+    io_state io;
+    init_io(&io, client_sock_fd, MAX_IRC_BUF);
+    char *line;
+    while (!tests_done && (line = io_simple_readline(&io, "[Server] "))) {
+        parse_buffer(line);
     }
+    reset_io(&io);
 
     close(client_sock_fd);
 
