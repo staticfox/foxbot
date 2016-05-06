@@ -23,8 +23,9 @@
 #ifndef FOX_SOCKET_H_
 #define FOX_SOCKET_H_
 
-int create_and_bind(void);
-int establish_link(void);
+void create_socket(void);
+void destroy_socket(void);
+void establish_link(void);
 void sockwrite(const char *buf);
 void raw(char *fmt, ...);
 void io(void);

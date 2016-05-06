@@ -143,7 +143,7 @@ init_foxbot(int argc, char **argv)
     parse_opts(argc, argv);
     read_conf_file();
     setup_signals();
-    create_and_bind();
+    create_socket();
     establish_link();
 }
 
@@ -160,6 +160,7 @@ quit_foxbot(void)
     }
 
     clear_channels();
+    destroy_socket();
 }
 
 enum bot_status

@@ -39,8 +39,8 @@
 #include <foxbot/foxbot.h>
 #include <foxbot/socket.h>
 
-int
-create_and_bind(void)
+void
+create_socket(void)
 {
     int addrerr;
     static const struct addrinfo ADDRINFO_EMPTY;
@@ -60,11 +60,22 @@ create_and_bind(void)
         do_error(strerror(errno));
         exit(EXIT_FAILURE);
     }
-
-    return 0;
 }
 
-int
+void
+destroy_socket(void)
+{
+    /* Terminate connection cleanly */
+    shutdown(bot.fd, SHUT_WR);
+    char buf[BUFSIZ];
+    while (recv(bot.fd, buf, sizeof(buf), 0) > 0);
+    close(bot.fd);
+
+    freeaddrinfo(bot.hil);
+    bot.hil = NULL;
+}
+
+void
 establish_link(void)
 {
     int status;
@@ -77,8 +88,6 @@ establish_link(void)
 
     raw("NICK %s\n", botconfig.nick);
     raw("USER %s 0 0 :%s\n", botconfig.ident, botconfig.realname);
-
-    return 0;
 }
 
 void
