@@ -159,6 +159,7 @@ START_TEST(channel_quit_check)
     /* Generate a random hex value to ensure test validity */
     snprintf(quitbuf, sizeof(quitbuf), "unit test : %08x", rand());
     do_quit(quitbuf);
+    yield_to_server();
     wait_for("ERROR :Closing Link: 127.0.0.1 (Quit: %s)", quitbuf);
 
     end_test();

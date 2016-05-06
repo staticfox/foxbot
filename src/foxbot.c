@@ -164,6 +164,12 @@ quit_foxbot(void)
     quit_signal = 0;
 }
 
+static bool
+is_pause_message(const char *line)
+{
+    return line[0] == '#';
+}
+
 enum bot_status
 exec_foxbot(void)
 {
@@ -171,15 +177,16 @@ exec_foxbot(void)
         bot.quit_reason = "SIGINT";
         return BS_QUIT;
     }
-    if ((bot.flags & RUNTIME_TEST)
-            && bot.msg->command
-            && (strcmp(bot.msg->command, "FOXBOT") == 0))
-        return BS_PAUSED;
     const char *const line = io_simple_readline(&bot.io, "");
     if (!line)
         return BS_ERRORED;
     printf(">> %s\n", line);
     fflush(stdout);
+    if ((bot.flags & RUNTIME_TEST) && is_pause_message(line)) {
+        if (line[1])
+            raw("%s\n", line + 1);
+        return BS_PAUSED;
+    }
     if (!parse_line(line))
         return BS_QUIT;
     return BS_RUNNING;

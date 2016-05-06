@@ -31,23 +31,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/types.h>
 #include <sys/socket.h>
-#include <time.h>
 #include <unistd.h>
 
 #include <foxbot/conf.h>
 #include <foxbot/memory.h>
 #include <foxbot/message.h>
+#include <foxbot/rope.h>
 #include <foxbot/foxbot.h>
 
 #include "check_server.h"
 
 static const struct sockaddr_in SOCKADDR_IN_EMPTY;
 
-int tests_done = 0;
-int client_sock_fd = 0;
-int sockfd = 0;
+static int sockfd = -1;
 
 enum check_commands {
     CHECK_INVALID,
@@ -58,9 +55,30 @@ enum check_commands {
     CHECK_JOIN
 };
 
-bool got_nick = false, got_user = false, connected = false;
-char *check_nick, *check_user;
+static bool got_nick, got_user, connected;
+static char *check_nick, *check_user;
 char *last_buffer;
+static int notification_pipe[2] = {-1, -1};
+static tsrope write_queue;
+
+void
+wait_for_server_notification(void)
+{
+    char c;
+    if (read(notification_pipe[0], &c, 1) < 1) {
+        fprintf(stderr, "Read error: %s\n", strerror(errno));
+        exit(EXIT_FAILURE);
+    }
+}
+
+static void
+trigger_server_notification(void)
+{
+    if (write(notification_pipe[1], "\0", 1) < 1) {
+        fprintf(stderr, "[Server] Write error: %s\n", strerror(errno));
+        exit(EXIT_FAILURE);
+    }
+}
 
 /* Simulate an introduction to the IRC server. Wheeeeee! */
 void
@@ -94,9 +112,6 @@ do_burst(void)
     fox_write(":%s!~%s@127.0.0.1 JOIN %s\r\n", check_nick, check_user, botconfig.debug_channel);
     fox_write(":ircd.staticfox.net 353 %s = %s :%s\r\n", check_nick, botconfig.debug_channel, check_nick);
     fox_write(":ircd.staticfox.net 366 %s %s :End of /NAMES list.\r\n", check_nick, botconfig.debug_channel);
-
-    /* Used as a reference point to know when the spam has stopped */
-    fox_write(":ircd.staticfox.net FOXBOT * :Not a real command :)\r\n");
 }
 
 void
@@ -183,7 +198,6 @@ end:
 
     if (got_nick && got_user && !connected) {
         connected = true;
-        do_burst();
     }
 
     xfree(l_params);
@@ -195,28 +209,42 @@ void
 fox_write(const char *line, ...)
 {
     char buf[MAX_IRC_BUF] = {0};
-    ssize_t writeval;
-    int n;
 
     va_list ap;
     va_start(ap, line);
     vsnprintf(buf, MAX_IRC_BUF, line, ap);
     va_end(ap);
 
-    writeval = strlen(buf);
+    append_tsrope(&write_queue, alloc_rope_segment(buf, strlen(buf) + 1));
+}
 
-    /* This is mostly for burst spam control */
-    struct timespec tim;
-    tim.tv_sec  = 0;
-    tim.tv_nsec = 250000L;
-    nanosleep(&tim , NULL);
+void
+fox_shutdown(void)
+{
+    char nothing;
+    append_tsrope(&write_queue, alloc_rope_segment(&nothing, 0));
+}
 
-    n = write(client_sock_fd, buf, writeval);
-
-    if (n < 0) {
-        fprintf(stderr, "[Server] Write error: %s\n", strerror(errno));
+/* Write thread. */
+static void *
+start_writer(void *client_sock_fd_ptr)
+{
+    const int client_sock_fd = *(const int *)client_sock_fd_ptr;
+    while (1) {
+        struct rope_segment *const s = waitshift_tsrope(&write_queue);
+        if (!s->len)
+            break;
+        if (write(client_sock_fd, s->data, s->len - 1) < 0) {
+            fprintf(stderr, "[Server] Write error: %s\n", strerror(errno));
+            exit(EXIT_FAILURE);
+        }
+        xfree(s);
+    }
+    if (shutdown(client_sock_fd, SHUT_WR)) {
+        fprintf(stderr, "[Server] Cannot shutdown: %s\n", strerror(errno));
         exit(EXIT_FAILURE);
     }
+    return NULL;
 }
 
 /* Function pointer as this starts as a
@@ -229,24 +257,40 @@ start_listener(void *unused)
     struct sockaddr_in cli_addr = SOCKADDR_IN_EMPTY;
     socklen_t clilen;
 
-    listen(sockfd, 5);
     clilen = sizeof(cli_addr);
 
-    client_sock_fd = accept(sockfd, (struct sockaddr *)&cli_addr, &clilen);
+    const int client_sock_fd =
+        accept(sockfd, (struct sockaddr *)&cli_addr, &clilen);
 
     if (client_sock_fd < 0) {
         fprintf(stderr, "[Server] Accept error: %s\n", strerror(errno));
         exit(EXIT_FAILURE);
     }
 
+    pthread_t thread;
+    if (pthread_create(&thread, NULL, start_writer, (void *)&client_sock_fd)) {
+        fprintf(stderr, "[Server] Cannot create writer thread: %s\n",
+                strerror(errno));
+        exit(EXIT_FAILURE);
+    }
+
     io_state io;
     init_io(&io, client_sock_fd, MAX_IRC_BUF);
     char *line;
-    while (!tests_done && (line = io_simple_readline(&io, "[Server] "))) {
-        parse_buffer(line);
+    while ((line = io_simple_readline(&io, "[Server] "))) {
+        if (line[0] == '#')
+            trigger_server_notification();
+        else
+            parse_buffer(line);
     }
     reset_io(&io);
 
+    fox_shutdown();
+    if (pthread_join(thread, NULL)) {
+        fprintf(stderr, "[Server] Cannot join writer thread: %s\n",
+                strerror(errno));
+        exit(EXIT_FAILURE);
+    }
     close(client_sock_fd);
 
     return NULL;
@@ -255,32 +299,18 @@ start_listener(void *unused)
 void
 shutdown_test_server(void)
 {
+    clear_tsrope(&write_queue);
     close(sockfd);
+    close(notification_pipe[0]);
+    close(notification_pipe[1]);
 }
 
-int
-setup_test_server(void)
+static int
+bind_socket(int sockfd)
 {
-    struct sockaddr_in serv_addr = SOCKADDR_IN_EMPTY;
     int nport = 43210;
-    int set = 1;
 
-    sockfd = socket(AF_INET, SOCK_STREAM, 0);
-
-    if (sockfd < 0) {
-        fprintf(stderr, "[Server] Socket error: %s", strerror(errno));
-        return -1;
-    }
-
-    /* This tells the kernel that we are willing to reuse the socket
-     * regardless if there is lingering information.
-     * Fixes https://github.com/staticfox/foxbot/issues/17
-     */
-    if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &set, sizeof(set)) == -1) {
-        fprintf(stderr, "[Server] setsockopt error: %s\n", strerror(errno));
-        return -1;
-    }
-
+    struct sockaddr_in serv_addr = SOCKADDR_IN_EMPTY;
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = INADDR_ANY;
 
@@ -298,5 +328,36 @@ setup_test_server(void)
     /* Shouldn't be here, but I guess we couldn't find an available
      * port to bind to :( */
     fprintf(stderr, "[Server] Bind error: %s\n", strerror(errno));
-    return -1;
+    exit(EXIT_FAILURE);
+}
+
+int
+setup_test_server(void)
+{
+    int set = 1;
+
+    if (pipe(notification_pipe)) {
+        fprintf(stderr, "[Server] Cannot create pipe: %s", strerror(errno));
+        exit(EXIT_FAILURE);
+    }
+
+    sockfd = socket(AF_INET, SOCK_STREAM, 0);
+
+    if (sockfd < 0) {
+        fprintf(stderr, "[Server] Socket error: %s", strerror(errno));
+        exit(EXIT_FAILURE);
+    }
+
+    /* This tells the kernel that we are willing to reuse the socket
+     * regardless if there is lingering information.
+     * Fixes https://github.com/staticfox/foxbot/issues/17
+     */
+    if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &set, sizeof(set)) == -1) {
+        fprintf(stderr, "[Server] setsockopt error: %s\n", strerror(errno));
+        exit(EXIT_FAILURE);
+    }
+
+    const int port = bind_socket(sockfd);
+    listen(sockfd, 5);
+    return port;
 }

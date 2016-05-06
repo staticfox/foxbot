@@ -85,6 +85,7 @@ START_TEST(ircd_unknown_cmd)
 {
     begin_test();
     sockwrite("ASDF\r\n");
+    yield_to_server();
     wait_for_numeric(421);
     end_test();
 }

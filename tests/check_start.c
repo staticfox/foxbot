@@ -60,34 +60,37 @@ new_foxbot(int port)
     };
 
     init_foxbot(sizeof(args) / sizeof(*args) - 1, args);
-    while (exec_foxbot() == BS_RUNNING);
+    yield_to_bot();
 }
 
 int
 new_testserver(void)
 {
     int nport;
-    int err;
 
     if((nport = setup_test_server()) < 0) {
         fprintf(stderr, "Unable to start socket server.\n");
         return -1;
     }
 
-    err = pthread_create(&tid, NULL, start_listener, NULL);
-
-    /* Brief moment to start the listener */
-    struct timespec tim;
-    tim.tv_sec  = 0;
-    tim.tv_nsec = 900000L;
-    nanosleep(&tim , NULL);
-
-    if(err != 0) {
+    if (pthread_create(&tid, NULL, start_listener, NULL)) {
         fprintf(stderr, "Thread error: %s\n", strerror(errno));
         return -1;
     }
 
     return nport;
+}
+
+static void
+delete_testserver(void)
+{
+    fox_shutdown();
+    if (pthread_join(tid, NULL)) {
+        fprintf(stderr, "Cannot join server thread: %s\n",
+                strerror(errno));
+        exit(EXIT_FAILURE);
+    }
+    shutdown_test_server();
 }
 
 void
@@ -96,49 +99,62 @@ begin_test(void)
     int nport;
     nport = new_testserver();
     new_foxbot(nport);
+    yield_to_server();
+    do_burst();
+    /* Need to do this a few times to process the channel joins */
+    yield_to_server();
+    yield_to_server();
 }
 
 void
 end_test(void)
 {
     delete_foxbot();
-    tests_done = 1;
-    shutdown_test_server();
+    delete_testserver();
+}
+
+/** Tell the bot to pause itself.  When the bot receives that message, it will
+  * return control to the caller.  If the `msg` is not an empty string, the
+  * provided message is also sent to the server.  Generally, `send_pause`
+  * should always be paired with `exec_bot`. */
+static void
+send_pause(const char *msg)
+{
+    fox_write("#%s\r\n", msg);
 }
 
 static enum bot_status
-io(void)
+exec_bot(void)
 {
-    const char *const line = io_simple_readline(&bot.io, "");
-    if (!line)
-        return BS_ERRORED;
-    printf(">> %s\n", line);
-    fflush(stdout);
-    if (!parse_line(line))
-        return BS_QUIT;
-    return BS_RUNNING;
+    enum bot_status status;
+    while ((status = exec_foxbot()) == BS_RUNNING);
+    return status;
+}
+
+enum bot_status
+yield_to_bot(void)
+{
+    send_pause("");
+    return exec_bot();
+}
+
+void
+yield_to_server(void)
+{
+    send_pause("#");
+    /* Unlike yield_to_bot, we force the bot to run even if it wants to
+       quit otherwise wait_for_server_notification could get stuck */
+    while (exec_bot() != BS_PAUSED);
+    wait_for_server_notification();
 }
 
 enum bot_status
 write_and_wait(const char *data)
 {
-    char buf[MAX_IRC_BUF];
-
-    snprintf(buf, sizeof(buf), "%s\r\n", data);
-
-    fox_write(buf);
-
-    /* Enough to determine whether it will never hit
-     * but not enough to timeout libcheck. */
-    for (int i = 0; i < 900000; i++) {
-        const enum bot_status status = io();
-        if (status || (bot.msg->buffer &&
-                       (strcmp(bot.msg->buffer, data) == 0)))
-            return status;
-    }
-
-    fprintf(stderr, "READ FAILED: %s\n", data);
-    ck_assert(0);
+    fox_write("%s\r\n", data);
+    const enum bot_status status = yield_to_bot();
+    ck_assert_str_eq(bot.msg->buffer, data);
+    return status;
 }
 
 void
@@ -150,43 +166,22 @@ wait_for(const char *line, ...)
     vsnprintf(buf, MAX_IRC_BUF, line, ap);
     va_end(ap);
 
-    for (int i = 0; i < 900000; i++) {
-        if (strcmp(bot.msg->buffer, buf) == 0)
-            return;
-        io();
-    }
-
-    fprintf(stderr, "WAIT_FOR FAILED: %s\n", buf);
-    ck_assert(0);
-    return;
+    yield_to_server();
+    ck_assert_str_eq(bot.msg->buffer, buf);
 }
 
 void
 wait_for_command(enum commands cmd)
 {
-    for (int i = 0; i < 900000; i++) {
-        if (bot.msg->ctype == cmd)
-            return;
-        io();
-    }
-
-    fprintf(stderr, "WAIT_FOR_COMMAND FAILED: %d\n", cmd);
-    ck_assert(0);
-    return;
+    yield_to_server();
+    ck_assert_int_eq(bot.msg->ctype, cmd);
 }
 
 void
 wait_for_numeric(unsigned int numeric)
 {
-    for (int i = 0; i < 900000; i++) {
-        if (bot.msg->numeric == numeric)
-            return;
-        io();
-    }
-
-    fprintf(stderr, "WAIT_FOR_NUMERIC FAILED: %d\n", numeric);
-    ck_assert(0);
-    return;
+    yield_to_server();
+    ck_assert_uint_eq(bot.msg->numeric, numeric);
 }
 
 void
@@ -198,12 +193,6 @@ wait_for_last_buf(const char *line, ...)
     vsnprintf(buf, MAX_IRC_BUF, line, ap);
     va_end(ap);
 
-    for (int i = 0; i < 100000000; i++) {
-        if (strcmp(last_buffer, buf) == 0)
-            return;
-    }
-
-    fprintf(stderr, "WAIT_FOR_LAST_BUF FAILED: %s\n", buf);
-    ck_assert(0);
-    return;
+    yield_to_server();
+    ck_assert_str_eq(last_buffer, buf);
 }
