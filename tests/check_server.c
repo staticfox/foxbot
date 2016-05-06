@@ -43,6 +43,8 @@
 
 #include "check_server.h"
 
+static const struct sockaddr_in SOCKADDR_IN_EMPTY;
+
 int tests_done = 0;
 int client_sock_fd = 0;
 int sockfd = 0;
@@ -272,8 +274,7 @@ start_listener(void *unused)
 {
     (void)unused;
 
-    static const struct sockaddr_in sockaddr_in_empty;
-    struct sockaddr_in cli_addr = sockaddr_in_empty;
+    struct sockaddr_in cli_addr = SOCKADDR_IN_EMPTY;
     socklen_t clilen;
 
     listen(sockfd, 5);
@@ -304,7 +305,7 @@ shutdown_test_server(void)
 int
 setup_test_server(void)
 {
-    struct sockaddr_in serv_addr;
+    struct sockaddr_in serv_addr = SOCKADDR_IN_EMPTY;
     int nport = 43210;
     int set = 1;
 
@@ -323,8 +324,6 @@ setup_test_server(void)
         fprintf(stderr, "[Server] setsockopt error: %s\n", strerror(errno));
         return -1;
     }
-
-    memset(&serv_addr, 0, sizeof(serv_addr));
 
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = INADDR_ANY;

@@ -23,7 +23,6 @@
 #define _POSIX_C_SOURCE 201112L
 
 #include <stdio.h>
-#include <string.h> /* for memset */
 
 #include <foxbot/foxbot.h>
 #include <foxbot/signal.h>
@@ -39,9 +38,9 @@ void
 setup_signals(void)
 {
     sigset_t sigs;
-    struct sigaction act;
+    static const struct sigaction SIGACTION_EMPTY;
+    struct sigaction act = SIGACTION_EMPTY;
 
-    memset(&act, 0, sizeof(act));
     sigemptyset(&sigs);
 
     act.sa_handler = sigint_handler;

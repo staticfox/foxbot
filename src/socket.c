@@ -43,9 +43,8 @@ int
 create_and_bind(void)
 {
     int addrerr;
-    struct addrinfo hints;
-
-    memset(&hints, 0, sizeof(hints));
+    static const struct addrinfo ADDRINFO_EMPTY;
+    struct addrinfo hints = ADDRINFO_EMPTY;
 
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
