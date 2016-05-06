@@ -120,7 +120,7 @@ io(void)
 }
 
 enum bot_status
-write_and_wait(char *data)
+write_and_wait(const char *data)
 {
     char buf[MAX_IRC_BUF];
 
@@ -142,7 +142,7 @@ write_and_wait(char *data)
 }
 
 void
-wait_for(char *line, ...)
+wait_for(const char *line, ...)
 {
     char buf[MAX_IRC_BUF] = {0};
     va_list ap;
@@ -190,7 +190,7 @@ wait_for_numeric(unsigned int numeric)
 }
 
 void
-wait_for_last_buf(char *line, ...)
+wait_for_last_buf(const char *line, ...)
 {
     char buf[MAX_IRC_BUF] = {0};
     va_list ap;

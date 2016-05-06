@@ -190,7 +190,7 @@ end:
 }
 
 void
-fox_write(char *line, ...)
+fox_write(const char *line, ...)
 {
     char buf[MAX_IRC_BUF] = {0};
     ssize_t writeval;
