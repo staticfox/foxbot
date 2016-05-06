@@ -50,6 +50,12 @@ enum commands {
     NICK,
 };
 
+enum bot_status {
+    BS_RUNNING,
+    BS_QUIT,
+    BS_PAUSED                           /* only occurs during testing */
+};
+
 struct bot_t {
     int fd;
     int flags;
@@ -57,6 +63,7 @@ struct bot_t {
     bool registered;
     bool modes[256];
     bool nonblocking;
+    const char *quit_reason;
     struct msg_t *msg;
     struct user_t *user;
     struct addrinfo *hil; /* Needed for reconnects */
@@ -71,7 +78,9 @@ void do_quit(const char *message);
 void do_error(char *line, ...);
 void parse_line(const char *line);
 void foxbot_quit(void);
-int main_foxbot(int argc, char **argv);
+void init_foxbot(int argc, char **argv);
+enum bot_status exec_foxbot(void);
+void quit_foxbot(void);
 
 extern volatile sig_atomic_t quitting;
 extern struct bot_t bot;

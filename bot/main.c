@@ -25,5 +25,8 @@
 int
 main(int argc, char **argv)
 {
-    return main_foxbot(argc, argv);
+    init_foxbot(argc, argv);
+    while (exec_foxbot() == BS_RUNNING);
+    quit_foxbot();
+    return 0;
 }

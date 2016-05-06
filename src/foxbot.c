@@ -130,8 +130,8 @@ parse_opts(int argc, char **argv)
         bot.test_port = -1;
 }
 
-int
-main_foxbot(int argc, char **argv)
+void
+init_foxbot(int argc, char **argv)
 {
     static const struct msg_t MSG_EMPTY;
     bot.msg = xmalloc(sizeof(*bot.msg));
@@ -145,30 +145,33 @@ main_foxbot(int argc, char **argv)
     setup_signals();
     create_and_bind();
     establish_link();
+}
 
-    while (!quitting) {
-        if ((bot.flags & RUNTIME_TEST)
-                && bot.msg->command
-                && (strcmp(bot.msg->command, "FOXBOT") == 0))
-            break;
-
-        io();
-    }
-
-    if (bot.registered && !(bot.flags & RUNTIME_TEST)) {
+void
+quit_foxbot(void)
+{
+    if (bot.registered) {
         char buf[MAX_IRC_BUF];
-        const char *reason = "<unknown>";
-        switch (quitting) {
-        case 1:
+        const char *reason = bot.quit_reason;
+        if (!reason)
             reason = "QUIT";
-            break;
-        case 2:
-            reason = "SIGINT";
-            break;
-        }
         snprintf(buf, sizeof(buf), "Exiting due to %s", reason);
         do_quit(buf);
     }
+}
 
-    return 0;
+enum bot_status
+exec_foxbot(void)
+{
+    if (quitting == 2)
+        bot.quit_reason = "SIGINT";
+    if (quitting)
+        return BS_QUIT;
+    if ((bot.flags & RUNTIME_TEST)
+            && bot.msg->command
+            && (strcmp(bot.msg->command, "FOXBOT") == 0))
+        return BS_PAUSED;
+
+    io();
+    return BS_RUNNING;
 }

@@ -37,9 +37,6 @@
 #include "check_foxbot.h"
 #include "check_server.h"
 
-extern int main_foxbot(int argc, char **argv);
-extern void io();
-
 static pthread_t tid;
 
 void
@@ -58,10 +55,12 @@ new_foxbot(int port)
     char *args[] = {
         PREFIX "/bin/foxbot",
         "-tp", s_port, "-c",
-        TESTDIST "/foxbot.conf"
+        TESTDIST "/foxbot.conf",
+        NULL /* C standard requires argv[argc] == NULL */
     };
 
-    main_foxbot(sizeof(args) / sizeof(*args), args);
+    init_foxbot(sizeof(args) / sizeof(*args) - 1, args);
+    while (exec_foxbot() == BS_RUNNING);
 }
 
 int
