@@ -65,7 +65,7 @@ static bool
 set_cap(const char *cap)
 {
     for (size_t i = 0; i < CAP_OPTS; i++) {
-        if (!(bot.ircd->caps_supported & capabilities[i].value)) {
+        if (!cap_supported(capabilities[i].value)) {
             if (strcmp(cap, capabilities[i].name) == 0) {
                 bot.ircd->caps_supported |= capabilities[i].value;
                 if (capabilities[i].bot_supports)
