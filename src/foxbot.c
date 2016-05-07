@@ -131,6 +131,8 @@ init_foxbot(int argc, char **argv)
     *bot.msg = MSG_EMPTY;
     bot.msg->from = xmalloc(sizeof(*bot.msg->from));
     bot.ircd = xmalloc(sizeof(*bot.ircd));
+    bot.ircd->caps_supported = 0x0;
+    bot.ircd->caps_active = 0x0;
     bot.flags = RUNTIME_RUN;
 
     parse_opts(argc, argv);

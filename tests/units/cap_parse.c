@@ -1,5 +1,5 @@
 /*
- *   check_foxbot.c -- May 1 2016 9:31:02 EST
+ *   cap_parse.c -- May 7 2016 01:39:00 EDT
  *
  *   This file is part of the foxbot IRC bot
  *   Copyright (C) 2016 Matt Ullman (staticfox at staticfox dot net)
@@ -19,37 +19,46 @@
  *   Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
  */
-
-#include <errno.h>
 #include <stdio.h>
-#include <stdlib.h>
+#include <foxbot/cap.h>
+#include <foxbot/foxbot.h>
+#include <foxbot/message.h>
 
-#include "check_foxbot.h"
-#include "check_server.h"
+#include "../check_foxbot.h"
+#include "../check_server.h"
 
-static void
-add_testcases(Suite *s)
+START_TEST(check_cap_ls)
 {
-    connect_parse_setup(s);
-    channel_parse_setup(s);
-    memory_setup(s);
-    user_parse_setup(s);
-    cap_parse_setup(s);
+    begin_test();
+
+    ck_assert(cap_supported(EXTENDEDJOIN));
+    ck_assert(!cap_supported(FOXBOTUNITTEST));
+
+    end_test();
 }
+END_TEST
 
-int
-main()
+START_TEST(check_cap_ack)
 {
-    Suite *s = suite_create("check_foxbot");
+    begin_test();
 
-    add_testcases(s);
+    write_and_wait(":ircd.staticfox.net CAP * ACK :staticfox.net/unit_test");
+    ck_assert(cap_active(FOXBOTUNITTEST));
+    fprintf(stderr, "%lu\n", bot.ircd->caps_active);
+    ck_assert(!cap_active(EXTENDEDJOIN));
 
-    SRunner *runner = srunner_create(s);
-    srunner_set_tap(runner, "-");
-    srunner_run_all(runner, CK_NORMAL);
+    end_test();
+}
+END_TEST
 
-    int number_failed = srunner_ntests_failed(runner);
-    srunner_free(runner);
+void
+cap_parse_setup(Suite *s)
+{
+    TCase *tc = tcase_create("cap_parse");
 
-    return (number_failed == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
+    tcase_add_checked_fixture(tc, NULL, delete_foxbot);
+    tcase_add_test(tc, check_cap_ls);
+    tcase_add_test(tc, check_cap_ack);
+
+    suite_add_tcase(s, tc);
 }

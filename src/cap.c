@@ -46,10 +46,9 @@ static const struct {
     { "sasl", SASL, false },
     { "server-time", SERVERTIME, false },
     { "tls", TLS, false },
-    { "userhost-in-names", USERHOSTINNAMES, false }
+    { "userhost-in-names", USERHOSTINNAMES, false },
+    { "staticfox.net/unit_test", FOXBOTUNITTEST, false }
 };
-
-#define CAP_OPTS sizeof(capabilities)/sizeof(*capabilities)
 
 static int
 get_sub_command(const char *cmd)
@@ -58,8 +57,6 @@ get_sub_command(const char *cmd)
         return 1;
     if(strcmp(cmd, "ACK") == 0)
         return 2;
-    if(strcmp(cmd, "REQ") == 0)
-        return 3;
 
     return -1;
 }
@@ -69,7 +66,7 @@ set_cap(const char *cap)
 {
     for (size_t i = 0; i < CAP_OPTS; i++) {
         if (!(bot.ircd->caps_supported & capabilities[i].value)) {
-            if (!strcmp(cap, capabilities[i].name)) {
+            if (strcmp(cap, capabilities[i].name) == 0) {
                 bot.ircd->caps_supported |= capabilities[i].value;
                 if (capabilities[i].bot_supports)
                     return true;
@@ -90,14 +87,15 @@ cap_ack(char *caps)
 
     while ((token = fox_strsep(&caps, " ")) != NULL) {
         for (size_t i = 0; i < CAP_OPTS; i++) {
-            if (!strcmp(token, capabilities[i].name)) {
+            if (strcmp(token, capabilities[i].name) == 0) {
                 bot.ircd->caps_active |= capabilities[i].value;
                 break;
             }
         }
     }
 
-    raw("CAP END\n");
+    if (!bot.registered)
+        raw("CAP END\n");
 }
 
 static void

@@ -28,22 +28,25 @@
 #include <foxbot/ircd.h>
 #include <foxbot/foxbot.h>
 
-#define ACCOUNTNOTIFY   0x00001
-#define ACCOUNTTAG      0x00002
-#define AWAYNOTIFY      0x00004
-#define CAPNOTIFY       0x00008
-#define CHGHOST         0x00010
-#define ECHOMESSAGE     0x00020
-#define EXTENDEDJOIN    0x00040
-#define INVITENOTIFY    0x00080
-#define MULTIPREFIX     0x00100
-#define SASL            0x00200
-#define SERVERTIME      0x00400
-#define TLS             0x00800
-#define USERHOSTINNAMES 0x01000
+#define CAP_OPTS sizeof(capabilities)/sizeof(*capabilities)
+
+#define ACCOUNTNOTIFY   0x000001
+#define ACCOUNTTAG      0x000002
+#define AWAYNOTIFY      0x000004
+#define CAPNOTIFY       0x000008
+#define CHGHOST         0x000010
+#define ECHOMESSAGE     0x000020
+#define EXTENDEDJOIN    0x000040
+#define INVITENOTIFY    0x000080
+#define MULTIPREFIX     0x000100
+#define SASL            0x000200
+#define SERVERTIME      0x000400
+#define TLS             0x000800
+#define USERHOSTINNAMES 0x001000
+#define FOXBOTUNITTEST  0x100000
 
 void handle_cap(void);
-inline bool is_supported(int i) { return (bot.ircd->caps_supported & i); }
-inline bool is_active(int i) { return (bot.ircd->caps_active & i); }
+static inline bool cap_supported(int i) { return (bot.ircd->caps_supported & i); }
+static inline bool cap_active(int i) { return (bot.ircd->caps_active & i); }
 
 #endif
