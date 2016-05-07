@@ -127,12 +127,12 @@ void
 init_foxbot(int argc, char **argv)
 {
     static const struct msg_t MSG_EMPTY;
+    static const struct ircd_t IRCD_EMPTY;
     bot.msg = xmalloc(sizeof(*bot.msg));
     *bot.msg = MSG_EMPTY;
     bot.msg->from = xmalloc(sizeof(*bot.msg->from));
     bot.ircd = xmalloc(sizeof(*bot.ircd));
-    bot.ircd->caps_supported = 0x0;
-    bot.ircd->caps_active = 0x0;
+    *bot.ircd = IRCD_EMPTY;
     bot.flags = RUNTIME_RUN;
 
     parse_opts(argc, argv);
