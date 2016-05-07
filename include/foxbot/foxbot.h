@@ -50,6 +50,7 @@ enum commands {
     ERROR,
     NUMERIC,
     NICK,
+    CAP
 };
 
 enum bot_status {

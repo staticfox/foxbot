@@ -6,7 +6,8 @@ AM_YFLAGS = -d
 
 noinst_LIBRARIES = libfoxbot.a libfoxbotaux.a
 
-libfoxbot_a_SOURCES = channel.c \
+libfoxbot_a_SOURCES = cap.c \
+				 channel.c \
                  conf.c \
                  foxbot.c \
                  irc.c \

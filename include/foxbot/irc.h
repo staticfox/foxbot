@@ -29,5 +29,6 @@ void handle_kick(void);
 void handle_part(void);
 void handle_mode(void);
 void handle_nick(void);
+void handle_cap(void);
 
 #endif

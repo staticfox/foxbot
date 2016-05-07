@@ -27,6 +27,7 @@
 #include <stdbool.h>
 #include <string.h>
 
+#include <foxbot/cap.h>
 #include <foxbot/conf.h>
 #include <foxbot/foxbot.h>
 #include <foxbot/irc.h>
@@ -78,6 +79,7 @@ set_command_enum(void)
     if (do_set_enum("KICK",    KICK)   ) return;
     if (do_set_enum("ERROR",   ERROR)  ) return;
     if (do_set_enum("NICK",    NICK)   ) return;
+    if (do_set_enum("CAP",     CAP)    ) return;
 
     do_error("Unhandled command: %s", bot.msg->command);
 }
@@ -147,6 +149,9 @@ hook_literal(void)
         break;
     case NICK:
         handle_nick();
+        break;
+    case CAP:
+        handle_cap();
         break;
     default:
         break;
