@@ -1,5 +1,5 @@
 /*
- *   user_parse.c -- May 4 2016 05:05:39 EST
+ *   user_parse.c -- May 4 2016 05:05:39 EDT
  *
  *   This file is part of the foxbot IRC bot
  *   Copyright (C) 2016 Matt Ullman (staticfox at staticfox dot net)

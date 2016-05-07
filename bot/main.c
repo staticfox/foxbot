@@ -1,5 +1,5 @@
 /*
- *   main.c -- May 1 2016 19:57:22 EST
+ *   main.c -- May 1 2016 19:57:22 EDT
  *
  *   This file is part of the foxbot IRC bot
  *   Copyright (C) 2016 Matt Ullman (staticfox at staticfox dot net)

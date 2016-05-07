@@ -1,5 +1,5 @@
 /*
- *   config_lexer.l -- April 27 2016 18:42:54 EST
+ *   config_lexer.l -- April 27 2016 18:42:54 EDT
  *
  *   This file is part of the foxbot IRC bot
  *   Copyright (C) 2016 Matt Ullman (staticfox at staticfox dot net)

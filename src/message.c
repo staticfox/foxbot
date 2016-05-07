@@ -1,5 +1,5 @@
 /*
- *   message.c -- April 29 2016 10:07:07 EST
+ *   message.c -- April 29 2016 10:07:07 EDT
  *
  *   This file is part of the foxbot IRC bot
  *   Copyright (C) 2016 Matt Ullman (staticfox at staticfox dot net)

@@ -1,5 +1,5 @@
 /*
- *   check_server.c -- May 1 2016 10:58:00 EST
+ *   check_server.c -- May 1 2016 10:58:00 EDT
  *
  *   This file is part of the foxbot IRC bot
  *   Copyright (C) 2016 Matt Ullman (staticfox at staticfox dot net)

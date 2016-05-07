@@ -1,5 +1,5 @@
 /*
- *   ircd.h -- April 28 2016 19:47:26 EST
+ *   ircd.h -- April 28 2016 19:47:26 EDT
  *
  *   This file is part of the foxbot IRC bot
  *   Copyright (C) 2016 Matt Ullman (staticfox at staticfox dot net)

@@ -1,5 +1,5 @@
 /*
- *   conf.h -- April 27 2016 19:45:35 EST
+ *   conf.h -- April 27 2016 19:45:35 EDT
  *
  *   This file is part of the foxbot IRC bot
  *   Copyright (C) 2016 Matt Ullman (staticfox at staticfox dot net)

@@ -1,5 +1,5 @@
 /*
- *   memory_parse.c -- May 4 2016 02:27:59 EST
+ *   memory_parse.c -- May 4 2016 02:27:59 EDT
  *
  *   This file is part of the foxbot IRC bot
  *   Copyright (C) 2016 Matt Ullman (staticfox at staticfox dot net)

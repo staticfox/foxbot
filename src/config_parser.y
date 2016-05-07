@@ -1,5 +1,5 @@
 /*
- *   config_parser.y -- April 27 2016 18:39:58 EST
+ *   config_parser.y -- April 27 2016 18:39:58 EDT
  *
  *   This file is part of the foxbot IRC bot
  *   Copyright (C) 2016 Matt Ullman (staticfox at staticfox dot net)

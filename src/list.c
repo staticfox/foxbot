@@ -1,5 +1,5 @@
 /*
- *   list.c -- April 28 2016 18:22:29 EST
+ *   list.c -- April 28 2016 18:22:29 EDT
  *
  *   This file is part of the foxbot IRC bot
  *   Copyright (C) 2016 Matt Ullman (staticfox at staticfox dot net)

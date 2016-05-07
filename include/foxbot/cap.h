@@ -1,5 +1,5 @@
 /*
- *   cap.h -- May 7 2016 00:39:57 EST
+ *   cap.h -- May 7 2016 00:39:57 EDT
  *
  *   This file is part of the foxbot IRC bot
  *   Copyright (C) 2016 Matt Ullman (staticfox at staticfox dot net)

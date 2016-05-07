@@ -1,5 +1,5 @@
 /*
- *   foxsocket.h -- April 28 2016 05:19:58 EST
+ *   foxsocket.h -- April 28 2016 05:19:58 EDT
  *
  *   This file is part of the foxbot IRC bot
  *   Copyright (C) 2016 Matt Ullman (staticfox at staticfox dot net)

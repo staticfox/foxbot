@@ -1,5 +1,5 @@
 /*
- *   signal.h -- April 27 2016 15:02:30 EST
+ *   signal.h -- April 27 2016 15:02:30 EDT
  *
  *   This file is part of the foxbot IRC bot
  *   Copyright (C) 2016 Matt Ullman (staticfox at staticfox dot net)

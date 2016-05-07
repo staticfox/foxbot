@@ -1,5 +1,5 @@
 /*
- *   channel.c -- April 30 2016 00:57:23 EST
+ *   channel.c -- April 30 2016 00:57:23 EDT
  *
  *   This file is part of the foxbot IRC bot
  *   Copyright (C) 2016 Matt Ullman (staticfox at staticfox dot net)

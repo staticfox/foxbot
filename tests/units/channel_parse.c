@@ -1,5 +1,5 @@
 /*
- *   channel_parse.c -- May 4 2016 00:12:16 EST
+ *   channel_parse.c -- May 4 2016 00:12:16 EDT
  *
  *   This file is part of the foxbot IRC bot
  *   Copyright (C) 2016 Matt Ullman (staticfox at staticfox dot net)
