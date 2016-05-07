@@ -43,6 +43,7 @@
 #define USERHOSTINNAMES 0x01000
 
 void handle_cap(void);
-inline bool is_supported(int i) { return (bot.ircd->caps & i); }
+inline bool is_supported(int i) { return (bot.ircd->caps_supported & i); }
+inline bool is_active(int i) { return (bot.ircd->caps_active & i); }
 
 #endif

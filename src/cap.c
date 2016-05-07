@@ -32,7 +32,7 @@
 static const struct {
     char *name;
     unsigned value;
-    bool is_supported;
+    bool bot_supports;
 } capabilities[]= {
     { "account-notify", ACCOUNTNOTIFY, false },
     { "account-tag", ACCOUNTTAG, false },
@@ -49,13 +49,17 @@ static const struct {
     { "userhost-in-names", USERHOSTINNAMES, false }
 };
 
+#define CAP_OPTS sizeof(capabilities)/sizeof(*capabilities)
+
 static int
 get_sub_command(const char *cmd)
 {
     if(strcmp(cmd, "LS") == 0)
         return 1;
-    if(strcmp(cmd, "REQ") == 0)
+    if(strcmp(cmd, "ACK") == 0)
         return 2;
+    if(strcmp(cmd, "REQ") == 0)
+        return 3;
 
     return -1;
 }
@@ -63,11 +67,11 @@ get_sub_command(const char *cmd)
 static bool
 set_cap(const char *cap)
 {
-    for (size_t i = 0; i < sizeof(capabilities)/sizeof(*capabilities); i++) {
-        if (!(bot.ircd->caps & capabilities[i].value)) {
+    for (size_t i = 0; i < CAP_OPTS; i++) {
+        if (!(bot.ircd->caps_supported & capabilities[i].value)) {
             if (!strcmp(cap, capabilities[i].name)) {
-                bot.ircd->caps |= capabilities[i].value;
-                if (capabilities[i].is_supported)
+                bot.ircd->caps_supported |= capabilities[i].value;
+                if (capabilities[i].bot_supports)
                     return true;
                 return false;
             }
@@ -75,6 +79,25 @@ set_cap(const char *cap)
     }
 
     return false;
+}
+
+static void
+cap_ack(char *caps)
+{
+    char *token;
+
+    memmove(caps, caps+1, strlen(caps));
+
+    while ((token = fox_strsep(&caps, " ")) != NULL) {
+        for (size_t i = 0; i < CAP_OPTS; i++) {
+            if (!strcmp(token, capabilities[i].name)) {
+                bot.ircd->caps_active |= capabilities[i].value;
+                break;
+            }
+        }
+    }
+
+    raw("CAP END\n");
 }
 
 static void
@@ -91,7 +114,7 @@ cap_ls(char *caps)
             ptr += sprintf(ptr, "%s ", token);
 
     if (strlen(buf) > 0)
-        ptr[strlen(ptr)-1] = 0;
+        ptr[strlen(ptr) - 1] = 0;
 
     *ptr = '\0';
 
@@ -115,6 +138,9 @@ handle_cap(void)
             switch(get_sub_command(token)) {
             case 1:
                 cap_ls(string);
+                break;
+            case 2:
+                cap_ack(string);
                 break;
             default:
                 goto end;

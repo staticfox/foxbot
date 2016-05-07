@@ -43,7 +43,8 @@ struct ircd_t {
         char *prefix;
         char *chan_types;
     } supports;
-    long int caps;
+    long int caps_supported;
+    long int caps_active;
 };
 
 void parse_rpl_welcome(void);
