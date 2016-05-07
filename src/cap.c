@@ -29,25 +29,26 @@
 #include <foxbot/memory.h>
 #include <foxbot/message.h>
 
-static const struct {
-    char *name;
-    unsigned value;
-    bool bot_supports;
+static struct {
+    const char *name;
+    const unsigned value;
+    const bool bot_supports;
+    bool is_sticky;
 } capabilities[]= {
-    { "account-notify", ACCOUNTNOTIFY, false },
-    { "account-tag", ACCOUNTTAG, false },
-    { "away-notify", AWAYNOTIFY, false },
-    { "cap-notify", CAPNOTIFY, false },
-    { "chghost", CHGHOST, false },
-    { "echo-message", ECHOMESSAGE, false },
-    { "extended-join", EXTENDEDJOIN, false },
-    { "invite-notify", INVITENOTIFY, false },
-    { "multi-prefix", MULTIPREFIX, false },
-    { "sasl", SASL, false },
-    { "server-time", SERVERTIME, false },
-    { "tls", TLS, false },
-    { "userhost-in-names", USERHOSTINNAMES, false },
-    { "staticfox.net/unit_test", FOXBOTUNITTEST, false }
+    { "account-notify", ACCOUNTNOTIFY, false, false },
+    { "account-tag", ACCOUNTTAG, false, false },
+    { "away-notify", AWAYNOTIFY, false, false },
+    { "cap-notify", CAPNOTIFY, false, false },
+    { "chghost", CHGHOST, false, false },
+    { "echo-message", ECHOMESSAGE, false, false },
+    { "extended-join", EXTENDEDJOIN, false, false },
+    { "invite-notify", INVITENOTIFY, false, false },
+    { "multi-prefix", MULTIPREFIX, false, false },
+    { "sasl", SASL, false, false },
+    { "server-time", SERVERTIME, false, false },
+    { "tls", TLS, false, false },
+    { "userhost-in-names", USERHOSTINNAMES, false, false },
+    { "staticfox.net/unit_test", FOXBOTUNITTEST, true, false }
 };
 
 static int
@@ -59,6 +60,16 @@ get_sub_command(const char *cmd)
         return 2;
 
     return -1;
+}
+
+bool
+is_sticky(unsigned int cap)
+{
+    for (size_t i = 0; i < CAP_OPTS; i++)
+        if (capabilities[i].value == cap)
+            return capabilities[i].is_sticky;
+
+    return false;
 }
 
 static bool
@@ -86,9 +97,30 @@ cap_ack(char *caps)
     memmove(caps, caps+1, strlen(caps));
 
     while ((token = fox_strsep(&caps, " ")) != NULL) {
+        bool delete = false, sticky = false;
+        switch(token[0]) {
+            case '~':
+            case '-':
+                delete = true;
+                memmove(token, token+1, strlen(token));
+                break;
+            case '=':
+                sticky = true;
+                memmove(token, token+1, strlen(token));
+                break;
+            default:
+                break;
+            }
+
         for (size_t i = 0; i < CAP_OPTS; i++) {
             if (strcmp(token, capabilities[i].name) == 0) {
-                bot.ircd->caps_active |= capabilities[i].value;
+                if (delete)
+                    bot.ircd->caps_active &= ~(capabilities[i].value);
+                else
+                    bot.ircd->caps_active |= (capabilities[i].value);
+
+                if (sticky)
+                    capabilities[i].is_sticky = true;
                 break;
             }
         }

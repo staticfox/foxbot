@@ -44,7 +44,26 @@ START_TEST(check_cap_ack)
 
     write_and_wait(":ircd.staticfox.net CAP * ACK :staticfox.net/unit_test");
     ck_assert(cap_active(FOXBOTUNITTEST));
-    fprintf(stderr, "%lu\n", bot.ircd->caps_active);
+    ck_assert(!cap_active(EXTENDEDJOIN));
+
+    end_test();
+}
+END_TEST
+
+START_TEST(check_cap_modifier)
+{
+    begin_test();
+
+    write_and_wait(":ircd.staticfox.net CAP * ACK :staticfox.net/unit_test");
+    ck_assert(cap_active(FOXBOTUNITTEST));
+    ck_assert(!cap_active(EXTENDEDJOIN));
+    write_and_wait(":ircd.staticfox.net CAP * ACK :-staticfox.net/unit_test");
+    ck_assert(!cap_active(FOXBOTUNITTEST));
+    ck_assert(!cap_active(EXTENDEDJOIN));
+    write_and_wait(":ircd.staticfox.net CAP * ACK :staticfox.net/unit_test");
+    write_and_wait(":ircd.staticfox.net CAP * ACK :=staticfox.net/unit_test");
+    ck_assert(cap_active(FOXBOTUNITTEST));
+    ck_assert(is_sticky(FOXBOTUNITTEST));
     ck_assert(!cap_active(EXTENDEDJOIN));
 
     end_test();
@@ -59,6 +78,7 @@ cap_parse_setup(Suite *s)
     tcase_add_checked_fixture(tc, NULL, delete_foxbot);
     tcase_add_test(tc, check_cap_ls);
     tcase_add_test(tc, check_cap_ack);
+    tcase_add_test(tc, check_cap_modifier);
 
     suite_add_tcase(s, tc);
 }

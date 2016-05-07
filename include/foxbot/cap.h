@@ -46,6 +46,7 @@
 #define FOXBOTUNITTEST  0x100000
 
 void handle_cap(void);
+bool is_sticky(unsigned int cap);
 static inline bool cap_supported(int i) { return (bot.ircd->caps_supported & i); }
 static inline bool cap_active(int i) { return (bot.ircd->caps_active & i); }
 
