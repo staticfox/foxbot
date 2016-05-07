@@ -23,6 +23,7 @@
 #ifndef FOX_USER_H_
 #define FOX_USER_H_
 
+#include <stdbool.h>
 #include <stddef.h>
 
 #include "list.h"
@@ -32,6 +33,12 @@ struct user_t {
     char *nick;
     char *ident;
     char *host;
+    char *gecos;
+    char *flags;
+    char *account;
+    char *server;
+    int hops;
+    bool away;
     size_t number_of_channels;
 };
 

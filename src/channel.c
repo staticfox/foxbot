@@ -61,24 +61,31 @@ channel_count(void)
 void
 add_user_to_channel(struct channel_t *channel, struct user_t *user)
 {
+    static const struct member_t CHANNEL_MEMBER;
     assert(channel != NULL);
     assert(user != NULL);
 
-    if (channel_get_user(channel, user) != NULL) {
+    if (channel_get_membership(channel, user) != NULL) {
         do_error("Attempting to rejoin %s to %s.", user->nick, channel->name);
         return;
     }
 
+    struct member_t *member = xmalloc(sizeof(*member));
+    *member = CHANNEL_MEMBER;
+    member->user = user;
+
     user->number_of_channels++;
-    dlink_insert(&channel->users, user);
+    dlink_insert(&channel->users, member);
 }
 
-struct user_t *
-channel_get_user(struct channel_t *channel, struct user_t *user)
+struct member_t *
+channel_get_membership(struct channel_t *channel, struct user_t *user)
 {
-    DLINK_FOREACH(node, dlist_head(&channel->users))
-        if (((struct user_t *)dlink_data(node)) == user)
-            return (struct user_t *)dlink_data(node);
+    DLINK_FOREACH(node, dlist_head(&channel->users)) {
+        struct member_t *member = dlink_data(node);
+        if (member->user == user)
+            return member;
+    }
 
     return NULL;
 }
@@ -87,7 +94,9 @@ void
 channel_remove_user(struct channel_t *channel, struct user_t *user)
 {
     DLINK_FOREACH(u_node, dlist_head(&channel->users)) {
-        if (((struct user_t *)dlink_data(u_node)) == user) {
+        struct member_t *member = dlink_data(u_node);
+        if (member->user == user) {
+            xfree(member->modes);
             dlink_delete(u_node, &channel->users);
             break;
         }
@@ -118,9 +127,10 @@ delete_channel_s(struct channel_t *channel)
         /* Remove users from the channel. Also delete
          * their cache entry if need be */
         DLINK_FOREACH(u_node, dlist_head(&channel->users)) {
-            struct user_t *user = dlink_data(u_node);
-            if (--user->number_of_channels == 0 && user != bot.user)
-                delete_user(user);
+            struct member_t *member = dlink_data(u_node);
+            if (--member->user->number_of_channels == 0 && member->user != bot.user)
+                delete_user(member->user);
+            xfree(member->modes);
             dlink_delete(u_node, &channel->users);
         }
 

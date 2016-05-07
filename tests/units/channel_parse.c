@@ -39,16 +39,15 @@ START_TEST(simple_channel_check)
 {
     begin_test();
     struct channel_t *chptr; /* The channel we joined */
-    struct user_t *uptr; /* me */
 
     /* Test us joining */
     ck_assert(channel_count() == 2);
     ck_assert((chptr = find_channel("#unit_test")) != NULL);
     ck_assert(dlist_length(&chptr->users) == 1);
-    ck_assert((uptr = channel_get_user(chptr, bot.user)) != NULL);
+    ck_assert_ptr_ne(channel_get_membership(chptr, bot.user), NULL);
     ck_assert((chptr = find_channel(botconfig.debug_channel)) != NULL);
     ck_assert(dlist_length(&chptr->users) == 1);
-    ck_assert((uptr = channel_get_user(chptr, bot.user)) != NULL);
+    ck_assert_ptr_ne(channel_get_membership(chptr, bot.user), NULL);
     end_test();
 }
 END_TEST
@@ -57,20 +56,20 @@ START_TEST(channel_part_check)
 {
     begin_test();
     struct channel_t *chptr, *chptr2;
-    struct user_t *uptr, *uptr2;
+    struct user_t *uptr;
     char ibuf[MAX_IRC_BUF];
 
     ck_assert(botconfig.channel && botconfig.debug_channel);
 
     ck_assert((chptr = find_channel(botconfig.channel)) != NULL);
-    ck_assert((uptr = channel_get_user(chptr, bot.user)) != NULL);
+    ck_assert_ptr_ne(channel_get_membership(chptr, bot.user), NULL);
 
     /* Introduce a new user */
     write_and_wait(":test_user1!~test@255.255.255.255 JOIN #unit_test");
     ck_assert(channel_count() == 2);
     ck_assert(dlist_length(&chptr->users) == 2);
-    ck_assert((uptr2 = find_nick("test_user1")) != NULL);
-    ck_assert(channel_get_user(chptr, uptr2) != NULL);
+    ck_assert((uptr = find_nick("test_user1")) != NULL);
+    ck_assert_ptr_ne(channel_get_membership(chptr, uptr), NULL);
 
     write_and_wait(":test_user1!~test@255.255.255.255 PART #unit_test");
     ck_assert(channel_count() == 2);
@@ -119,20 +118,20 @@ START_TEST(channel_quit_check)
     begin_test();
 
     struct channel_t *chptr, *chptr2;
-    struct user_t *uptr, *uptr2;
+    struct user_t *uptr;
     char ibuf[MAX_IRC_BUF];
     char quitbuf[MAX_IRC_BUF];
 
     ck_assert((chptr = find_channel("#unit_test")) != NULL);
-    ck_assert((uptr = channel_get_user(chptr, bot.user)) != NULL);
+    ck_assert_ptr_ne(channel_get_membership(chptr, bot.user), NULL);
 
     /* Introduce a new user */
     write_and_wait(":test_user1!~test@255.255.255.255 JOIN #unit_test");
     write_and_wait(":test_user2!~test@255.255.255.255 JOIN #unit_test");
     ck_assert(dlist_length(&chptr->users) == 3);
     ck_assert(user_count() == 3);
-    ck_assert((uptr2 = find_nick("test_user2")) != NULL);
-    ck_assert(channel_get_user(chptr, uptr2) != NULL);
+    ck_assert((uptr = find_nick("test_user2")) != NULL);
+    ck_assert_ptr_ne(channel_get_membership(chptr, uptr), NULL);
 
     write_and_wait(":test_user2!~test@255.255.255.255 QUIT :l8r");
     ck_assert(dlist_length(&chptr->users) == 2);
@@ -146,7 +145,7 @@ START_TEST(channel_quit_check)
     ck_assert(channel_count() == 3);
     write_and_wait(":test_user2!~test@255.255.255.255 JOIN #unit_test");
     write_and_wait(":test_user2!~test@255.255.255.255 JOIN #unit_test2");
-    ck_assert((uptr2 = find_nick("test_user2")) != NULL);
+    ck_assert((uptr = find_nick("test_user2")) != NULL);
     ck_assert((chptr2 = find_channel("#unit_test2")) != NULL);
     ck_assert(user_count() == 3);
 
@@ -212,21 +211,21 @@ START_TEST(channel_kick_user)
 {
     begin_test();
     struct channel_t *chptr, *chptr2;
-    struct user_t *uptr, *uptr2, *uptr3;
+    struct user_t *uptr1, *uptr2;
 
     ck_assert((chptr = find_channel("#unit_test")) != NULL);
     ck_assert((chptr2 = find_channel("#test_spam")) != NULL);
-    ck_assert((uptr = channel_get_user(chptr, bot.user)) != NULL);
+    ck_assert_ptr_ne(channel_get_membership(chptr, bot.user), NULL);
 
     /* Introduce a new user */
     write_and_wait(":test_user1!~test@255.255.255.255 JOIN #unit_test");
     write_and_wait(":test_user2!~test@255.255.255.255 JOIN #unit_test");
     ck_assert(dlist_length(&chptr->users) == 3);
     ck_assert(user_count() == 3);
-    ck_assert((uptr2 = find_nick("test_user1")) != NULL);
-    ck_assert((uptr3 = find_nick("test_user2")) != NULL);
-    ck_assert(channel_get_user(chptr, uptr2) != NULL);
-    ck_assert(channel_get_user(chptr, uptr3) != NULL);
+    ck_assert((uptr1 = find_nick("test_user1")) != NULL);
+    ck_assert((uptr2 = find_nick("test_user2")) != NULL);
+    ck_assert_ptr_ne(channel_get_membership(chptr, uptr1), NULL);
+    ck_assert_ptr_ne(channel_get_membership(chptr, uptr2), NULL);
 
     /* test_user1 kicks test_user2 */
     write_and_wait(":test_user1!~test@255.255.255.255 KICK #unit_test test_user2 :Bye.");
@@ -238,15 +237,15 @@ START_TEST(channel_kick_user)
     write_and_wait(":test_user2!~test@255.255.255.255 JOIN #unit_test");
     ck_assert(dlist_length(&chptr->users) == 3);
     ck_assert(user_count() == 3);
-    ck_assert((uptr3 = find_nick("test_user2")) != NULL);
-    ck_assert(channel_get_user(chptr, uptr3) != NULL);
+    ck_assert((uptr2 = find_nick("test_user2")) != NULL);
+    ck_assert_ptr_ne(channel_get_membership(chptr, uptr2), NULL);
 
     /* test_user2 joins another channel we are in */
     write_and_wait(":test_user2!~test@255.255.255.255 JOIN #test_spam");
     ck_assert(dlist_length(&chptr2->users) == 2);
     ck_assert(dlist_length(&chptr->users) == 3);
     ck_assert(user_count() == 3);
-    ck_assert(channel_get_user(chptr2, uptr3) != NULL);
+    ck_assert_ptr_ne(channel_get_membership(chptr2, uptr2), NULL);
 
     /* test_user1 rekicks test_user2, but we should still have info
      * on test_user2 since they are in #test_spam */
@@ -254,8 +253,8 @@ START_TEST(channel_kick_user)
     ck_assert(dlist_length(&chptr->users) == 2);
     ck_assert(dlist_length(&chptr2->users) == 2);
     ck_assert(user_count() == 3);
-    ck_assert((uptr3 = find_nick("test_user2")) != NULL);
-    ck_assert(uptr3->nick != NULL);
+    ck_assert((uptr2 = find_nick("test_user2")) != NULL);
+    ck_assert(uptr2->nick != NULL);
 
     end_test();
 }
@@ -265,20 +264,20 @@ START_TEST(channel_kick_me)
 {
     begin_test();
     struct channel_t *chptr, *chptr2;
-    struct user_t *uptr, *uptr2, *uptr3;
+    struct user_t *uptr1, *uptr2;
 
     ck_assert((chptr = find_channel("#unit_test")) != NULL);
     ck_assert((chptr2 = find_channel("#test_spam")) != NULL);
-    ck_assert((uptr = channel_get_user(chptr, bot.user)) != NULL);
+    ck_assert_ptr_ne(channel_get_membership(chptr, bot.user), NULL);
 
     write_and_wait(":test_user1!~test@255.255.255.255 JOIN #unit_test");
     write_and_wait(":test_user2!~test@255.255.255.255 JOIN #unit_test");
     ck_assert(dlist_length(&chptr->users) == 3);
     ck_assert(user_count() == 3);
-    ck_assert((uptr2 = find_nick("test_user1")) != NULL);
-    ck_assert((uptr3 = find_nick("test_user2")) != NULL);
-    ck_assert(channel_get_user(chptr, uptr2) != NULL);
-    ck_assert(channel_get_user(chptr, uptr3) != NULL);
+    ck_assert((uptr1 = find_nick("test_user1")) != NULL);
+    ck_assert((uptr2 = find_nick("test_user2")) != NULL);
+    ck_assert_ptr_ne(channel_get_membership(chptr, uptr1), NULL);
+    ck_assert_ptr_ne(channel_get_membership(chptr, uptr2), NULL);
 
     /* we get kicked from #unit_test */
     write_and_wait(":test_user1!~test@255.255.255.255 KICK #unit_test foxbot :Bye.");
