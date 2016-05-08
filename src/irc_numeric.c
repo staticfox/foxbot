@@ -29,8 +29,22 @@
 #include <foxbot/memory.h>
 #include <foxbot/user.h>
 
+static unsigned int
+modchar_to_bitflag(const char f)
+{
+    switch(f) {
+    case '~': return CFLAG_OWNER;
+    case '&': return CFLAG_ADMIN;
+    case '@': return CFLAG_OPERATOR;
+    case '%': return CFLAG_HALFOP;
+    case '+': return CFLAG_VOICE;
+    case '-': return CFLAG_USEROP;
+    default:  return CFLAG_SPECIAL;
+    }
+}
+
 static void
-set_flags(char *flags, struct member_t *member)
+set_flags(const char *flags, struct member_t *member)
 {
     char flag_buf[MAX_IRC_BUF];
     char *ptr = flag_buf;
@@ -45,35 +59,27 @@ set_flags(char *flags, struct member_t *member)
             if (flags[ii] == bot.ircd->supports.prefix[jj]) {
                 /* If the mode isn't in this table, then we don't
                  * know what to call it. Thanks InspIRCd :/ */
-                switch(flags[ii]) {
-                    case '~': member->opstatus |= CFLAG_OWNER; break;
-                    case '&': member->opstatus |= CFLAG_ADMIN; break;
-                    case '@': member->opstatus |= CFLAG_OPERATOR; break;
-                    case '%': member->opstatus |= CFLAG_HALFOP; break;
-                    case '+': member->opstatus |= CFLAG_VOICE; break;
-                    case '-': member->opstatus |= CFLAG_USEROP; break;
-                    default: member->opstatus |= CFLAG_SPECIAL; break;
-                }
+                member->opstatus |= modchar_to_bitflag(flags[ii]);
                 goto next;
             }
         }
 
         switch(flags[ii]) {
-            case 'G':
-                member->user->away = true;
-                break;
-            case 'H':
-                member->user->away = false;
-                break;
-            case '*':
-                member->user->ircop = true;
-                break;
-            default:
-                ptr += sprintf(ptr, "%c", flags[ii]);
-                break;
+        case 'G':
+            member->user->away = true;
+            break;
+        case 'H':
+            member->user->away = false;
+            break;
+        case '*':
+            member->user->ircop = true;
+            break;
+        default:
+            ptr += sprintf(ptr, "%c", flags[ii]);
+            break;
         }
 next:
-    continue;
+        continue;
     }
 
     *ptr = 0;
