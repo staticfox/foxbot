@@ -135,8 +135,6 @@ parse_rpl_whoreply(void)
             xfree(member->user->gecos);
             if (bot.msg->params + length + 1)
                 member->user->gecos = xstrdup(bot.msg->params + length);
-            else
-                member->user->gecos = NULL;
             goto done;
             break;
         }
@@ -212,8 +210,6 @@ parse_rpl_whospcrpl(void)
             xfree(member->user->gecos);
             if (bot.msg->params + length + 1)
                 member->user->gecos = xstrdup(bot.msg->params + length + 1);
-            else
-                member->user->gecos = NULL;
             goto done;
             break;
         }

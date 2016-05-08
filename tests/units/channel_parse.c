@@ -386,6 +386,10 @@ START_TEST(channel_who_spcrpl_ts6)
 
     ck_assert_ptr_eq(member->user, user);
 
+    write_and_wait(":ircd.staticfox.net 354 foxbot #unknown ~fox 192.168.hwo.mh ircd.staticfox.net foxbot H 0 0 0 ::3");
+    wait_for_last_buf("PRIVMSG %s :Received WHO for unknown channel #unknown.",
+                      botconfig.debug_channel);
+
     end_test();
 }
 END_TEST
@@ -442,6 +446,32 @@ START_TEST(channel_who_spcrpl_inspircd)
 
     ck_assert_ptr_eq(member->user, user);
 
+    write_and_wait(":ircd.staticfox.net 352 foxbot #unknown ~fox 192.168.hwo.mh ircd.staticfox.net foxbot H*!~@ :0 ...");
+    wait_for_last_buf("PRIVMSG %s :Received WHO for unknown channel #unknown.",
+                      botconfig.debug_channel);
+
+    end_test();
+}
+END_TEST
+
+START_TEST(channel_who_flag)
+{
+    begin_test_server(0);
+    struct channel_t *channel;
+    struct member_t *member;
+    struct user_t *user;
+
+    write_and_wait(":ircd.staticfox.net 354 foxbot #unit_test ~fox 192.168.hwo.mh ircd.staticfox.net foxbot Hd 0 0 0 ::3");
+    write_and_wait(":ircd.staticfox.net 315 foxbot #unit_test :End of /WHO list.");
+
+    ck_assert(bot.ircd->supports.whox == true);
+
+    ck_assert_ptr_ne(user = find_nick("foxbot"), NULL);
+    ck_assert_ptr_ne(channel = find_channel("#unit_test"), NULL);
+    ck_assert_ptr_ne(member = channel_get_membership(channel, user), NULL);
+
+    ck_assert_str_eq(user->flags, "d");
+
     end_test();
 }
 END_TEST
@@ -466,6 +496,7 @@ channel_parse_setup(Suite *s)
     tcase_add_test(tc, channel_unknown_kick_target);
     tcase_add_test(tc, channel_who_spcrpl_ts6);
     tcase_add_test(tc, channel_who_spcrpl_inspircd);
+    tcase_add_test(tc, channel_who_flag);
 
     suite_add_tcase(s, tc);
 }
