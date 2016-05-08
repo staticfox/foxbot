@@ -73,4 +73,9 @@ xensure0_(int value,
     return value;
 }
 
+#ifdef COVERAGE
+#undef panic
+#define panic(...) (void)0
+#endif
+
 #endif

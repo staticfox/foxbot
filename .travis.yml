@@ -76,14 +76,18 @@ before_script:
     # must set these flags after installation to avoid running coverage on
     # other dependencies like libcheck
   - if [ "$BUILD_TYPE" = coverage ]; then
-      export CFLAGS="$CFLAGS --coverage" LDFLAGS="$LDFLAGS --coverage";
+      export CFLAGS="$CFLAGS --coverage"
+             CPPFLAGS="$CPPFLAGS -DCOVERAGE"
+             LDFLAGS="$LDFLAGS --coverage";
     fi
 
 after_success:
   - if [ "$BUILD_TYPE" = coverage ]; then
       lcov -c -o coverage.info -d src &&
       lcov -r coverage.info -o coverage.info
+        include/foxbot/error.h
         src/config_lexer.c
+        src/error.c
         src/config_lexer.l
         src/config_parser.c
         &&
