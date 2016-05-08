@@ -164,7 +164,6 @@ parse_rpl_isupport(void)
             bool mode = true;
 
             for (size_t ii = 0, pos = 0; value[ii] != '\0'; ii++) {
-                fprintf(stderr, "Prefix char (%c)\n", value[ii]);
                 switch(value[ii]) {
                 case '(':
                     continue;
