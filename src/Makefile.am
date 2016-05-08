@@ -10,7 +10,8 @@ libfoxbot_a_SOURCES = cap.c \
 				 channel.c \
                  conf.c \
                  foxbot.c \
-                 irc.c \
+                 irc_literal.c \
+                 irc_numeric.c \
                  ircd.c \
                  list.c \
                  memory.c \

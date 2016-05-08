@@ -58,24 +58,27 @@ channel_count(void)
     return dlist_length(&channels);
 }
 
-void
+struct member_t *
 add_user_to_channel(struct channel_t *channel, struct user_t *user)
 {
     static const struct member_t CHANNEL_MEMBER;
+    struct member_t *member = NULL;
     assert(channel != NULL);
     assert(user != NULL);
 
-    if (channel_get_membership(channel, user) != NULL) {
+    if ((member = channel_get_membership(channel, user)) != NULL) {
         do_error("Attempting to rejoin %s to %s.", user->nick, channel->name);
-        return;
+        return member;
     }
 
-    struct member_t *member = xmalloc(sizeof(*member));
+    member = xmalloc(sizeof(*member));
     *member = CHANNEL_MEMBER;
     member->user = user;
 
     user->number_of_channels++;
     dlink_insert(&channel->users, member);
+
+    return member;
 }
 
 struct member_t *
@@ -96,7 +99,6 @@ channel_remove_user(struct channel_t *channel, struct user_t *user)
     DLINK_FOREACH(u_node, dlist_head(&channel->users)) {
         struct member_t *member = dlink_data(u_node);
         if (member->user == user) {
-            xfree(member->modes);
             dlink_delete(u_node, &channel->users);
             break;
         }
@@ -130,7 +132,6 @@ delete_channel_s(struct channel_t *channel)
             struct member_t *member = dlink_data(u_node);
             if (--member->user->number_of_channels == 0 && member->user != bot.user)
                 delete_user(member->user);
-            xfree(member->modes);
             dlink_delete(u_node, &channel->users);
         }
 

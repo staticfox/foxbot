@@ -39,6 +39,8 @@ struct user_t {
     char *server;
     int hops;
     bool away;
+    bool ircop;
+    unsigned long idle;
     size_t number_of_channels;
 };
 

@@ -1,5 +1,5 @@
 /*
- *   irc.c -- April 29 2016 10:12:47 EDT
+ *   irc_literal.c -- April 29 2016 10:12:47 EDT
  *
  *   This file is part of the foxbot IRC bot
  *   Copyright (C) 2016 Matt Ullman (staticfox at staticfox dot net)
@@ -92,8 +92,13 @@ handle_join(void)
     }
 
     /* Must be us */
-    if (channel == NULL)
+    if (channel == NULL) {
         channel = create_channel(bot.msg->target);
+        if (bot.ircd->supports.whox)
+            raw("WHO %s %%acdfhlnrsu\n", channel->name);
+        else
+            raw("WHO %s\n", channel->name);
+    }
 
     add_user_to_channel(channel, bot.msg->from);
 }

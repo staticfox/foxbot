@@ -1,5 +1,5 @@
 /*
- *   irc.h -- April 29 2016 10:14:04 EDT
+ *   irc_numeric.h -- May 7 2016 20:42:07 EDT
  *
  *   This file is part of the foxbot IRC bot
  *   Copyright (C) 2016 Matt Ullman (staticfox at staticfox dot net)
@@ -20,15 +20,9 @@
  *
  */
 
-#ifndef FOX_IRC_H_
-#define FOX_IRC_H_
+#ifndef FOX_IRC_NUMERIC_H_
+#define FOX_IRC_NUMERIC_H_
 
-void handle_quit(void);
-void handle_join(void);
-void handle_kick(void);
-void handle_part(void);
-void handle_mode(void);
-void handle_nick(void);
-void handle_cap(void);
+void parse_rpl_whospcrpl(void);
 
 #endif

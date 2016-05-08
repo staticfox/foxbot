@@ -29,6 +29,14 @@
 #include "list.h"
 #include "user.h"
 
+#define CFLAG_USEROP    0x01
+#define CFLAG_VOICE     0x02
+#define CFLAG_HALFOP    0x04
+#define CFLAG_OPERATOR  0x08
+#define CFLAG_ADMIN     0x10
+#define CFLAG_OWNER     0x20
+#define CFLAG_SPECIAL   0x40
+
 struct channel_t {
     char *name;
     char *modes;
@@ -37,12 +45,7 @@ struct channel_t {
 
 struct member_t {
     struct user_t *user;
-    char *modes;
-    bool owner;
-    bool admin;
-    bool operator;
-    bool voice;
-    bool user_op;
+    unsigned long int opstatus;
     time_t joined;
 };
 
@@ -55,8 +58,8 @@ struct channel_t * create_channel(const char *name);
 /** Returns the amount of channels within the cache */
 size_t channel_count(void);
 
-/** Add a `#user_t` to a channel. */
-void add_user_to_channel(struct channel_t *channel, struct user_t *user);
+/** Add a `#user_t` to a channel. Returns a `#member_t`. */
+struct member_t * add_user_to_channel(struct channel_t *channel, struct user_t *user);
 
 /** Delete '#user_t' from all channels. */
 void channel_quit_user(struct user_t *user);
@@ -73,5 +76,13 @@ void delete_channel_s(struct channel_t *channel);
 
 /** Look up a channel by name in the global channel cache. */
 struct channel_t * find_channel(const char *name);
+
+static inline bool member_is_special(const struct member_t *member) { return member->opstatus & CFLAG_SPECIAL; }
+static inline bool member_is_owner(const struct member_t *member) { return member->opstatus & CFLAG_OWNER; }
+static inline bool member_is_admin(const struct member_t *member) { return member->opstatus & CFLAG_ADMIN; }
+static inline bool member_is_op(const struct member_t *member) { return member->opstatus & CFLAG_OPERATOR; }
+static inline bool member_is_halfop(const struct member_t *member) { return member->opstatus & CFLAG_HALFOP; }
+static inline bool member_is_voice(const struct member_t *member) { return member->opstatus & CFLAG_VOICE; }
+static inline bool member_is_userop(const struct member_t *member) { return member->opstatus & CFLAG_USEROP; }
 
 #endif

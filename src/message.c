@@ -30,7 +30,8 @@
 #include <foxbot/cap.h>
 #include <foxbot/conf.h>
 #include <foxbot/foxbot.h>
-#include <foxbot/irc.h>
+#include <foxbot/irc_literal.h>
+#include <foxbot/irc_numeric.h>
 #include <foxbot/ircd.h>
 #include <foxbot/memory.h>
 #include <foxbot/message.h>
@@ -119,6 +120,9 @@ hook_numeric(void)
         break;
     case   5: /* RPL_ISUPPORT */
         parse_rpl_isupport();
+        break;
+    case 354: /* RPL_WHOSPCRPL */
+        parse_rpl_whospcrpl();
         break;
     case 421: /* ERR_UNKNOWNCOMMAND */
         do_error(bot.msg->buffer);
