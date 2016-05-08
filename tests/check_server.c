@@ -59,7 +59,7 @@ static bool got_nick, got_user, connected;
 static char *check_nick, *check_user;
 char *last_buffer;
 static int notification_pipe[2] = {-1, -1};
-static tsrope write_queue;
+static tsrope write_queue = TSROPE_EMPTY;
 
 void
 wait_for_server_notification(void)
