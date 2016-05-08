@@ -114,6 +114,10 @@ delete_user(struct user_t *user)
         xfree(user->nick);
         xfree(user->ident);
         xfree(user->host);
+        xfree(user->gecos);
+        xfree(user->flags);
+        xfree(user->account);
+        xfree(user->server);
         xfree(user);
         dlink_delete(node, &users);
         return;
