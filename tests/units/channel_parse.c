@@ -403,6 +403,8 @@ START_TEST(channel_who_spcrpl_inspircd)
     write_and_wait(":ircd.staticfox.net 352 foxbot #unit_test ChanServ services.int services.staticfox.net ChanServ H*@ :0 Channel Services");
     write_and_wait(":ircd.staticfox.net 352 foxbot #unit_test :End of /WHO list.");
 
+    ck_assert(bot.ircd->supports.whox == false);
+
     ck_assert_ptr_ne(user = find_nick("foxbot"), NULL);
     ck_assert_ptr_ne(channel = find_channel("#unit_test"), NULL);
     ck_assert_ptr_ne(member = channel_get_membership(channel, user), NULL);
