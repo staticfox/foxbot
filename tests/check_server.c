@@ -80,9 +80,8 @@ trigger_server_notification(void)
     }
 }
 
-/* Simulate an introduction to the IRC server. Wheeeeee! */
-void
-do_burst(void)
+static void
+ts6_burst(void)
 {
     fox_write(":ircd.staticfox.net NOTICE * :*** Ident disabled, not checking ident\r\n");
     fox_write(":ircd.staticfox.net NOTICE * :*** Looking up your hostname...\r\n");
@@ -104,8 +103,49 @@ do_burst(void)
     fox_write(":ircd.staticfox.net 375 %s :- ircd.staticfox.net Message of the Day -\r\n", check_nick);
     fox_write(":ircd.staticfox.net 372 %s :- Not an important MOTD\r\n", check_nick);
     fox_write(":ircd.staticfox.net 376 %s :End of /MOTD command.\r\n", check_nick);
-    fox_write(":%s MODE %s :+i\r\n", check_nick, check_nick);
+}
 
+static void
+inspircd_burst(void)
+{
+    fox_write(":ircd.staticfox.net NOTICE Auth :*** Looking up your hostname...\r\n");
+    fox_write(":ircd.staticfox.net NOTICE Auth :*** Found your hostname (localhost.localdomain) -- cached\r\n");
+    fox_write(":ircd.staticfox.net NOTICE Auth :Welcome to StaticFox!\r\n");
+    fox_write(":ircd.staticfox.net 001 %s :Welcome to the StaticFox IRC Network %s!%s@127.0.0.1\r\n", check_nick, check_nick, check_user);
+    fox_write(":ircd.staticfox.net 002 %s :Your host is ircd.staticfox.net, running version InspIRCd-2.0\r\n", check_nick);
+    fox_write(":ircd.staticfox.net 003 %s :This server was created 09:42:41 Sep 26 2015\r\n", check_nick);
+    fox_write(":ircd.staticfox.net 004 %s ircd.staticfox.net InspIRCd-2.0 BGcgioswx BCGINOPQYabceghiklmnopqstuv IYabeghkloqv\r\n", check_nick);
+    fox_write(":ircd.staticfox.net 005 %s AWAYLEN=200 CALLERID=g CASEMAPPING=rfc1459 CHANMODES=Ibeg,k,l,BCGNOPQcimnpstu CHANNELLEN=64 CHANTYPES=# CHARSET=ascii ELIST=MU EXCEPTS=e EXTBAN=,BCNOQcm FNC INVEX=I KICKLEN=255 :are supported by this server\r\n", check_nick);
+    fox_write(":ircd.staticfox.net 005 %s MAP MAXBANS=60 MAXCHANNELS=20 MAXPARA=32 MAXTARGETS=20 MODES=20 NETWORK=StaticFox NICKLEN=31 OVERRIDE PREFIX=(Yqaohv)!~&@%%+ STATUSMSG=!~&@%%+ TOPICLEN=307 VBANLIST :are supported by this server\r\n", check_nick);
+    fox_write(":ircd.staticfox.net 005 %s WALLCHOPS WALLVOICES :are supported by this server\r\n", check_nick);
+    fox_write(":ircd.staticfox.net 042 %s 504AAAAAF :your unique ID\r\n", check_nick);
+    fox_write(":ircd.staticfox.net 375 %s :ircd.staticfox.net message of the day\r\n", check_nick);
+    fox_write(":ircd.staticfox.net 372 %s :- Not an important MOTD\r\n", check_nick);
+    fox_write(":ircd.staticfox.net 376 %s :End of message of the day.\r\n", check_nick);
+    fox_write(":ircd.staticfox.net 251 %s :There are 1 users and 0 invisible on 1 servers\r\n", check_nick);
+    fox_write(":ircd.staticfox.net 254 %s 0 :channels formed\r\n", check_nick);
+    fox_write(":ircd.staticfox.net 255 %s :I have 1 clients and 0 servers\r\n", check_nick);
+    fox_write(":ircd.staticfox.net 265 %s :Current Local Users: 1  Max: 2\r\n", check_nick);
+    fox_write(":ircd.staticfox.net 266 %s :Current Global Users: 1  Max: 2\r\n", check_nick);
+}
+
+/* Simulate an introduction to the IRC server. Wheeeeee! */
+void
+do_burst(int i)
+{
+    switch(i) {
+    case 0:
+        ts6_burst();
+        break;
+    case 1:
+        inspircd_burst();
+        break;
+    default:
+        ts6_burst();
+        break;
+    }
+
+    fox_write(":%s MODE %s :+i\r\n", check_nick, check_nick);
     /* Needed to give the bot an idea of what its n!u@h is */
     fox_write(":%s!~%s@127.0.0.1 JOIN %s\r\n", check_nick, check_user, botconfig.channel);
     fox_write(":ircd.staticfox.net 353 %s = %s :%s\r\n", check_nick, botconfig.channel, check_nick);
@@ -175,7 +215,7 @@ parse_buffer(const char *buf)
                 }
                 goto end;
             } else if (cmd == CHECK_JOIN) {
-                fox_write(":%s!~%s@127.0.0.1 JOIN %s\r\n", check_nick, check_user, token);
+                //fox_write(":%s!~%s@127.0.0.1 JOIN %s\r\n", check_nick, check_user, token);
                 goto end;
             }
             break;

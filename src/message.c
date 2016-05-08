@@ -121,6 +121,9 @@ hook_numeric(void)
     case   5: /* RPL_ISUPPORT */
         parse_rpl_isupport();
         break;
+    case 352: /* RPL_WHOREPLY */
+        parse_rpl_whoreply();
+        break;
     case 354: /* RPL_WHOSPCRPL */
         parse_rpl_whospcrpl();
         break;

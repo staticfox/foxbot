@@ -88,7 +88,7 @@ void fox_write(const char *line, ...);
 void fox_shutdown(void);
 void * start_listener(void *unused);
 void shutdown_test_server(void);
-void do_burst(void);
+void do_burst(int i);
 void wait_for_server_notification(void);
 /** Wait until the server listener has finished processing all pending
   * messages. */

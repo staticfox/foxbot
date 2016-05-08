@@ -85,6 +85,73 @@ next:
 }
 
 void
+parse_rpl_whoreply(void)
+{
+    char *token, *string, *tofree;
+    char *ident = NULL, *host = NULL, *server = NULL;
+    struct channel_t *channel;
+    struct member_t *member;
+    struct user_t *user;
+    size_t length = 0;
+    int i = 0;
+
+    tofree = string = xstrdup(bot.msg->params);
+
+    while ((token = fox_strsep(&string, " ")) != NULL) {
+        switch(i) {
+        case 0:
+            channel = find_channel(token);
+            if (!channel) {
+                do_error("Received WHO for unknown channel %s.", token);
+                goto done;
+            }
+            break;
+        case 1:
+            ident = xstrdup(token);
+            break;
+        case 2:
+            host = xstrdup(token);
+            break;
+        case 3:
+            server = xstrdup(token);
+            break;
+        case 4:
+            user = find_nick(token);
+            if (!user)
+                user = make_nuh(token, ident, host);
+            xfree(user->server);
+            user->server = xstrdup(server);
+            member = channel_get_membership(channel, user);
+            if (!member)
+                member = add_user_to_channel(channel, user);
+            break;
+        case 5:
+            set_flags(token, member);
+            break;
+        case 6:
+            user->hops = atoi(token + 1);
+            break;
+        default:
+            xfree(member->user->gecos);
+            if (bot.msg->params + length + 1)
+                member->user->gecos = xstrdup(bot.msg->params + length);
+            else
+                member->user->gecos = NULL;
+            goto done;
+            break;
+        }
+        length += strlen(token) + 1;
+        i++;
+    }
+
+done:
+    xfree(tofree);
+    xfree(ident);
+    xfree(host);
+    xfree(server);
+}
+
+void
 parse_rpl_whospcrpl(void)
 {
     char *token, *string, *tofree;

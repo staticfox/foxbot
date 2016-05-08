@@ -27,6 +27,7 @@ void new_foxbot(int port);
 void delete_foxbot(void);
 int new_testserver(void);
 void begin_test(void);
+void begin_test_server(int i);
 void end_test(void);
 
 /* Unit tests */

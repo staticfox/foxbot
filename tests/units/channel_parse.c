@@ -330,7 +330,7 @@ START_TEST(channel_unknown_kick_target)
 }
 END_TEST
 
-START_TEST(channel_who_spcrpl)
+START_TEST(channel_who_spcrpl_ts6)
 {
     begin_test();
     struct channel_t *channel;
@@ -390,6 +390,60 @@ START_TEST(channel_who_spcrpl)
 }
 END_TEST
 
+START_TEST(channel_who_spcrpl_inspircd)
+{
+    begin_test_server(1);
+    struct channel_t *channel;
+    struct member_t *member;
+    struct user_t *user;
+
+    write_and_wait(":ircd.staticfox.net 352 foxbot #unit_test ~fox 192.168.hwo.mh ircd.staticfox.net foxbot H*!~@ :0 ...");
+    write_and_wait(":ircd.staticfox.net 352 foxbot #unit_test ~kvirc64 host.two ircd.staticfox.net staticfox H*@& :2 ...");
+    write_and_wait(":ircd.staticfox.net 352 foxbot #unit_test ~fox 73.205.jzy.por ircd.staticfox.net windows-foxbot G%+ :3 lol thing");
+    write_and_wait(":ircd.staticfox.net 352 foxbot #unit_test ChanServ services.int services.staticfox.net ChanServ H*@ :0 Channel Services");
+    write_and_wait(":ircd.staticfox.net 352 foxbot #unit_test :End of /WHO list.");
+
+    ck_assert_ptr_ne(user = find_nick("foxbot"), NULL);
+    ck_assert_ptr_ne(channel = find_channel("#unit_test"), NULL);
+    ck_assert_ptr_ne(member = channel_get_membership(channel, user), NULL);
+
+    ck_assert(member_is_special(member) == true);
+    ck_assert(member_is_owner(member) == true);
+    ck_assert(member_is_admin(member) == false);
+    ck_assert(member_is_op(member) == true);
+    ck_assert(member_is_halfop(member) == false);
+    ck_assert(member_is_voice(member) == false);
+    ck_assert(member_is_userop(member) == false);
+
+    ck_assert(user->away == false);
+    ck_assert_str_eq(user->server, "ircd.staticfox.net");
+    ck_assert_int_eq(user->hops, 0);
+    ck_assert_str_eq(user->gecos, "...");
+
+    ck_assert_ptr_eq(member->user, user);
+
+    ck_assert_ptr_ne(user = find_nick("windows-foxbot"), NULL);
+    ck_assert_ptr_ne(member = channel_get_membership(channel, user), NULL);
+
+    ck_assert(member_is_special(member) == false);
+    ck_assert(member_is_owner(member) == false);
+    ck_assert(member_is_admin(member) == false);
+    ck_assert(member_is_op(member) == false);
+    ck_assert(member_is_halfop(member) == true);
+    ck_assert(member_is_voice(member) == true);
+    ck_assert(member_is_userop(member) == false);
+
+    ck_assert(user->away == true);
+    ck_assert_str_eq(user->server, "ircd.staticfox.net");
+    ck_assert_int_eq(user->hops, 3);
+    ck_assert_str_eq(user->gecos, "lol thing");
+
+    ck_assert_ptr_eq(member->user, user);
+
+    end_test();
+}
+END_TEST
+
 void
 channel_parse_setup(Suite *s)
 {
@@ -408,7 +462,8 @@ channel_parse_setup(Suite *s)
     tcase_add_test(tc, channel_kick_me);
     tcase_add_test(tc, channel_unknown_kick_chan);
     tcase_add_test(tc, channel_unknown_kick_target);
-    tcase_add_test(tc, channel_who_spcrpl);
+    tcase_add_test(tc, channel_who_spcrpl_ts6);
+    tcase_add_test(tc, channel_who_spcrpl_inspircd);
 
     suite_add_tcase(s, tc);
 }

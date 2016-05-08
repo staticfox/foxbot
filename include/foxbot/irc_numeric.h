@@ -24,5 +24,6 @@
 #define FOX_IRC_NUMERIC_H_
 
 void parse_rpl_whospcrpl(void);
+void parse_rpl_whoreply(void);
 
 #endif

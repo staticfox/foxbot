@@ -94,13 +94,26 @@ delete_testserver(void)
 }
 
 void
+begin_test_server(int i)
+{
+    int nport;
+    nport = new_testserver();
+    new_foxbot(nport);
+    yield_to_server();
+    do_burst(i);
+    /* Need to do this a few times to process the channel joins */
+    yield_to_server();
+    yield_to_server();
+}
+
+void
 begin_test(void)
 {
     int nport;
     nport = new_testserver();
     new_foxbot(nport);
     yield_to_server();
-    do_burst();
+    do_burst(0);
     /* Need to do this a few times to process the channel joins */
     yield_to_server();
     yield_to_server();
