@@ -9,6 +9,7 @@ noinst_LIBRARIES = libfoxbot.a libfoxbotaux.a
 libfoxbot_a_SOURCES = cap.c \
 				 channel.c \
                  conf.c \
+                 error.c \
                  foxbot.c \
                  irc_literal.c \
                  irc_numeric.c \

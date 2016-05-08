@@ -256,14 +256,14 @@ fox_write(const char *line, ...)
     vsnprintf(buf, MAX_IRC_BUF, line, ap);
     va_end(ap);
 
-    append_tsrope(&write_queue, alloc_rope_segment(buf, strlen(buf) + 1));
+    append_tsrope(&write_queue, xalloc_rope_segment(buf, strlen(buf) + 1));
 }
 
 void
 fox_shutdown(void)
 {
     char nothing;
-    append_tsrope(&write_queue, alloc_rope_segment(&nothing, 0));
+    append_tsrope(&write_queue, xalloc_rope_segment(&nothing, 0));
 }
 
 /* Write thread. */
@@ -273,8 +273,10 @@ start_writer(void *client_sock_fd_ptr)
     const int client_sock_fd = *(const int *)client_sock_fd_ptr;
     while (1) {
         struct rope_segment *const s = waitshift_tsrope(&write_queue);
-        if (!s->len)
+        if (!s->len) {
+            xfree(s);
             break;
+        }
         if (write(client_sock_fd, s->data, s->len - 1) < 0) {
             fprintf(stderr, "[Server] Write error: %s\n", strerror(errno));
             exit(EXIT_FAILURE);

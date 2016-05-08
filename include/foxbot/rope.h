@@ -36,18 +36,26 @@ struct rope_segment {
 
 /** A singly linked list of char arrays. */
 typedef struct {
-    size_t _len;
+    size_t _len;                        /* Total number of bytes */
+    size_t _count;                      /* Number of segments */
     struct rope_segment *_head;
     struct rope_segment *_tail;
 } rope;
 
-#define ROPE_EMPTY {0, NULL, NULL}
+/** An empty rope initializer. */
+#define ROPE_EMPTY {0, 0, NULL, NULL}
 
-/** Create a new rope segment from the given bytes. The segment can be later
-    deallocated using `free`. */
-struct rope_segment *alloc_rope_segment(const char *val, size_t len);
+/** Allocate a new rope segment with the given bytes as data.  The segment can
+  * be later deallocated using `free`. */
+struct rope_segment *xalloc_rope_segment(const void *data, size_t len);
 
-/** Attach a new segment to the end of the rope. */
+/** Get the total number of bytes in a rope. */
+static inline size_t rope_len(const rope *r) { return r->_len; }
+
+/** Get the number of segments in a rope. */
+static inline size_t rope_count(const rope *r) { return r->_count; }
+
+/** Attach a new segment to the end of a rope. */
 void append_rope(rope *r, struct rope_segment *s);
 
 /** Remove the head and return it.  Be sure to free it later.  Returns `NULL`
@@ -57,15 +65,23 @@ struct rope_segment *shift_rope(rope *r);
 /** Remove all elements from the rope and free all its used memory. */
 void clear_rope(rope *r);
 
-/** Like `rope`, but thread-safe. */
+/** Like `#rope`, but thread-safe. */
 typedef struct {
     pthread_cond_t _cond;    /* Used to notify threads waiting for segments */
     pthread_mutex_t _mutex;
     rope _rope;
+#ifndef NDEBUG
+    char _is_initialized;
+#endif
 } tsrope;
 
+#ifdef NDEBUG
 #define TSROPE_EMPTY                                                    \
     {PTHREAD_COND_INITIALIZER, PTHREAD_MUTEX_INITIALIZER, ROPE_EMPTY}
+#else
+#define TSROPE_EMPTY                                                    \
+    {PTHREAD_COND_INITIALIZER, PTHREAD_MUTEX_INITIALIZER, ROPE_EMPTY, 1}
+#endif
 
 /** Attach a new segment to the end of the rope. */
 void append_tsrope(tsrope *r, struct rope_segment *s);
@@ -74,7 +90,7 @@ void append_tsrope(tsrope *r, struct rope_segment *s);
     if the rope is empty. */
 struct rope_segment *shift_tsrope(tsrope *r);
 
-/** Like `shift_tsrope` but will block indefinitely until a segment becomes
+/** Like `#shift_tsrope` but will block indefinitely until a segment becomes
     available.  Hence, the return value is never `NULL`. */
 struct rope_segment *waitshift_tsrope(tsrope *r);
 

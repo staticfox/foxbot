@@ -1,8 +1,8 @@
 /*
- *   check_foxbot.c -- May 1 2016 9:31:02 EDT
+ *   error.c -- May 8 2016 03:56:56 EDT
  *
  *   This file is part of the foxbot IRC bot
- *   Copyright (C) 2016 Matt Ullman (staticfox at staticfox dot net)
+ *   Copyright (C) 2016 Fylwind Ruzkelt (fyl@wolfpa.ws)
  *
  *   This program is FREE software. You can redistribute it and/or
  *   modify it under the terms of the GNU General Public License
@@ -20,37 +20,36 @@
  *
  */
 
-#include <errno.h>
+#include <config.h>
+
+#include <stdarg.h>
+#include <stdint.h>
 #include <stdio.h>
-#include <stdlib.h>
 
-#include "check_foxbot.h"
-#include "check_server.h"
+#include "error.h"
 
-static void
-add_testcases(Suite *s)
+void
+panic_message(const char *file,
+              uintmax_t line,
+              const char *func,
+              const char *format,
+              ...)
 {
-    connect_parse_setup(s);
-    channel_parse_setup(s);
-    memory_setup(s);
-    rope_setup(s);
-    user_parse_setup(s);
-    cap_parse_setup(s);
+    va_list vlist;
+    va_start(vlist, format);
+    vpanic_message(file, line, func, format, vlist);
+    va_end(vlist);
 }
 
-int
-main()
+void
+vpanic_message(const char *file,
+              uintmax_t line,
+              const char *func,
+              const char *format,
+               va_list vlist)
 {
-    Suite *s = suite_create("check_foxbot");
-
-    add_testcases(s);
-
-    SRunner *runner = srunner_create(s);
-    srunner_set_tap(runner, "-");
-    srunner_run_all(runner, CK_NORMAL);
-
-    int number_failed = srunner_ntests_failed(runner);
-    srunner_free(runner);
-
-    return (number_failed == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
+    char msg[1024];
+    vsnprintf(msg, sizeof(msg), format, vlist);
+    fprintf(stderr, PACKAGE_NAME ":%s:%lu:%s: %s\n", file, line, func, msg);
+    fflush(stderr);
 }
