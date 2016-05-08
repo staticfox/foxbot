@@ -41,7 +41,7 @@ typedef struct {
     struct rope_segment *_tail;
 } rope;
 
-#define ROPE_EMPTY {0, NULL, NULL};
+#define ROPE_EMPTY {0, NULL, NULL}
 
 /** Create a new rope segment from the given bytes. The segment can be later
     deallocated using `free`. */
@@ -64,8 +64,8 @@ typedef struct {
     rope _rope;
 } tsrope;
 
-#define TSROPE_EMPTY \
-    {PTHREAD_COND_INITIALIZER, PTHREAD_MUTEX_INITIALIZER, ROPE_EMPTY};
+#define TSROPE_EMPTY                                                    \
+    {PTHREAD_COND_INITIALIZER, PTHREAD_MUTEX_INITIALIZER, ROPE_EMPTY}
 
 /** Attach a new segment to the end of the rope. */
 void append_tsrope(tsrope *r, struct rope_segment *s);
