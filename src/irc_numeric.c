@@ -84,8 +84,7 @@ set_flags(const char *flags, struct member_t *member)
             member->user->ircop = true;
             break;
         default:
-            ptr += sprintf(ptr, "%c", flags[ii]);
-            break;
+            *ptr++ = flags[ii];
         }
     }
 
