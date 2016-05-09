@@ -43,6 +43,19 @@ modchar_to_bitflag(const char f)
     }
 }
 
+static bool
+is_channel_status_prefix(char prefix)
+{
+    for(size_t jj = 0; bot.ircd->supports.prefix[jj]; ++jj) {
+        if (prefix == bot.ircd->supports.prefix[jj]) {
+            /* If the mode isn't in this table, then we don't
+             * know what to call it. Thanks InspIRCd :/ */
+            return true;
+        }
+    }
+    return false;
+}
+
 static void
 set_flags(const char *flags, struct member_t *member)
 {
@@ -55,13 +68,9 @@ set_flags(const char *flags, struct member_t *member)
     for(size_t ii = 0; flags[ii]; ++ii) {
         /* Check if it's a channel status prefix. If it is, don't
          * count it as a user flag. */
-        for(size_t jj = 0; bot.ircd->supports.prefix[jj]; ++jj) {
-            if (flags[ii] == bot.ircd->supports.prefix[jj]) {
-                /* If the mode isn't in this table, then we don't
-                 * know what to call it. Thanks InspIRCd :/ */
-                member->opstatus |= modchar_to_bitflag(flags[ii]);
-                goto next;
-            }
+        if (is_channel_status_prefix(flags[ii])) {
+            member->opstatus |= modchar_to_bitflag(flags[ii]);
+            continue;
         }
 
         switch(flags[ii]) {
@@ -78,8 +87,6 @@ set_flags(const char *flags, struct member_t *member)
             ptr += sprintf(ptr, "%c", flags[ii]);
             break;
         }
-next:
-        continue;
     }
 
     *ptr = 0;
