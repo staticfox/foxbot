@@ -35,6 +35,7 @@ void connect_parse_setup(Suite *s);
 void channel_parse_setup(Suite *s);
 void user_parse_setup(Suite *s);
 void memory_setup(Suite *s);
+void parser_setup(Suite *s);
 void rope_setup(Suite *s);
 void cap_parse_setup(Suite *s);
 void ircv3_parse_setup(Suite *s);

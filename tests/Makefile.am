@@ -19,5 +19,6 @@ check_foxbot_SOURCES = check_foxbot.c \
                        units/connect_parse.c \
                        units/ircv3_parse.c \
                        units/memory_parse.c \
+                       units/parser.c \
                        units/rope.c \
                        units/user_parse.c

@@ -17,6 +17,7 @@ libfoxbot_a_SOURCES = cap.c \
                  list.c \
                  memory.c \
                  message.c \
+                 parser.c \
                  rope.c \
                  signal.c \
                  socket.c \

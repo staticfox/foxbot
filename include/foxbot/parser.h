@@ -1,8 +1,8 @@
 /*
- *   check_foxbot.c -- May 1 2016 9:31:02 EDT
+ *   parser.h -- May 8 2016 21:52:49 EDT
  *
  *   This file is part of the foxbot IRC bot
- *   Copyright (C) 2016 Matt Ullman (staticfox at staticfox dot net)
+ *   Copyright (C) 2016 Fylwind Ruzkelt (fyl@wolfpa.ws)
  *
  *   This program is FREE software. You can redistribute it and/or
  *   modify it under the terms of the GNU General Public License
@@ -20,39 +20,24 @@
  *
  */
 
-#include <errno.h>
-#include <stdio.h>
-#include <stdlib.h>
+#ifndef FOX_PARSER_H_
+#define FOX_PARSER_H_
 
-#include "check_foxbot.h"
-#include "check_server.h"
+#include <stdbool.h>
 
-static void
-add_testcases(Suite *s)
-{
-    connect_parse_setup(s);
-    channel_parse_setup(s);
-    memory_setup(s);
-    parser_setup(s);
-    rope_setup(s);
-    user_parse_setup(s);
-    cap_parse_setup(s);
-    ircv3_parse_setup(s);
-}
+/** Parse a decimal integer.  If the integer could not be parsed (because it
+ * was out of range or not a valid integer, `false` is returned and the
+ * arguments are not modified.  Otherwise, `true` is returned, the value is
+ * saved in `value_out`, and `string` is moved past the parsed integer. */
+bool parse_int(char **string, int *value_out);
 
-int
-main()
-{
-    Suite *s = suite_create("check_foxbot");
+/** Works just like `parse_int`. */
+bool parse_uint(char **string, unsigned *value_out);
 
-    add_testcases(s);
+/** Works just like `parse_int`. */
+bool parse_long(char **string, long *value_out);
 
-    SRunner *runner = srunner_create(s);
-    srunner_set_tap(runner, "-");
-    srunner_run_all(runner, CK_NORMAL);
+/** Works just like `parse_int`. */
+bool parse_ulong(char **string, unsigned long *value_out);
 
-    int number_failed = srunner_ntests_failed(runner);
-    srunner_free(runner);
-
-    return (number_failed == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
-}
+#endif
