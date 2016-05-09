@@ -97,136 +97,97 @@ set_flags(const char *flags, struct member_t *member)
         member->user->flags = NULL;
 }
 
+static bool
+iparse_channel_user(char **string,
+                    struct user_t **user_out,
+                    struct member_t **member_out)
+{
+    char *channel_name, *ident, *host, *server, *nick, *flags;
+    struct channel_t *channel;
+    struct user_t *user;
+    struct member_t *member;
+
+    if (!(channel_name = fox_strsep(string, " ")))
+        return false;
+    if (!(channel = find_channel(channel_name))) {
+        do_error("Received WHO for unknown channel %s.", channel_name);
+        return false;
+    }
+
+    if (!((ident = fox_strsep(string, " ")) &&
+          (host = fox_strsep(string, " ")) &&
+          (server = fox_strsep(string, " ")) &&
+          (nick = fox_strsep(string, " "))))
+        return false;
+
+    user = find_or_make_user(nick, ident, host);
+    xfree(user->server);
+    user->server = xstrdup(server);
+    member = channel_get_or_add_membership(channel, user);
+
+    *user_out = user;
+    *member_out = member;
+
+    if (!(flags = fox_strsep(string, " ")))
+        return false;
+
+    set_flags(flags, member);
+    return true;
+}
+
+static void
+do_parse_rpl_whoreply(char *string)
+{
+    char *token;
+    struct member_t *member;
+    struct user_t *user;
+
+    if (!(iparse_channel_user(&string, &user, &member) &&
+          (token = fox_strsep(&string, " ")) &&
+          *token++ == ':' &&
+          parse_int(&token, &user->hops)))
+        return;
+
+    xfree(member->user->gecos);
+    member->user->gecos = string[0] ? xstrdup(string) : NULL;
+}
+
 void
 parse_rpl_whoreply(void)
 {
-    char *token, *string, *tofree, *s;
-    char *ident, *host, *server;
-    struct channel_t *channel;
+    char *string;
+    string = xstrdup(bot.msg->params);
+    do_parse_rpl_whoreply(string);
+    xfree(string);
+}
+
+static void
+do_parse_rpl_whospcrpl(char *string)
+{
+    char *token, *account;
     struct member_t *member;
     struct user_t *user;
-    size_t length = 0;
-    int i = 0;
 
-    tofree = string = xstrdup(bot.msg->params);
+    if (!(iparse_channel_user(&string, &user, &member) &&
+          (token = fox_strsep(&string, " ")) &&
+          parse_int(&token, &user->hops) &&
+          (token = fox_strsep(&string, " ")) &&
+          parse_ulong(&token, &user->idle) &&
+          (account = fox_strsep(&string, " "))))
+        return;
 
-    while ((token = fox_strsep(&string, " ")) != NULL) {
-        switch(i) {
-        case 0:
-            channel = find_channel(token);
-            if (!channel) {
-                do_error("Received WHO for unknown channel %s.", token);
-                goto done;
-            }
-            break;
-        case 1:
-            ident = token;
-            break;
-        case 2:
-            host = token;
-            break;
-        case 3:
-            server = token;
-            break;
-        case 4:
-            user = find_or_make_user(token, ident, host);
-            xfree(user->server);
-            user->server = xstrdup(server);
-            member = channel_get_or_add_membership(channel, user);
-            break;
-        case 5:
-            set_flags(token, member);
-            break;
-        case 6:
-            s = token + 1;
-            if (token[0] != ':' || !parse_int(&s, &user->hops))
-                goto done;
-            break;
-        default:
-            xfree(member->user->gecos);
-            member->user->gecos = NULL;
-            if (bot.msg->params[length])
-                member->user->gecos = xstrdup(bot.msg->params + length);
-            goto done;
-            break;
-        }
-        length += strlen(token) + 1;
-        i++;
-    }
+    xfree(member->user->account);
+    member->user->account = strcmp(account, "0") ? xstrdup(account) : NULL;
 
-done:
-    xfree(tofree);
+    xfree(member->user->gecos);
+    member->user->gecos = string[0] ? xstrdup(string + 1) : NULL;
 }
 
 void
 parse_rpl_whospcrpl(void)
 {
-    char *token, *string, *tofree, *s;
-    char *ident, *host, *server;
-    struct channel_t *channel;
-    struct member_t *member;
-    struct user_t *user;
-    size_t length = 0;
-    int i = 0;
-
-    tofree = string = xstrdup(bot.msg->params);
-
-    while ((token = fox_strsep(&string, " ")) != NULL) {
-        switch(i) {
-        case 0:
-            channel = find_channel(token);
-            if (!channel) {
-                do_error("Received WHO for unknown channel %s.", token);
-                goto done;
-            }
-            break;
-        case 1:
-            ident = token;
-            break;
-        case 2:
-            host = token;
-            break;
-        case 3:
-            server = token;
-            break;
-        case 4:
-            user = find_or_make_user(token, ident, host);
-            xfree(user->server);
-            user->server = xstrdup(server);
-            member = channel_get_or_add_membership(channel, user);
-            break;
-        case 5:
-            set_flags(token, member);
-            break;
-        case 6:
-            s = token;
-            if (!parse_int(&s, &member->user->hops))
-                goto done;
-            break;
-        case 7:
-            s = token;
-            if (!parse_ulong(&s, &member->user->idle))
-                goto done;
-            break;
-        case 8:
-            xfree(member->user->account);
-            if (strcmp(token, "0") == 0)
-                member->user->account = NULL;
-            else
-                member->user->account = xstrdup(token);
-            break;
-        default:
-            xfree(member->user->gecos);
-            member->user->gecos = NULL;
-            if (bot.msg->params[length] && bot.msg->params[length + 1])
-                member->user->gecos = xstrdup(bot.msg->params + length + 1);
-            goto done;
-            break;
-        }
-        length += strlen(token) + 1;
-        i++;
-    }
-
-done:
-    xfree(tofree);
+    char *string;
+    string = xstrdup(bot.msg->params);
+    do_parse_rpl_whospcrpl(string);
+    xfree(string);
 }
