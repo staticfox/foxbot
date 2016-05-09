@@ -141,6 +141,8 @@ parse_rpl_whoreply(void)
             set_flags(token, member);
             break;
         case 6:
+            if (token[0] != ':')
+                goto done;
             user->hops = atoi(token + 1);
             break;
         default:
