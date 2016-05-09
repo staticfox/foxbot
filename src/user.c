@@ -103,6 +103,15 @@ find_nick(const char *nick)
     return NULL;
 }
 
+struct user_t *
+find_or_make_user(const char *nick, const char *ident, const char *host)
+{
+    struct user_t *const user = find_nick(nick);
+    if (user)
+        return user;
+    return make_nuh(nick, ident, host);
+}
+
 void
 delete_user(struct user_t *user)
 {

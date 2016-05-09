@@ -59,6 +59,12 @@ struct user_t * make_nuh(const char *n, const char *u, const char *h);
 /** Look up a user by nick in the global user cache. */
 struct user_t * find_nick(const char *nick);
 
+/** Does `#find_nick` first to get the user, and failing that, it uses
+ * `#make_nuh` to create the user. */
+struct user_t * find_or_make_user(const char *nick,
+                                  const char *ident,
+                                  const char *host);
+
 /** Delete a user. */
 void delete_user(struct user_t *user);
 

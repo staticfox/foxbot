@@ -129,14 +129,10 @@ parse_rpl_whoreply(void)
             server = token;
             break;
         case 4:
-            user = find_nick(token);
-            if (!user)
-                user = make_nuh(token, ident, host);
+            user = find_or_make_user(token, ident, host);
             xfree(user->server);
             user->server = xstrdup(server);
-            member = channel_get_membership(channel, user);
-            if (!member)
-                member = add_user_to_channel(channel, user);
+            member = channel_get_or_add_membership(channel, user);
             break;
         case 5:
             set_flags(token, member);
@@ -194,14 +190,10 @@ parse_rpl_whospcrpl(void)
             server = token;
             break;
         case 4:
-            user = find_nick(token);
-            if (!user)
-                user = make_nuh(token, ident, host);
+            user = find_or_make_user(token, ident, host);
             xfree(user->server);
             user->server = xstrdup(server);
-            member = channel_get_membership(channel, user);
-            if (!member)
-                member = add_user_to_channel(channel, user);
+            member = channel_get_or_add_membership(channel, user);
             break;
         case 5:
             set_flags(token, member);

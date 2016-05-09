@@ -93,6 +93,15 @@ channel_get_membership(struct channel_t *channel, struct user_t *user)
     return NULL;
 }
 
+struct member_t *
+channel_get_or_add_membership(struct channel_t *channel, struct user_t *user)
+{
+    struct member_t *const member = channel_get_membership(channel, user);
+    if (member)
+        return member;
+    return add_user_to_channel(channel, user);
+}
+
 void
 channel_remove_user(struct channel_t *channel, struct user_t *user)
 {

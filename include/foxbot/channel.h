@@ -70,6 +70,11 @@ void channel_remove_user(struct channel_t *channel, struct user_t *user);
 /** Returns a pointer is '#member_t' is in '#channel_t' */
 struct member_t * channel_get_membership(struct channel_t *channel, struct user_t *user);
 
+/** Tries `#channel_get_membership` first, and failing that, does
+ * `#add_user_to_channel`. */
+struct member_t * channel_get_or_add_membership(struct channel_t *channel,
+                                                struct user_t *user);
+
 /** Delete a channel from the global channel cache if we already have the
     channel's struct. */
 void delete_channel_s(struct channel_t *channel);
