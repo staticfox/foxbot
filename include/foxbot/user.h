@@ -28,7 +28,7 @@
 
 #include "list.h"
 
-/** A user object.  The object owns the 3 member strings. */
+/** A user object.  The object owns all of the member strings. */
 struct user_t {
     char *nick;
     char *ident;
