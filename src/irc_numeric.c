@@ -88,7 +88,7 @@ set_flags(const char *flags, struct member_t *member)
         }
     }
 
-    *ptr = 0;
+    *ptr = '\0';
     xfree(member->user->flags);
     if (strlen(flag_buf) > 0)
         member->user->flags = xstrdup(flag_buf);
