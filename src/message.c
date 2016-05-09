@@ -265,8 +265,6 @@ parse_line(const char *line)
         size_t len = strlen(bot.msg->source + 1) + 1 + strlen(bot.msg->command) + 1 + strlen(bot.msg->target) + 3;
         if (strlen(line) > len)
             bot.msg->params = xstrdup(line + len);
-        else if (bot.msg->ctype != JOIN && bot.msg->ctype != PART && bot.msg->ctype != NICK)
-            do_error("Received command with no arguments: (%zu) > %zu - Command: %s\n", strlen(line), len, bot.msg->command);
     }
 
     call_hooks();
