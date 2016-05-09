@@ -35,7 +35,7 @@ static struct {
     const bool bot_supports;
     bool is_sticky;
 } capabilities[]= {
-    { "account-notify", ACCOUNTNOTIFY, false, false },
+    { "account-notify", ACCOUNTNOTIFY, true, false },
     { "account-tag", ACCOUNTTAG, false, false },
     { "away-notify", AWAYNOTIFY, false, false },
     { "cap-notify", CAPNOTIFY, false, false },

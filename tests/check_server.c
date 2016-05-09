@@ -86,6 +86,7 @@ ts6_burst(void)
     fox_write(":ircd.staticfox.net NOTICE * :*** Ident disabled, not checking ident\r\n");
     fox_write(":ircd.staticfox.net NOTICE * :*** Looking up your hostname...\r\n");
     fox_write(":ircd.staticfox.net CAP * LS :account-notify account-tag away-notify cap-notify chghost echo-message extended-join invite-notify multi-prefix sasl server-time tls userhost-in-names\r\n");
+    fox_write(":ircd.staticfox.net CAP * ACK :account-notify\r\n");
     fox_write(":ircd.staticfox.net 001 %s :Welcome to the StaticFox Internet Relay Chat Network %s\r\n", check_nick, check_nick);
     fox_write(":ircd.staticfox.net 002 %s :Your host is ircd.staticfox.net[ircd.staticfox.net/9990], running version generic-ircd-1\r\n", check_nick);
     fox_write(":ircd.staticfox.net 003 %s :This server was created Sat Apr 30 2016 at 21:34:09 EDT\r\n", check_nick);

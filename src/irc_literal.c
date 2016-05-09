@@ -180,3 +180,12 @@ handle_quit(void)
     /* SHOULD delete the user's struct on channel_remove_user */
     channel_quit_user(bot.msg->from);
 }
+
+void
+handle_account(void)
+{
+    xfree(bot.msg->from->account);
+    bot.msg->from->account = NULL;
+    if (strcmp(bot.msg->target, "*") != 0)
+        bot.msg->from->account = xstrdup(bot.msg->target);
+}

@@ -30,5 +30,6 @@ void handle_part(void);
 void handle_mode(void);
 void handle_nick(void);
 void handle_cap(void);
+void handle_account(void);
 
 #endif

@@ -81,6 +81,7 @@ set_command_enum(void)
     if (do_set_enum("ERROR",   ERROR)  ) return;
     if (do_set_enum("NICK",    NICK)   ) return;
     if (do_set_enum("CAP",     CAP)    ) return;
+    if (do_set_enum("ACCOUNT", ACCOUNT)) return;
 
     do_error("Unhandled command: %s", bot.msg->command);
 }
@@ -159,6 +160,9 @@ hook_literal(void)
         break;
     case CAP:
         handle_cap();
+        break;
+    case ACCOUNT:
+        handle_account();
         break;
     default:
         break;
