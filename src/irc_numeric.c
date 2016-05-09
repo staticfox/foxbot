@@ -100,7 +100,7 @@ void
 parse_rpl_whoreply(void)
 {
     char *token, *string, *tofree;
-    char *ident = NULL, *host = NULL, *server = NULL;
+    char *ident, *host, *server;
     struct channel_t *channel;
     struct member_t *member;
     struct user_t *user;
@@ -119,13 +119,13 @@ parse_rpl_whoreply(void)
             }
             break;
         case 1:
-            ident = xstrdup(token);
+            ident = token;
             break;
         case 2:
-            host = xstrdup(token);
+            host = token;
             break;
         case 3:
-            server = xstrdup(token);
+            server = token;
             break;
         case 4:
             user = find_nick(token);
@@ -157,16 +157,13 @@ parse_rpl_whoreply(void)
 
 done:
     xfree(tofree);
-    xfree(ident);
-    xfree(host);
-    xfree(server);
 }
 
 void
 parse_rpl_whospcrpl(void)
 {
     char *token, *string, *tofree;
-    char *ident = NULL, *host = NULL, *server = NULL;
+    char *ident, *host, *server;
     struct channel_t *channel;
     struct member_t *member;
     struct user_t *user;
@@ -185,13 +182,13 @@ parse_rpl_whospcrpl(void)
             }
             break;
         case 1:
-            ident = xstrdup(token);
+            ident = token;
             break;
         case 2:
-            host = xstrdup(token);
+            host = token;
             break;
         case 3:
-            server = xstrdup(token);
+            server = token;
             break;
         case 4:
             user = find_nick(token);
@@ -233,7 +230,4 @@ parse_rpl_whospcrpl(void)
 
 done:
     xfree(tofree);
-    xfree(ident);
-    xfree(host);
-    xfree(server);
 }
