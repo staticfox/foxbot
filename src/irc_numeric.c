@@ -27,6 +27,7 @@
 #include <foxbot/foxbot.h>
 #include <foxbot/message.h>
 #include <foxbot/memory.h>
+#include <foxbot/parser.h>
 #include <foxbot/user.h>
 
 static unsigned int
@@ -99,7 +100,7 @@ set_flags(const char *flags, struct member_t *member)
 void
 parse_rpl_whoreply(void)
 {
-    char *token, *string, *tofree;
+    char *token, *string, *tofree, *s;
     char *ident, *host, *server;
     struct channel_t *channel;
     struct member_t *member;
@@ -141,9 +142,9 @@ parse_rpl_whoreply(void)
             set_flags(token, member);
             break;
         case 6:
-            if (token[0] != ':')
+            s = token + 1;
+            if (token[0] != ':' || !parse_int(&s, &user->hops))
                 goto done;
-            user->hops = atoi(token + 1);
             break;
         default:
             xfree(member->user->gecos);
@@ -164,7 +165,7 @@ done:
 void
 parse_rpl_whospcrpl(void)
 {
-    char *token, *string, *tofree;
+    char *token, *string, *tofree, *s;
     char *ident, *host, *server;
     struct channel_t *channel;
     struct member_t *member;
@@ -206,10 +207,14 @@ parse_rpl_whospcrpl(void)
             set_flags(token, member);
             break;
         case 6:
-            member->user->hops = atoi(token);
+            s = token;
+            if (!parse_int(&s, &member->user->hops))
+                goto done;
             break;
         case 7:
-            member->user->idle = atoi(token);
+            s = token;
+            if (!parse_ulong(&s, &member->user->idle))
+                goto done;
             break;
         case 8:
             xfree(member->user->account);
