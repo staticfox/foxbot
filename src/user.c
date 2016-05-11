@@ -38,9 +38,9 @@ static dlink_list users;
 void
 make_me(const char *nick)
 {
-    static const struct user_t empty_user;
+    static const struct user_t EMPTY_USER;
     struct user_t *user = xmalloc(sizeof(*user));
-    *user = empty_user;
+    *user = EMPTY_USER;
     user->nick = xstrdup(nick);
     user->number_of_channels = 0;
 
