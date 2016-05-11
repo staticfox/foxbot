@@ -81,9 +81,9 @@ fail:
 struct user_t *
 make_nuh(const char *n, const char *u, const char *h)
 {
-    static const struct user_t empty_user;
+    static const struct user_t EMPTY_USER;
     struct user_t *user = xmalloc(sizeof(*user));
-    *user = empty_user;
+    *user = EMPTY_USER;
     user->nick  = xstrdup(n);
     user->ident = xstrdup(u);
     user->host  = xstrdup(h);
