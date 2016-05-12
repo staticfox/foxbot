@@ -71,7 +71,7 @@ START_TEST(channel_part_check)
     ck_assert((uptr = find_nick("test_user1")) != NULL);
     ck_assert_ptr_ne(channel_get_membership(chptr, uptr), NULL);
 
-    write_and_wait(":test_user1!~test@255.255.255.255 PART #unit_test");
+    write_and_wait(":test_user1!~test@255.255.255.255 PART #unit_test :Leaving now");
     ck_assert(channel_count() == 2);
     ck_assert(dlist_length(&chptr->users) == 1);
     ck_assert(find_nick("test_user1") == NULL);
@@ -85,7 +85,7 @@ START_TEST(channel_part_check)
 
     write_and_wait(":test_user1!~test@255.255.255.255 JOIN #unit_test2");
     ck_assert((chptr2 = find_channel("#unit_test2")) != NULL);
-    write_and_wait(":test_user1!~test@255.255.255.255 PART #unit_test2");
+    write_and_wait(":test_user1!~test@255.255.255.255 PART :#unit_test2");
     ck_assert(find_nick("test_user1") != NULL);
     ck_assert(dlist_length(&chptr2->users) == 1);
 

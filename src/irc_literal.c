@@ -111,6 +111,10 @@ handle_part(void)
         return;
 
     struct channel_t *channel = NULL;
+
+    if (bot.msg->params == NULL && bot.msg->target[0] == ':')
+        memmove(bot.msg->target, bot.msg->target + 1, strlen(bot.msg->target));
+
     channel = find_channel(bot.msg->target);
 
     if (channel == NULL) {
