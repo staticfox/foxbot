@@ -48,7 +48,7 @@ handle_mode(void)
             return;
         }
 
-        for (size_t ii = 0; bot.msg->params[ii] != '\0'; ii++) {
+        for (size_t ii = 0; bot.msg->params[ii]; ii++) {
             switch (bot.msg->params[ii]) {
             case ':':
                 continue;

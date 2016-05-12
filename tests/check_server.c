@@ -170,12 +170,12 @@ static void
 parse_buffer(const char *buf)
 {
     enum check_commands cmd = CHECK_INVALID;
-    unsigned int i = 0, ii;
+    unsigned int i = 0;
     int params = 1;
     char *token, *string, *tofree;
     static char *l_params = NULL;
 
-    for (ii = 0; buf[ii] != '\0'; ii++)
+    for (size_t ii = 0; buf[ii]; ii++)
         if (buf[ii] == ' ')
             params++;
 

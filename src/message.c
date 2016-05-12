@@ -194,7 +194,7 @@ bool
 parse_line(const char *line)
 {
     bool quitting = false;
-    unsigned int i = 0, ii;
+    unsigned int i = 0;
     int params = 1;
     char *token, *string, *tofree;
 
@@ -202,7 +202,7 @@ parse_line(const char *line)
 
     bot.msg->buffer = xstrdup(line);
 
-    for (ii = 0; line[ii] != '\0'; ii++)
+    for (size_t ii = 0; line[ii]; ii++)
         if (line[ii] == ' ')
             params++;
 

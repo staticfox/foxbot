@@ -163,7 +163,7 @@ parse_rpl_isupport(void)
             char modes[MAX_IRC_BUF] = {0}, prefixes[MAX_IRC_BUF] = {0};
             bool mode = true;
 
-            for (size_t ii = 0, pos = 0; value[ii] != '\0'; ii++) {
+            for (size_t ii = 0, pos = 0; value[ii]; ii++) {
                 switch(value[ii]) {
                 case '(':
                     continue;

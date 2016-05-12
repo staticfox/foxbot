@@ -68,7 +68,7 @@ T_STRING    \"[^\"\n]*[\"\n]
 
                             /* Remove close quote */
                             yylval.string[yyleng - 2] = '\0';
-                            for (; yylval.string[i] != '\0'; ++i, ++j) {
+                            for (; yylval.string[i]; ++i, ++j) {
                                 if (yylval.string[i] == '\\') ++i;
                                 yylval.string[j] = yylval.string[i];
                             }
