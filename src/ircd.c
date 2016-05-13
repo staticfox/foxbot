@@ -30,6 +30,7 @@
 #include <foxbot/memory.h>
 #include <foxbot/message.h>
 #include <foxbot/foxbot.h>
+#include <foxbot/parser.h>
 #include <foxbot/user.h>
 
 /* 001 | RPL_WELCOME */
@@ -72,32 +73,6 @@ parse_rpl_myinfo(void)
     }
 
     xfree(tofree);
-}
-
-static bool
-parse_long(const char *str, long *value)
-{
-    char *end;
-    const long n = strtol(str, &end, 10);
-    return str != end && (*value = n);
-}
-
-static bool
-parse_uint(const char *str, unsigned *value)
-{
-    long n;
-    return parse_long(str, &n) && n >= 0 && n <= UINT_MAX && (*value = n);
-}
-
-static bool
-strip_prefix(const char *str, const char *prefix, char **suffix /* nullable */)
-{
-    for (; *prefix; ++str, ++prefix)
-        if (*str != *prefix)
-            return false;
-    if (suffix)
-        *suffix = (char *)str;
-    return true;
 }
 
 static bool

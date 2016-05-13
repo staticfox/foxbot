@@ -138,14 +138,14 @@ iparse_channel_user(char **string,
 static void
 do_parse_rpl_whoreply(char *string)
 {
-    char *token;
+    const char *token;
     struct member_t *member;
     struct user_t *user;
 
     if (!(iparse_channel_user(&string, &user, &member) &&
           (token = fox_strsep(&string, " ")) &&
           *token++ == ':' &&
-          parse_int(&token, &user->hops)))
+          iparse_int(&token, &user->hops)))
         return;
 
     xfree(member->user->gecos);
@@ -164,15 +164,15 @@ parse_rpl_whoreply(void)
 static void
 do_parse_rpl_whospcrpl(char *string)
 {
-    char *token, *account;
+    const char *token, *account;
     struct member_t *member;
     struct user_t *user;
 
     if (!(iparse_channel_user(&string, &user, &member) &&
           (token = fox_strsep(&string, " ")) &&
-          parse_int(&token, &user->hops) &&
+          iparse_int(&token, &user->hops) &&
           (token = fox_strsep(&string, " ")) &&
-          parse_ulong(&token, &user->idle) &&
+          iparse_ulong(&token, &user->idle) &&
           (account = fox_strsep(&string, " "))))
         return;
 

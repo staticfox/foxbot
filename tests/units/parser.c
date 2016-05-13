@@ -27,29 +27,29 @@
 #include <foxbot/memory.h>
 #include <foxbot/parser.h>
 
-START_TEST(parse_int_check)
+START_TEST(iparse_int_check)
 {
     {
-        char s[] = "12";
-        char *p = s;
+        const char s[] = "12";
+        const char *p = s;
         int n = -42;
-        ck_assert_int_eq(parse_int(&p, &n), 1);
+        ck_assert_int_eq(iparse_int(&p, &n), 1);
         ck_assert_int_eq(n, 12);
         ck_assert_ptr_eq(p, s + strlen(s));
     }
     {
-        char s[] = "";
-        char *p = s;
+        const char s[] = "";
+        const char *p = s;
         int n = -42;
-        ck_assert_int_eq(parse_int(&p, &n), 0);
+        ck_assert_int_eq(iparse_int(&p, &n), 0);
         ck_assert_int_eq(n, -42);
         ck_assert_ptr_eq(p, s);
     }
     {
-        char s[] = " 12";
-        char *p = s;
+        const char s[] = " 12";
+        const char *p = s;
         int n = -42;
-        ck_assert_int_eq(parse_int(&p, &n), 0);
+        ck_assert_int_eq(iparse_int(&p, &n), 0);
         ck_assert_int_eq(n, -42);
         ck_assert_ptr_eq(p, s);
     }
@@ -58,49 +58,9 @@ START_TEST(parse_int_check)
         char *s = xmalloc(snprintf(NULL, 0, "%i", INT_MAX) + 1);
         s[0] = '1';
         sprintf(s + 1, "%i", INT_MAX);
-        char *p = s;
+        const char *p = s;
         int n = -42;
-        ck_assert_int_eq(parse_int(&p, &n), 0);
-        ck_assert_int_eq(n, -42);
-        ck_assert_ptr_eq(p, s);
-        xfree(s);
-    }
-}
-END_TEST
-
-START_TEST(parse_long_check) {
-    {
-        char s[] = "12";
-        char *p = s;
-        long n = -42;
-        ck_assert_int_eq(parse_long(&p, &n), 1);
-        ck_assert_int_eq(n, 12);
-        ck_assert_ptr_eq(p, s + strlen(s));
-    }
-    {
-        char s[] = "";
-        char *p = s;
-        long n = -42;
-        ck_assert_int_eq(parse_long(&p, &n), 0);
-        ck_assert_int_eq(n, -42);
-        ck_assert_ptr_eq(p, s);
-    }
-    {
-        char s[] = " 12";
-        char *p = s;
-        long n = -42;
-        ck_assert_int_eq(parse_long(&p, &n), 0);
-        ck_assert_int_eq(n, -42);
-        ck_assert_ptr_eq(p, s);
-    }
-    {
-        /* test a number that's out of range */
-        char *s = xmalloc(snprintf(NULL, 0, "%li", LONG_MAX) + 1);
-        s[0] = '1';
-        sprintf(s + 1, "%li", LONG_MAX);
-        char *p = s;
-        long n = -42;
-        ck_assert_int_eq(parse_long(&p, &n), 0);
+        ck_assert_int_eq(iparse_int(&p, &n), 0);
         ck_assert_int_eq(n, -42);
         ck_assert_ptr_eq(p, s);
         xfree(s);
@@ -110,26 +70,62 @@ END_TEST
 
 START_TEST(parse_uint_check) {
     {
-        char s[] = "12";
-        char *p = s;
+        const char s[] = "12";
+        const char *p = s;
         unsigned n = 42;
-        ck_assert_int_eq(parse_uint(&p, &n), 1);
+        ck_assert_int_eq(parse_uint(p, &n), 1);
+        ck_assert_int_eq(n, 12);
+    }
+    {
+        const char s[] = "";
+        const char *p = s;
+        unsigned n = 42;
+        ck_assert_int_eq(parse_uint(p, &n), 0);
+        ck_assert_int_eq(n, 42);
+    }
+    {
+        const char s[] = " 12";
+        const char *p = s;
+        unsigned n = 42;
+        ck_assert_int_eq(parse_uint(p, &n), 0);
+        ck_assert_int_eq(n, 42);
+    }
+    {
+        /* test a number that's out of range */
+        char *s = xmalloc(snprintf(NULL, 0, "%u", UINT_MAX) + 1);
+        s[0] = '1';
+        sprintf(s + 1, "%u", UINT_MAX);
+        const char *p = s;
+        unsigned n = 42;
+        ck_assert_int_eq(parse_uint(p, &n), 0);
+        ck_assert_int_eq(n, 42);
+        xfree(s);
+    }
+}
+END_TEST
+
+START_TEST(iparse_uint_check) {
+    {
+        const char s[] = "12";
+        const char *p = s;
+        unsigned n = 42;
+        ck_assert_int_eq(iparse_uint(&p, &n), 1);
         ck_assert_int_eq(n, 12);
         ck_assert_ptr_eq(p, s + strlen(s));
     }
     {
-        char s[] = "";
-        char *p = s;
+        const char s[] = "";
+        const char *p = s;
         unsigned n = 42;
-        ck_assert_int_eq(parse_uint(&p, &n), 0);
+        ck_assert_int_eq(iparse_uint(&p, &n), 0);
         ck_assert_int_eq(n, 42);
         ck_assert_ptr_eq(p, s);
     }
     {
-        char s[] = " 12";
-        char *p = s;
+        const char s[] = " 12";
+        const char *p = s;
         unsigned n = 42;
-        ck_assert_int_eq(parse_uint(&p, &n), 0);
+        ck_assert_int_eq(iparse_uint(&p, &n), 0);
         ck_assert_int_eq(n, 42);
         ck_assert_ptr_eq(p, s);
     }
@@ -138,9 +134,9 @@ START_TEST(parse_uint_check) {
         char *s = xmalloc(snprintf(NULL, 0, "%u", UINT_MAX) + 1);
         s[0] = '1';
         sprintf(s + 1, "%u", UINT_MAX);
-        char *p = s;
+        const char *p = s;
         unsigned n = 42;
-        ck_assert_int_eq(parse_uint(&p, &n), 0);
+        ck_assert_int_eq(iparse_uint(&p, &n), 0);
         ck_assert_int_eq(n, 42);
         ck_assert_ptr_eq(p, s);
         xfree(s);
@@ -148,28 +144,104 @@ START_TEST(parse_uint_check) {
 }
 END_TEST
 
-START_TEST(parse_ulong_check) {
+START_TEST(parse_long_check) {
     {
-        char s[] = "12";
-        char *p = s;
-        unsigned long n = 42;
-        ck_assert_int_eq(parse_ulong(&p, &n), 1);
+        const char s[] = "12";
+        const char *p = s;
+        long n = -42;
+        ck_assert_int_eq(parse_long(p, &n), 1);
+        ck_assert_int_eq(n, 12);
+    }
+    {
+        const char s[] = "";
+        const char *p = s;
+        long n = -42;
+        ck_assert_int_eq(parse_long(p, &n), 0);
+        ck_assert_int_eq(n, -42);
+    }
+    {
+        const char s[] = " 12";
+        const char *p = s;
+        long n = -42;
+        ck_assert_int_eq(parse_long(p, &n), 0);
+        ck_assert_int_eq(n, -42);
+    }
+    {
+        /* test a number that's out of range */
+        char *s = xmalloc(snprintf(NULL, 0, "%li", LONG_MAX) + 1);
+        s[0] = '1';
+        sprintf(s + 1, "%li", LONG_MAX);
+        const char *p = s;
+        long n = -42;
+        ck_assert_int_eq(parse_long(p, &n), 0);
+        ck_assert_int_eq(n, -42);
+        xfree(s);
+    }
+}
+END_TEST
+
+START_TEST(iparse_long_check) {
+    {
+        const char s[] = "12";
+        const char *p = s;
+        long n = -42;
+        ck_assert_int_eq(iparse_long(&p, &n), 1);
         ck_assert_int_eq(n, 12);
         ck_assert_ptr_eq(p, s + strlen(s));
     }
     {
-        char s[] = "";
-        char *p = s;
+        const char s[] = "";
+        const char *p = s;
+        long n = -42;
+        ck_assert_int_eq(iparse_long(&p, &n), 0);
+        ck_assert_int_eq(n, -42);
+        ck_assert_ptr_eq(p, s);
+    }
+    {
+        const char s[] = " 12";
+        const char *p = s;
+        long n = -42;
+        ck_assert_int_eq(iparse_long(&p, &n), 0);
+        ck_assert_int_eq(n, -42);
+        ck_assert_ptr_eq(p, s);
+    }
+    {
+        /* test a number that's out of range */
+        char *s = xmalloc(snprintf(NULL, 0, "%li", LONG_MAX) + 1);
+        s[0] = '1';
+        sprintf(s + 1, "%li", LONG_MAX);
+        const char *p = s;
+        long n = -42;
+        ck_assert_int_eq(iparse_long(&p, &n), 0);
+        ck_assert_int_eq(n, -42);
+        ck_assert_ptr_eq(p, s);
+        xfree(s);
+    }
+}
+END_TEST
+
+START_TEST(iparse_ulong_check) {
+    {
+        const char s[] = "12";
+        const char *p = s;
         unsigned long n = 42;
-        ck_assert_int_eq(parse_ulong(&p, &n), 0);
+        ck_assert_int_eq(iparse_ulong(&p, &n), 1);
+        ck_assert_int_eq(n, 12);
+        ck_assert_ptr_eq(p, s + strlen(s));
+    }
+    {
+        const char s[] = "";
+        const char *p = s;
+        unsigned long n = 42;
+        ck_assert_int_eq(iparse_ulong(&p, &n), 0);
         ck_assert_int_eq(n, 42);
         ck_assert_ptr_eq(p, s);
     }
     {
-        char s[] = " 12";
-        char *p = s;
+        const char s[] = " 12";
+        const char *p = s;
         unsigned long n = 42;
-        ck_assert_int_eq(parse_ulong(&p, &n), 0);
+        ck_assert_int_eq(iparse_ulong(&p, &n), 0);
         ck_assert_int_eq(n, 42);
         ck_assert_ptr_eq(p, s);
     }
@@ -178,9 +250,9 @@ START_TEST(parse_ulong_check) {
         char *s = xmalloc(snprintf(NULL, 0, "%lu", ULONG_MAX) + 1);
         s[0] = '1';
         sprintf(s + 1, "%lu", ULONG_MAX);
-        char *p = s;
+        const char *p = s;
         unsigned long n = 42;
-        ck_assert_int_eq(parse_ulong(&p, &n), 0);
+        ck_assert_int_eq(iparse_ulong(&p, &n), 0);
         ck_assert_int_eq(n, 42);
         ck_assert_ptr_eq(p, s);
         xfree(s);
@@ -192,9 +264,11 @@ void
 parser_setup(Suite *s)
 {
     TCase *tc = tcase_create("parser");
-    tcase_add_test(tc, parse_int_check);
-    tcase_add_test(tc, parse_long_check);
+    tcase_add_test(tc, iparse_int_check);
     tcase_add_test(tc, parse_uint_check);
-    tcase_add_test(tc, parse_ulong_check);
+    tcase_add_test(tc, iparse_uint_check);
+    tcase_add_test(tc, parse_long_check);
+    tcase_add_test(tc, iparse_long_check);
+    tcase_add_test(tc, iparse_ulong_check);
     suite_add_tcase(s, tc);
 }

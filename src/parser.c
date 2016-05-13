@@ -29,12 +29,23 @@
 #include <foxbot/parser.h>
 
 bool
-parse_int(char **string, int *value_out)
+strip_prefix(const char *str, const char *prefix, char **suffix)
+{
+    for (; *prefix; ++str, ++prefix)
+        if (*str != *prefix)
+            return false;
+    if (suffix)
+        *suffix = (char *)str;
+    return true;
+}
+
+bool
+iparse_int(const char **string, int *value_out)
 {
     long value;
-    char *s = *string;
+    const char *s = *string;
 
-    if (!parse_long(&s, &value) || value > INT_MAX || value < INT_MIN)
+    if (!iparse_long(&s, &value) || value > INT_MAX || value < INT_MIN)
         return 0;
 
     *value_out = (int)value;
@@ -43,12 +54,18 @@ parse_int(char **string, int *value_out)
 }
 
 bool
-parse_uint(char **string, unsigned *value_out)
+parse_uint(const char *str, unsigned *value_out)
+{
+    return iparse_uint(&str, value_out);
+}
+
+bool
+iparse_uint(const char **string, unsigned *value_out)
 {
     unsigned long value;
-    char *s = *string;
+    const char *s = *string;
 
-    if (!parse_ulong(&s, &value) || value > UINT_MAX)
+    if (!iparse_ulong(&s, &value) || value > UINT_MAX)
         return 0;
 
     *value_out = (unsigned)value;
@@ -57,9 +74,16 @@ parse_uint(char **string, unsigned *value_out)
 }
 
 bool
-parse_long(char **string, long *value_out)
+parse_long(const char *str, long *value_out)
 {
-    char *const nptr = *string, *endptr;
+    return iparse_long(&str, value_out);
+}
+
+bool
+iparse_long(const char **string, long *value_out)
+{
+    const char *const nptr = *string;
+    char *endptr;
     long value;
 
     /* forbid initial whitespace */
@@ -77,9 +101,10 @@ parse_long(char **string, long *value_out)
 }
 
 bool
-parse_ulong(char **string, unsigned long *value_out)
+iparse_ulong(const char **string, unsigned long *value_out)
 {
-    char *const nptr = *string, *endptr;
+    const char *const nptr = *string;
+    char *endptr;
     unsigned long value;
 
     /* forbid initial whitespace */

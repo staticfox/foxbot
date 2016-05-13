@@ -25,19 +25,30 @@
 
 #include <stdbool.h>
 
+/** Attempt to remove a `prefix` from `str`, returning `true` and storing the
+ * remaining string in `suffix`.  Otherwise, `false` is returned.  Note that
+ * `suffix` can be null. */
+bool strip_prefix(const char *str, const char *prefix, char **suffix);
+
 /** Parse a decimal integer.  If the integer could not be parsed (because it
  * was out of range or not a valid integer, `false` is returned and the
  * arguments are not modified.  Otherwise, `true` is returned, the value is
  * saved in `value_out`, and `string` is moved past the parsed integer. */
-bool parse_int(char **string, int *value_out);
+bool iparse_int(const char **string, int *value_out);
 
-/** Works just like `parse_int`. */
-bool parse_uint(char **string, unsigned *value_out);
+/** Works just like `iparse_uint` but simply accepts a string. */
+bool parse_uint(const char *string, unsigned *value_out);
 
-/** Works just like `parse_int`. */
-bool parse_long(char **string, long *value_out);
+/** Works just like `iparse_int`. */
+bool iparse_uint(const char **string, unsigned *value_out);
 
-/** Works just like `parse_int`. */
-bool parse_ulong(char **string, unsigned long *value_out);
+/** Works just like `iparse_long` but simply accepts a string. */
+bool parse_long(const char *string, long *value_out);
+
+/** Works just like `iparse_int`. */
+bool iparse_long(const char **string, long *value_out);
+
+/** Works just like `iparse_int`. */
+bool iparse_ulong(const char **string, unsigned long *value_out);
 
 #endif
