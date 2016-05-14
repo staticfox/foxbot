@@ -85,8 +85,8 @@ after_success:
   - if [ "$BUILD_TYPE" = coverage ]; then
       lcov -c -o coverage.info -d src &&
       lcov -r coverage.info -o coverage.info
-        include/foxbot/error.h
         src/config_lexer.c
+        src/error.h
         src/error.c
         src/config_lexer.l
         src/config_parser.c
