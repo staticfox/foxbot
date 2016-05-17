@@ -56,7 +56,8 @@ iparse_int(const char **string, int *value_out)
 bool
 parse_uint(const char *str, unsigned *value_out)
 {
-    return iparse_uint(&str, value_out);
+    unsigned value;
+    return iparse_uint(&str, &value) && !*str && (*value_out = value);
 }
 
 bool
@@ -76,7 +77,8 @@ iparse_uint(const char **string, unsigned *value_out)
 bool
 parse_long(const char *str, long *value_out)
 {
-    return iparse_long(&str, value_out);
+    long value;
+    return iparse_long(&str, &value) && !*str && (*value_out = value);
 }
 
 bool

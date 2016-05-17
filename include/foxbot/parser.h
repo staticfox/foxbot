@@ -36,13 +36,15 @@ bool strip_prefix(const char *str, const char *prefix, char **suffix);
  * saved in `value_out`, and `string` is moved past the parsed integer. */
 bool iparse_int(const char **string, int *value_out);
 
-/** Works just like `iparse_uint` but simply accepts a string. */
+/** Works just like `iparse_uint` but simply accepts a string and does not
+    allow trailing garbage. */
 bool parse_uint(const char *string, unsigned *value_out);
 
 /** Works just like `iparse_int`. */
 bool iparse_uint(const char **string, unsigned *value_out);
 
-/** Works just like `iparse_long` but simply accepts a string. */
+/** Works just like `iparse_long` but simply accepts a string and does not
+    allow trailing garbage. */
 bool parse_long(const char *string, long *value_out);
 
 /** Works just like `iparse_int`. */

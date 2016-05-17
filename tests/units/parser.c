@@ -54,6 +54,14 @@ START_TEST(iparse_int_check)
         ck_assert_ptr_eq(p, s);
     }
     {
+        const char s[] = "12 ";
+        const char *p = s;
+        int n = -42;
+        ck_assert_int_eq(iparse_int(&p, &n), 1);
+        ck_assert_int_eq(n, 12);
+        ck_assert_ptr_eq(p, s + strlen(s) - 1);
+    }
+    {
         /* test a number that's out of range */
         char *s = xmalloc(snprintf(NULL, 0, "%i", INT_MAX) + 1);
         s[0] = '1';
@@ -85,6 +93,13 @@ START_TEST(parse_uint_check) {
     }
     {
         const char s[] = " 12";
+        const char *p = s;
+        unsigned n = 42;
+        ck_assert_int_eq(parse_uint(p, &n), 0);
+        ck_assert_int_eq(n, 42);
+    }
+    {
+        const char s[] = "12 ";
         const char *p = s;
         unsigned n = 42;
         ck_assert_int_eq(parse_uint(p, &n), 0);
@@ -130,6 +145,14 @@ START_TEST(iparse_uint_check) {
         ck_assert_ptr_eq(p, s);
     }
     {
+        const char s[] = "12 ";
+        const char *p = s;
+        unsigned n = 42;
+        ck_assert_int_eq(iparse_uint(&p, &n), 1);
+        ck_assert_int_eq(n, 12);
+        ck_assert_ptr_eq(p, s + strlen(s) - 1);
+    }
+    {
         /* test a number that's out of range */
         char *s = xmalloc(snprintf(NULL, 0, "%u", UINT_MAX) + 1);
         s[0] = '1';
@@ -161,6 +184,13 @@ START_TEST(parse_long_check) {
     }
     {
         const char s[] = " 12";
+        const char *p = s;
+        long n = -42;
+        ck_assert_int_eq(parse_long(p, &n), 0);
+        ck_assert_int_eq(n, -42);
+    }
+    {
+        const char s[] = "12 ";
         const char *p = s;
         long n = -42;
         ck_assert_int_eq(parse_long(p, &n), 0);
@@ -206,6 +236,14 @@ START_TEST(iparse_long_check) {
         ck_assert_ptr_eq(p, s);
     }
     {
+        const char s[] = "12 ";
+        const char *p = s;
+        long n = -42;
+        ck_assert_int_eq(iparse_long(&p, &n), 1);
+        ck_assert_int_eq(n, 12);
+        ck_assert_ptr_eq(p, s + strlen(s) - 1);
+    }
+    {
         /* test a number that's out of range */
         char *s = xmalloc(snprintf(NULL, 0, "%li", LONG_MAX) + 1);
         s[0] = '1';
@@ -244,6 +282,14 @@ START_TEST(iparse_ulong_check) {
         ck_assert_int_eq(iparse_ulong(&p, &n), 0);
         ck_assert_int_eq(n, 42);
         ck_assert_ptr_eq(p, s);
+    }
+    {
+        const char s[] = "12 ";
+        const char *p = s;
+        unsigned long n = 42;
+        ck_assert_int_eq(iparse_ulong(&p, &n), 1);
+        ck_assert_int_eq(n, 12);
+        ck_assert_ptr_eq(p, s + strlen(s) - 1);
     }
     {
         /* test a number that's out of range */
