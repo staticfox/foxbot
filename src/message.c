@@ -55,11 +55,10 @@ set_command_enum(void)
 {
     assert(bot.msg->command);
 
-    size_t ii;
     size_t n = strlen(bot.msg->command);
     unsigned int digits = 0;
 
-    for (ii = 0; bot.msg->command[ii]; ii++)
+    for (size_t ii = 0; bot.msg->command[ii]; ii++)
         if (isdigit(bot.msg->command[ii]))
             digits++;
 
