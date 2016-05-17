@@ -88,24 +88,13 @@ set_command_enum(void)
 static void
 reset_message(void)
 {
+    static const struct msg_t EMPTY_MESSAGE;
     xfree(bot.msg->buffer);
-    bot.msg->buffer = NULL;
-
     xfree(bot.msg->source);
-    bot.msg->source = NULL;
-
     xfree(bot.msg->command);
-    bot.msg->command = NULL;
-
     xfree(bot.msg->target);
-    bot.msg->target = NULL;
-
     xfree(bot.msg->params);
-    bot.msg->params = NULL;
-
-    bot.msg->from = NULL;
-    bot.msg->from_server = false;
-    bot.msg->is_invalid = false;
+    *bot.msg = EMPTY_MESSAGE;
 }
 
 void
