@@ -30,6 +30,7 @@
 #include <foxbot/cap.h>
 #include <foxbot/conf.h>
 #include <foxbot/foxbot.h>
+#include <foxbot/hook.h>
 #include <foxbot/irc_literal.h>
 #include <foxbot/irc_numeric.h>
 #include <foxbot/ircd.h>

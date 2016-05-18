@@ -11,6 +11,7 @@ libfoxbot_a_SOURCES = cap.c \
                  conf.c \
                  error.c \
                  foxbot.c \
+                 hook.c \
                  irc_literal.c \
                  irc_numeric.c \
                  ircd.c \

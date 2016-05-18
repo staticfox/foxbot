@@ -30,6 +30,7 @@
 #include <foxbot/channel.h>
 #include <foxbot/conf.h>
 #include <foxbot/foxbot.h>
+#include <foxbot/hook.h>
 #include <foxbot/ircd.h>
 #include <foxbot/list.h>
 #include <foxbot/message.h>
