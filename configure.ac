@@ -25,7 +25,7 @@ AC_PROG_YACC
 AM_PROG_AR
 AM_PROG_LEX
 
-dnl m4 directrory
+dnl m4 directory
 AC_CONFIG_MACRO_DIR([m4])
 
 AC_SUBST([AM_CPPFLAGS], ['-I$(top_srcdir)/include'])
