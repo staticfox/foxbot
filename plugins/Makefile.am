@@ -3,7 +3,7 @@ AUTOMAKE_OPTIONS = subdir-objects
 
 AM_CPPFLAGS = -I$(top_srcdir)/include
 AM_LDFLAGS  = -module -export-dynamic -avoid-version -no-undefined -shared
-AM_LDFLAGS += -export-symbols-regex _fox_module
+AM_LDFLAGS += -export-symbols-regex fox_plugin
 LIBS += $(top_srcdir)/src/libfoxbot.la
 
 plugin_libsdir = $(PLUIGIN_DIR)
