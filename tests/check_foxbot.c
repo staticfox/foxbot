@@ -38,6 +38,7 @@ add_testcases(Suite *s)
     user_parse_setup(s);
     cap_parse_setup(s);
     ircv3_parse_setup(s);
+    hook_setup(s);
 }
 
 int
