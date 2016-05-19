@@ -93,7 +93,7 @@ add_m_safe(const char *const entry, const enum conf_multiple_types type)
 {
     DLINK_FOREACH(node, dlist_head(&botconfig.conf_modules)) {
         struct conf_multiple *cm = dlink_data(node);
-        if (strcmp(cm->name, entry) == 0)
+        if ((strcmp(cm->name, entry) == 0) && cm->type == type)
             return;
     }
 
@@ -103,6 +103,20 @@ add_m_safe(const char *const entry, const enum conf_multiple_types type)
     cm->name = xstrdup(entry);
     cm->type = type;
     dlink_insert(&botconfig.conf_modules, cm);
+}
+
+void
+conf_set_ckey(const char *const entry,
+              const enum conf_multiple_types type,
+              const char *const key)
+{
+    DLINK_FOREACH(node, dlist_head(&botconfig.conf_modules)) {
+        struct conf_multiple *cm = dlink_data(node);
+        if ((strcmp(cm->name, entry) == 0) && cm->type == type) {
+            xfree(cm->key);
+            cm->key = xstrdup(key);
+        }
+    }
 }
 
 void

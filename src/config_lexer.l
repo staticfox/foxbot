@@ -80,14 +80,21 @@ T_STRING    \"[^\"\n]*[\"\n]
                 }
 
 bot           { return T_BOT;           }
-channel       { return T_CHANNEL;       }
-debug_channel { return T_DEBUG_CHANNEL; }
 host          { return T_HOST;          }
 ident         { return T_IDENT;         }
 nick          { return T_NICK;          }
 port          { return T_PORT;          }
 realname      { return T_REALNAME;      }
 plugin        { return T_PLUGIN;        }
+
+channel       { return T_CHANNEL;       }
+name          { return T_NAME;          }
+key           { return T_KEY;           }
+
+debug         { return T_DEBUG;         }
+
+yes           { yylval.number = 1; return T_BOOL; }
+no            { yylval.number = 0; return T_BOOL; }
 
 .             { return yytext[0];       }
 <<EOF>>       { yyterminate();          }

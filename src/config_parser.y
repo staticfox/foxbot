@@ -27,6 +27,22 @@
 #include <foxbot/memory.h>
 
 int yylex(void);
+
+static struct channel_state_t {
+    char *name;
+    char *key;
+    int is_debug;
+} channel_state;
+
+static void
+clear_cstate(void)
+{
+    static const struct channel_state_t EMPTY_CSTATE;
+    xfree(channel_state.name);
+    xfree(channel_state.key);
+    channel_state = EMPTY_CSTATE;
+}
+
 %}
 
 %union {
@@ -35,21 +51,24 @@ int yylex(void);
 }
 
 %token T_BOT
-%token T_CHANNEL
+%token T_DEBUG
 %token T_HOST
 %token T_IDENT
 %token T_PLUGIN
 %token T_NICK
-%token T_DEBUG_CHANNEL
 %token T_PORT
 %token T_REALNAME
+%token T_CHANNEL
+%token T_NAME
+%token T_KEY
+%token T_BOOL
 %token T_STRING
 
 %type <string> T_STRING
 %%
 
 conf: | conf conf_item;
-conf_item: bot_entry | error ';' | error '}' ;
+conf_item: bot_entry | channel_entry | error ';' | error '}' ;
 
 /* Bot config */
 bot_entry: T_BOT  '{' bot_items '}' ';' ;
@@ -59,8 +78,6 @@ bot_item:  bot_nick |
            bot_ident |
            bot_host |
            bot_port |
-           bot_debug_channel |
-           bot_channel |
            bot_realname |
            bot_plugin |
            error ';' ;
@@ -101,24 +118,6 @@ bot_port: T_PORT '=' T_STRING ';'
     botconfig.port = xstrdup(yylval.string);
 };
 
-bot_debug_channel: T_DEBUG_CHANNEL '=' T_STRING ';'
-{
-    if (conf_parser_ctx.pass != 2)
-        break;
-
-    xfree(botconfig.debug_channel);
-    botconfig.debug_channel = xstrdup(yylval.string);
-}
-
-bot_channel: T_CHANNEL '=' T_STRING ';'
-{
-    if (conf_parser_ctx.pass != 2)
-        break;
-
-    xfree(botconfig.channel);
-    botconfig.channel = xstrdup(yylval.string);
-};
-
 bot_realname: T_REALNAME '=' T_STRING ';'
 {
     if (conf_parser_ctx.pass != 2)
@@ -134,4 +133,60 @@ bot_plugin: T_PLUGIN '=' T_STRING ';'
         break;
 
     add_m_safe(yylval.string, CONF_PLUGIN);
+}
+
+/* Channel {} entries */
+channel_entry: T_CHANNEL
+{
+    if (conf_parser_ctx.pass == 2)
+        clear_cstate();
+}  '{' channel_items '}' ';'
+{
+    if (conf_parser_ctx.pass != 2)
+        break;
+
+    if (channel_state.name == NULL)
+        break;
+
+    enum conf_multiple_types t;
+    if (channel_state.is_debug)
+        t = CONF_DEBUG_CHANNEL;
+    else
+        t = CONF_STANDARD_CHANNEL;
+
+    add_m_safe(channel_state.name, t);
+    if (channel_state.key != NULL)
+        conf_set_ckey(channel_state.name, t, channel_state.key);
+};
+
+channel_items: channel_items channel_item | channel_item;
+channel_item:  channel_name |
+               channel_key |
+               channel_debug |
+               error ';' ;
+
+channel_name: T_NAME '=' T_STRING ';'
+{
+    if (conf_parser_ctx.pass != 2)
+        break;
+
+    if (yylval.string[0])
+        channel_state.name = xstrdup(yylval.string);
+};
+
+channel_key: T_KEY '=' T_STRING ';'
+{
+    if (conf_parser_ctx.pass != 2)
+        break;
+
+    if (yylval.string[0])
+        channel_state.key = xstrdup(yylval.string);
+}
+
+channel_debug: T_DEBUG '=' T_BOOL ';'
+{
+    if (conf_parser_ctx.pass != 2)
+        break;
+
+    channel_state.is_debug = yylval.number;
 }

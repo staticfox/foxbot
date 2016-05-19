@@ -79,6 +79,7 @@ bool is_registered(void);
 void raw(char *fmt, ...);
 void privmsg(const char *target, const char *message);
 void join(const char *channel);
+void join_with_key(const char *channel, const char *key);
 void do_quit(const char *message);
 void do_error(char *line, ...);
 void init_foxbot(int argc, char **argv);

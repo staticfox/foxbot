@@ -59,6 +59,14 @@ join(const char *channel)
 }
 
 void
+join_with_key(const char *const channel, const char *const key)
+{
+    char buf[MAX_IRC_BUF];
+    snprintf(buf, sizeof(buf), "JOIN %s %s\n", channel, key);
+    raw(buf);
+}
+
+void
 do_quit(const char *message)
 {
     char buf[MAX_IRC_BUF];
@@ -75,10 +83,18 @@ do_error(char *line, ...)
     vsnprintf(buf, MAX_IO_BUF, line, ap);
     va_end(ap);
 
-    if (bot.registered && botconfig.debug_channel)
-        privmsg(botconfig.debug_channel, buf);
-    else
+    if (bot.registered) {
+        DLINK_FOREACH(node, dlist_head(&botconfig.conf_modules)) {
+        const struct conf_multiple *const cm = dlink_data(node);
+            if (cm->type == CONF_DEBUG_CHANNEL) {
+                struct channel_t *const chptr = find_channel(cm->name);
+                if (chptr && channel_get_membership(chptr, bot.user) != NULL)
+                    privmsg(cm->name, buf);
+            }
+        }
+    } else {
         fprintf(stderr, "%s\n", buf);
+    }
 }
 
 static void

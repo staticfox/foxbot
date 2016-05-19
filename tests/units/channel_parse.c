@@ -45,7 +45,7 @@ START_TEST(simple_channel_check)
     ck_assert((chptr = find_channel("#unit_test")) != NULL);
     ck_assert(dlist_length(&chptr->users) == 1);
     ck_assert_ptr_ne(channel_get_membership(chptr, bot.user), NULL);
-    ck_assert((chptr = find_channel(botconfig.debug_channel)) != NULL);
+    ck_assert((chptr = find_channel("#test_spam")) != NULL);
     ck_assert(dlist_length(&chptr->users) == 1);
     ck_assert_ptr_ne(channel_get_membership(chptr, bot.user), NULL);
     end_test();
@@ -59,9 +59,7 @@ START_TEST(channel_part_check)
     struct user_t *uptr;
     char ibuf[MAX_IRC_BUF];
 
-    ck_assert(botconfig.channel && botconfig.debug_channel);
-
-    ck_assert((chptr = find_channel(botconfig.channel)) != NULL);
+    ck_assert((chptr = find_channel("#unit_test")) != NULL);
     ck_assert_ptr_ne(channel_get_membership(chptr, bot.user), NULL);
 
     /* Introduce a new user */
@@ -92,8 +90,7 @@ START_TEST(channel_part_check)
     write_and_wait(":test_user1!~test@255.255.255.255 JOIN #unit_test2");
     write_and_wait(":test_user1!~test@255.255.255.255 JOIN #unit_test2");
 
-    wait_for_last_buf("PRIVMSG %s :Attempting to rejoin test_user1 to #unit_test2.",
-                      botconfig.debug_channel);
+    wait_for_last_buf("PRIVMSG #test_spam :Attempting to rejoin test_user1 to #unit_test2.");
 
     ck_assert(dlist_length(&chptr2->users) == 2);
 
@@ -199,8 +196,8 @@ START_TEST(channel_unknown_exists)
     delete_channel_s(chptr);
     ck_assert(chptr);
     ck_assert(chptr->name);
-    wait_for_last_buf("PRIVMSG %s :Received unknown channel struct for %p (%s)",
-                      botconfig.debug_channel, (void *)chptr, chptr->name);
+    wait_for_last_buf("PRIVMSG #test_spam :Received unknown channel struct for %p (%s)",
+                      (void *)chptr, chptr->name);
     xfree(chptr->name);
     xfree(chptr);
     end_test();
@@ -297,8 +294,7 @@ START_TEST(channel_unknown_kick_chan)
     begin_test();
 
     write_and_wait(":test_user1!~test@255.255.255.255 KICK #unknown test_user2 :Bye.");
-    wait_for_last_buf("PRIVMSG %s :Received KICK for an unknown channel #unknown",
-                      botconfig.debug_channel);
+    wait_for_last_buf("PRIVMSG #test_spam :Received KICK for an unknown channel #unknown");
 
     ck_assert(find_channel("#unknown") == NULL);
     ck_assert(find_nick("test_user1") == NULL);
@@ -318,8 +314,7 @@ START_TEST(channel_unknown_kick_target)
     ck_assert(dlist_length(&chptr->users) == 2);
     ck_assert(user_count() == 2);
     write_and_wait(":test_user1!~test@255.255.255.255 KICK #unit_test test_user2 :Bye.");
-    wait_for_last_buf("PRIVMSG %s :Received KICK for an unknown user test_user2",
-                      botconfig.debug_channel);
+    wait_for_last_buf("PRIVMSG #test_spam :Received KICK for an unknown user test_user2");
 
     ck_assert(find_nick("test_user1") != NULL);
     ck_assert(find_nick("test_user2") == NULL);
@@ -387,8 +382,7 @@ START_TEST(channel_who_spcrpl_ts6)
     ck_assert_ptr_eq(member->user, user);
 
     write_and_wait(":ircd.staticfox.net 354 foxbot #unknown ~fox 192.168.hwo.mh ircd.staticfox.net foxbot H 0 0 0 ::3");
-    wait_for_last_buf("PRIVMSG %s :Received WHO for unknown channel #unknown.",
-                      botconfig.debug_channel);
+    wait_for_last_buf("PRIVMSG #test_spam :Received WHO for unknown channel #unknown.");
 
     end_test();
 }
@@ -447,8 +441,7 @@ START_TEST(channel_who_spcrpl_inspircd)
     ck_assert_ptr_eq(member->user, user);
 
     write_and_wait(":ircd.staticfox.net 352 foxbot #unknown ~fox 192.168.hwo.mh ircd.staticfox.net foxbot H*!~@ :0 ...");
-    wait_for_last_buf("PRIVMSG %s :Received WHO for unknown channel #unknown.",
-                      botconfig.debug_channel);
+    wait_for_last_buf("PRIVMSG #test_spam :Received WHO for unknown channel #unknown.");
 
     end_test();
 }

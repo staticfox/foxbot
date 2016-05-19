@@ -38,11 +38,18 @@ void
 parse_rpl_welcome(void)
 {
     bot.registered = true;
-    if (botconfig.channel)
-        join(botconfig.channel);
 
-    if (botconfig.debug_channel)
-        join(botconfig.debug_channel);
+    /* Join channels */
+    DLINK_FOREACH(node, dlist_head(&botconfig.conf_modules)) {
+        const struct conf_multiple *const cm = dlink_data(node);
+        if (cm->type == CONF_STANDARD_CHANNEL || cm->type == CONF_DEBUG_CHANNEL) {
+            if (cm->key) {
+                join_with_key(cm->name, cm->key);
+            } else {
+                join(cm->name);
+            }
+        }
+    }
 
     /* That's me! */
     make_me(bot.msg->target);

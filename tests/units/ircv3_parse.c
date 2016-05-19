@@ -40,8 +40,7 @@ START_TEST(account_notify_check)
     begin_test();
     struct user_t *uptr;
 
-    ck_assert(botconfig.channel && botconfig.debug_channel);
-    ck_assert_ptr_ne(find_channel(botconfig.channel), NULL);
+    ck_assert_ptr_ne(find_channel("#unit_test"), NULL);
 
     write_and_wait(":test_user1!~test@255.255.255.255 JOIN #unit_test");
     ck_assert((uptr = find_nick("test_user1")) != NULL);

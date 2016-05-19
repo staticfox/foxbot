@@ -146,14 +146,18 @@ do_burst(int i)
         break;
     }
 
-    fox_write(":%s MODE %s :+i\r\n", check_nick, check_nick);
     /* Needed to give the bot an idea of what its n!u@h is */
-    fox_write(":%s!~%s@127.0.0.1 JOIN %s\r\n", check_nick, check_user, botconfig.channel);
-    fox_write(":ircd.staticfox.net 353 %s = %s :%s\r\n", check_nick, botconfig.channel, check_nick);
-    fox_write(":ircd.staticfox.net 366 %s %s :End of /NAMES list.\r\n", check_nick, botconfig.channel);
-    fox_write(":%s!~%s@127.0.0.1 JOIN %s\r\n", check_nick, check_user, botconfig.debug_channel);
-    fox_write(":ircd.staticfox.net 353 %s = %s :%s\r\n", check_nick, botconfig.debug_channel, check_nick);
-    fox_write(":ircd.staticfox.net 366 %s %s :End of /NAMES list.\r\n", check_nick, botconfig.debug_channel);
+    fox_write(":%s MODE %s :+i\r\n", check_nick, check_nick);
+
+    /* Simulate joining channels */
+    DLINK_FOREACH(node, dlist_head(&botconfig.conf_modules)) {
+        const struct conf_multiple *const cm = dlink_data(node);
+        if (cm->type == CONF_STANDARD_CHANNEL || cm->type == CONF_DEBUG_CHANNEL) {
+            fox_write(":%s!~%s@127.0.0.1 JOIN %s\r\n", check_nick, check_user, cm->name);
+            fox_write(":ircd.staticfox.net 353 %s = %s :%s\r\n", check_nick, cm->name, check_nick);
+            fox_write(":ircd.staticfox.net 366 %s %s :End of /NAMES list.\r\n", check_nick, cm->name);
+        }
+    }
 }
 
 void

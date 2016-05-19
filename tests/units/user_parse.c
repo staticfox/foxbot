@@ -51,8 +51,7 @@ START_TEST(user_mode_check)
 
     write_and_wait(":UNKNOWN MODE UNKNOWN :+i");
 
-    wait_for_last_buf("PRIVMSG %s :Received mode change for another user? :UNKNOWN MODE UNKNOWN :+i",
-                      botconfig.debug_channel);
+    wait_for_last_buf("PRIVMSG #test_spam :Received mode change for another user? :UNKNOWN MODE UNKNOWN :+i");
 
     ck_assert(!(bot.modes[(uint8_t)'i']));
 

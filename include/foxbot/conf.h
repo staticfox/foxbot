@@ -37,6 +37,7 @@ enum conf_multiple_types {
 struct conf_multiple {
     enum conf_multiple_types type;
     char *name;
+    char *key;
 };
 
 struct conf_parser_context {
@@ -57,6 +58,7 @@ struct botconfig_entry {
 };
 
 void add_m_safe(const char *entry, enum conf_multiple_types type);
+void conf_set_ckey(const char *entry, enum conf_multiple_types type, const char *key);
 void read_conf_file(void);
 void yyerror(const char *message);
 
