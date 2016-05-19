@@ -26,7 +26,7 @@
 #include <stdbool.h>
 
 struct module_t {
-    char *name;
+    const char *name;
     bool (*register_func)(void);
     bool (*unregister_func)(void);
     char *version;
