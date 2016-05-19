@@ -2,19 +2,35 @@
  *
  * C/C++/Bash comments are allowed.
  *
- * I can't imagine there would be many more questions
- * on what each option does. (Yes, more to come soonish).
  */
 
-/* bot {}: Bot options, major WIP */
+/* bot {}: Bot options */
 bot {
+    /* Uncomment to load this plugin. You can add as many plugins
+     * as you like.
+     */
+    // plugin = "echo_test.so";
+
     nick = "foxbot";
     ident = "fox";
+    realname = ":3";
 
     host = "misconfigured.network";
     port = "-4";
-    channel = "#misconfigured";
-    debug_channel = "#foxbot_logging";
-    realname = ":3";
-    // plugin = "echo_test.so";
+};
+
+/* channel {}: Channel options, define as many channels as you want. */
+channel {
+    name = "#misconfigured";
+};
+
+channel {
+    name = "#foxbot_logging";
+    debug = yes;
+};
+
+channel {
+    name = "#some_private_chan";
+    key = "s3cretk3y";
+    debug = yes;
 };
