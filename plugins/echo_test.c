@@ -28,7 +28,7 @@
 #include <foxbot/plugin.h>
 #include <foxbot/user.h>
 
-void
+static void
 say_my_name(void)
 {
     char buf[MAX_IRC_BUF];
@@ -39,14 +39,14 @@ say_my_name(void)
         privmsg(bot.msg->from->nick, buf);
 }
 
-bool
+static bool
 register_plugin(void)
 {
     add_hook("on_privmsg", (hook_func) say_my_name);
     return true;
 }
 
-bool
+static bool
 unregister_plugin(void)
 {
     delete_hook("on_privmsg", (hook_func) say_my_name);
