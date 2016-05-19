@@ -4,7 +4,6 @@ BUILT_SOURCES = config_parser.h
 CLEANFILES = config_lexer.[ch] config_parser.[ch]
 AM_YFLAGS = -d
 
-libfoxbot_la_LDFLAGS = -export-dynamic -module
 libfoxbot_la_LIBADD = $(LIBLTDL)
 libfoxbot_la_DEPENDENCIES = $(LTDLDEPS)
 
