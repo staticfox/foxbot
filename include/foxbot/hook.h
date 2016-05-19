@@ -32,8 +32,9 @@ struct hook_t {
     hook_func func;
 };
 
-void add_hook(const char *const name, hook_func func);
-void exec_hook(const char *const nick);
+void add_hook(const char *name, hook_func func);
+void delete_hook(hook_func func);
+void exec_hook(const char *nick);
 size_t hook_count(void);
 
 #endif

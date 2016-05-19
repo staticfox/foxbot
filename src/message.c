@@ -123,6 +123,10 @@ hook_numeric(void)
     default:
         break;
     }
+    /* Too many numerics, let the plugin figure
+     * it out. */
+    exec_hook("on_numeric");
+}
 }
 
 void
@@ -131,27 +135,41 @@ hook_literal(void)
     switch(bot.msg->ctype) {
     case JOIN:
         handle_join();
+        exec_hook("on_join");
         break;
     case PART:
         handle_part();
+        exec_hook("on_part");
         break;
     case KICK:
         handle_kick();
+        exec_hook("on_kick");
         break;
     case MODE:
         handle_mode();
+        exec_hook("on_mode");
         break;
     case QUIT:
         handle_quit();
+        exec_hook("on_quit");
         break;
     case NICK:
         handle_nick();
+        exec_hook("on_nick");
         break;
     case CAP:
         handle_cap();
+        exec_hook("on_cap");
         break;
     case ACCOUNT:
         handle_account();
+        exec_hook("on_account");
+        break;
+    case PRIVMSG:
+        exec_hook("on_privmsg");
+        break;
+    case NOTICE:
+        exec_hook("on_notice");
         break;
     default:
         break;
@@ -208,6 +226,7 @@ parse_line(const char *line)
                 tmp[n] = '\n';
                 tmp[n + 1] = '\0';
                 raw(tmp);
+                exec_hook("on_ping");
                 goto end;
             } else {
                 bot.msg->is_invalid = true;
@@ -228,6 +247,7 @@ parse_line(const char *line)
             } else {
                 if (strcmp(token, "ERROR") == 0) {
                     quitting = true;
+                    exec_hook("on_error");
                     goto end;
                 }
                 bot.msg->is_invalid = true;

@@ -29,7 +29,7 @@
 static dlink_list hooks;
 
 void
-add_hook(const char *const name, hook_func func)
+add_hook(const char *const name, const hook_func func)
 {
     static const struct hook_t EMPTY_HOOK;
     struct hook_t *hook = xmalloc(sizeof(*hook));
@@ -38,6 +38,22 @@ add_hook(const char *const name, hook_func func)
     hook->func = func;
     dlink_insert(&hooks, hook);
     return;
+}
+
+void
+delete_hook(const hook_func func)
+{
+    struct hook_t *hook = NULL;
+
+    DLINK_FOREACH(node, dlist_head(&hooks)) {
+        hook = (struct hook_t *) dlink_data(node);
+        if (hook->func == func) {
+            xfree(hook->name);
+            xfree(hook);
+            dlink_delete(node, &hooks);
+            break;
+        }
+    }
 }
 
 size_t
