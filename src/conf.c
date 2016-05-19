@@ -36,20 +36,21 @@ extern int yyparse();
 static void
 clear_conf(void)
 {
+    static const struct botconfig_entry EMPTY_BOT;
     xfree(botconfig.nick);
-    botconfig.nick = NULL;
     xfree(botconfig.ident);
-    botconfig.ident = NULL;
     xfree(botconfig.host);
-    botconfig.host = NULL;
     xfree(botconfig.port);
-    botconfig.port = NULL;
     xfree(botconfig.debug_channel);
-    botconfig.debug_channel = NULL;
     xfree(botconfig.channel);
-    botconfig.channel = NULL;
     xfree(botconfig.realname);
-    botconfig.realname = NULL;
+    DLINK_FOREACH(node, dlist_head(&botconfig.conf_modules)) {
+        struct conf_multiple *cm = dlink_data(node);
+        xfree(cm->name);
+        xfree(cm);
+        dlink_delete(node, &botconfig.conf_modules);
+    }
+    botconfig = EMPTY_BOT;
 }
 
 static void
@@ -85,6 +86,23 @@ read_conf(FILE *file)
     clear_conf();
     yyparse(file);
     override_test_port();
+}
+
+void
+add_m_safe(const char *const entry, const enum conf_multiple_types type)
+{
+    DLINK_FOREACH(node, dlist_head(&botconfig.conf_modules)) {
+        struct conf_multiple *cm = dlink_data(node);
+        if (strcmp(cm->name, entry) == 0)
+            return;
+    }
+
+    static const struct conf_multiple CONF_EMPTY;
+    struct conf_multiple *cm = xmalloc(sizeof(*cm));
+    *cm = CONF_EMPTY;
+    cm->name = xstrdup(entry);
+    cm->type = type;
+    dlink_insert(&botconfig.conf_modules, cm);
 }
 
 void

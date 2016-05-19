@@ -25,7 +25,19 @@
 
 #include <stdio.h>
 
-#include "memory.h"
+#include <foxbot/list.h>
+#include <foxbot/memory.h>
+
+enum conf_multiple_types {
+    CONF_STANDARD_CHANNEL,
+    CONF_DEBUG_CHANNEL,
+    CONF_MODULE
+};
+
+struct conf_multiple {
+    enum conf_multiple_types type;
+    char *name;
+};
 
 struct conf_parser_context {
     unsigned int pass;
@@ -41,8 +53,10 @@ struct botconfig_entry {
     char *debug_channel;
     char *channel;
     char *realname;
+    dlink_list conf_modules;
 };
 
+void add_m_safe(const char *entry, enum conf_multiple_types type);
 void read_conf_file(void);
 void yyerror(const char *message);
 

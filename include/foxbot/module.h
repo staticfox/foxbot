@@ -37,5 +37,6 @@ struct module_t {
 
 extern void register_module(struct module_t *module);
 void load_module(const char *name);
+void load_conf_modules(void);
 
 #endif

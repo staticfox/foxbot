@@ -25,6 +25,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <foxbot/conf.h>
 #include <foxbot/message.h>
 #include <foxbot/module.h>
 #include <foxbot/list.h>
@@ -62,4 +63,15 @@ load_module(const char *const name)
     void *obj = dlsym(mod, "_fox_module");
     struct module_t *module = (struct module_t *) obj;
     register_module(module);
+}
+
+void
+load_conf_modules(void)
+{
+    DLINK_FOREACH(node, dlist_head(&botconfig.conf_modules)) {
+        const struct conf_multiple *const cm = dlink_data(node);
+        if (cm->type == CONF_MODULE)
+            load_module(cm->name);
+    }
+
 }
