@@ -16,4 +16,5 @@ bot {
     channel = "#misconfigured";
     debug_channel = "#foxbot_logging";
     realname = ":3";
+    // module = "echo_test.so";
 };
