@@ -39,6 +39,10 @@ register_module(struct module_t *module)
         return;
     }
 
+    /* TODO: log system */
+    printf("Registered plugin %s by %s, compiled %s.\n",
+           module->name, module->author, module->build_time);
+
     dlink_insert(&modules, module);
 }
 
@@ -51,11 +55,11 @@ load_module(const char *const name)
     void *mod = dlopen(buf, RTLD_NOW);
 
     if (!mod) {
-        printf("Error opening %s: %s\n", name, dlerror());
+        do_error("Error opening %s: %s\n", name, dlerror());
         return;
     }
 
     void *obj = dlsym(mod, "_fox_module");
     struct module_t *module = (struct module_t *) obj;
-    printf("Found module %s\n", module->name);
+    register_module(module);
 }

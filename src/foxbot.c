@@ -142,7 +142,6 @@ init_foxbot(int argc, char **argv)
     setup_signals();
     create_socket();
     establish_link();
-    load_module("echo_test.so");
 }
 
 void

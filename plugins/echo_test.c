@@ -57,5 +57,5 @@ struct module_t _fox_module = {
     .version = "0.0.1",                    /* Plugin version */
     .description = "A simple test plugin", /* Plugin description */
     .author = "staticfox",                 /* Author of plugin */
-    .build_time = __DATE__ __TIME__,       /* Plugin compilation time */
+    .build_time = __DATE__", "__TIME__,    /* Plugin compilation time */
 };
