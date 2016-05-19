@@ -130,7 +130,7 @@ START_TEST(channel_quit_check)
     ck_assert((uptr = find_nick("test_user2")) != NULL);
     ck_assert_ptr_ne(channel_get_membership(chptr, uptr), NULL);
 
-    write_and_wait(":test_user2!~test@255.255.255.255 QUIT :l8r");
+    write_and_wait(":test_user2!~test@255.255.255.255 QUIT :l8r1");
     ck_assert(dlist_length(&chptr->users) == 2);
     ck_assert(user_count() == 2);
     ck_assert(find_nick("test_user2") == NULL);
@@ -146,7 +146,7 @@ START_TEST(channel_quit_check)
     ck_assert((chptr2 = find_channel("#unit_test2")) != NULL);
     ck_assert(user_count() == 3);
 
-    write_and_wait(":test_user2!~test@255.255.255.255 QUIT :l8r");
+    write_and_wait(":test_user2!~test@255.255.255.255 QUIT :l8r2");
     ck_assert(user_count() == 2);
     ck_assert(dlist_length(&chptr->users) == 2);
     ck_assert(dlist_length(&chptr2->users) == 1);

@@ -40,6 +40,7 @@
 #include <foxbot/rope.h>
 #include <foxbot/foxbot.h>
 
+#include "check_foxbot.h"
 #include "check_server.h"
 
 static const struct sockaddr_in SOCKADDR_IN_EMPTY;
@@ -176,6 +177,7 @@ parse_buffer(const char *buf)
     enum check_commands cmd = CHECK_INVALID;
     unsigned int i = 0;
     int params = 1;
+    bool check_pass = false;
     char *token, *string, *tofree;
     static char *l_params = NULL;
 
@@ -220,10 +222,15 @@ parse_buffer(const char *buf)
                 }
                 goto end;
             } else if (cmd == CHECK_JOIN) {
-                //fox_write(":%s!~%s@127.0.0.1 JOIN %s\r\n", check_nick, check_user, token);
-                goto end;
+                if (strcmp(token, "#test_spam") == 0)
+                    check_pass = true;
+                else
+                    goto end;
             }
             break;
+        case 2:
+            if (check_pass)
+                ck_assert_str_eq(token, "privchan");
         }
         i++;
     }
