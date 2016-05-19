@@ -4,7 +4,7 @@ dnl Process this file with autoconf to produce a configure script.
 AC_PREREQ([2.68])
 AC_INIT(foxbot, 0.0.1, staticfox@staticfox.net)
 AC_CONFIG_AUX_DIR([build-aux])
-AC_CONFIG_FILES([Makefile bot/Makefile src/Makefile tests/Makefile])
+AC_CONFIG_FILES([Makefile bot/Makefile src/Makefile plugins/Makefile tests/Makefile])
 AC_CONFIG_SRCDIR([src/foxbot.c])
 AC_CONFIG_HEADERS([include/config.h])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign nostdinc subdir-objects])
@@ -20,10 +20,15 @@ AC_DEFINE_DIR([LOCALSTATEDIR],[localstatedir],[Set to localstatedir.])
 dnl Checks for programs.
 AC_PROG_AWK
 AC_PROG_CC_C99
-AC_PROG_RANLIB
 AC_PROG_YACC
 AM_PROG_AR
 AM_PROG_LEX
+
+dnl initialize libtool
+LT_CONFIG_LTDL_DIR([libltdl])
+LT_INIT([dlopen disable-static])
+LTDL_INIT([recursive convenience])
+LIBTOOL="$LIBTOOL --silent"
 
 dnl m4 directory
 AC_CONFIG_MACRO_DIR([m4])
@@ -100,5 +105,18 @@ PKG_CHECK_MODULES([CHECK], [check],
 AX_CHECK_COMPILE_FLAG([$WERROR -Wno-gnu-zero-variadic-macro-arguments],
   [AX_APPEND_FLAG([-Wno-gnu-zero-variadic-macro-arguments], [CHECK_CFLAGS])])
 AC_REQUIRE_AUX_FILE([tap-driver.sh])
+
+dnl Check for plugin directory
+AC_MSG_CHECKING([whether to modify plugin path])
+AC_ARG_WITH(plugindir,
+  [AC_HELP_STRING([--with-plugindir=DIR], [Directory to install plugins.])],
+  [plugindir=`echo $withval | sed 's/\/$//'`
+  AC_MSG_RESULT(yes)],
+  [AS_IF([test "x$enable_fhs_paths" = "xyes"],
+    [plugindir='${pkglibdir}/plugins'],
+    [plugindir='${prefix}/plugins'])
+    AC_MSG_RESULT(no)
+  ])
+AC_DEFINE_DIR(PLUIGIN_DIR, plugindir, [Prefix where plugins are installed.])
 
 AC_OUTPUT

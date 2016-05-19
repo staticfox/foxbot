@@ -127,7 +127,6 @@ hook_numeric(void)
      * it out. */
     exec_hook("on_numeric");
 }
-}
 
 void
 hook_literal(void)

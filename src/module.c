@@ -1,0 +1,61 @@
+/*
+ *   module.c -- May 18 2016 21:30:04 EDT
+ *
+ *   This file is part of the foxbot IRC bot
+ *   Copyright (C) 2016 Matt Ullman (staticfox at staticfox dot net)
+ *
+ *   This program is FREE software. You can redistribute it and/or
+ *   modify it under the terms of the GNU General Public License
+ *   as published by the Free Software Foundation; either version 2
+ *   of the License, or (at your option) any later version.
+ *
+ *   This program is distributed in the HOPE that it will be USEFUL,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *   See the GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program. If not, write to the Free Software Foundation,
+ *   Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ *
+ */
+
+#include <config.h>
+#include <dlfcn.h>
+#include <stdio.h>
+#include <string.h>
+
+#include <foxbot/message.h>
+#include <foxbot/module.h>
+#include <foxbot/list.h>
+
+static dlink_list modules;
+
+void
+register_module(struct module_t *module)
+{
+    if (!module->register_func()) {
+        do_error("Error loading module %s (%p)", module->name, module);
+        return;
+    }
+
+    dlink_insert(&modules, module);
+}
+
+void
+load_module(const char *const name)
+{
+    char buf[1024];
+    snprintf(buf, sizeof(buf), "%s/%s", PLUIGIN_DIR, name);
+
+    void *mod = dlopen(buf, RTLD_NOW);
+
+    if (!mod) {
+        printf("Error opening %s: %s\n", name, dlerror());
+        return;
+    }
+
+    void *obj = dlsym(mod, "_fox_module");
+    struct module_t *module = (struct module_t *) obj;
+    printf("Found module %s\n", module->name);
+}
