@@ -1,5 +1,5 @@
 /*
- *   module.c -- May 18 2016 21:30:04 EDT
+ *   plugin.c -- May 18 2016 21:30:04 EDT
  *
  *   This file is part of the foxbot IRC bot
  *   Copyright (C) 2016 Matt Ullman (staticfox at staticfox dot net)
@@ -27,28 +27,28 @@
 
 #include <foxbot/conf.h>
 #include <foxbot/message.h>
-#include <foxbot/module.h>
+#include <foxbot/plugin.h>
 #include <foxbot/list.h>
 
-static dlink_list modules;
+static dlink_list plugins;
 
 void
-register_module(struct module_t *module)
+iregister_plugin(struct plugin_t *plugin)
 {
-    if (!module->register_func()) {
-        do_error("Error loading module %s (%p)", module->name, module);
+    if (!plugin->register_func()) {
+        do_error("Error loading plugin %s (%p)", plugin->name, plugin);
         return;
     }
 
     /* TODO: log system */
     printf("Registered plugin %s by %s, compiled %s.\n",
-           module->name, module->author, module->build_time);
+           plugin->name, plugin->author, plugin->build_time);
 
-    dlink_insert(&modules, module);
+    dlink_insert(&plugins, plugin);
 }
 
 void
-load_module(const char *const name)
+iload_plugin(const char *const name)
 {
     char buf[1024];
     snprintf(buf, sizeof(buf), "%s/%s", PLUIGIN_DIR, name);
@@ -60,17 +60,16 @@ load_module(const char *const name)
         return;
     }
 
-    void *obj = dlsym(mod, "_fox_module");
-    register_module((struct module_t *) obj);
+    void *obj = dlsym(mod, "fox_plugin");
+    iregister_plugin((struct plugin_t *) obj);
 }
 
 void
-load_conf_modules(void)
+load_conf_plugins(void)
 {
     DLINK_FOREACH(node, dlist_head(&botconfig.conf_modules)) {
         const struct conf_multiple *const cm = dlink_data(node);
-        if (cm->type == CONF_MODULE)
-            load_module(cm->name);
+        if (cm->type == CONF_PLUGIN)
+            iload_plugin(cm->name);
     }
-
 }

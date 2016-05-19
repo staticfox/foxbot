@@ -31,7 +31,7 @@
 enum conf_multiple_types {
     CONF_STANDARD_CHANNEL,
     CONF_DEBUG_CHANNEL,
-    CONF_MODULE
+    CONF_PLUGIN
 };
 
 struct conf_multiple {

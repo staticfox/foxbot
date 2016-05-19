@@ -87,7 +87,7 @@ ident         { return T_IDENT;         }
 nick          { return T_NICK;          }
 port          { return T_PORT;          }
 realname      { return T_REALNAME;      }
-module        { return T_MODULE;        }
+plugin        { return T_PLUGIN;        }
 
 .             { return yytext[0];       }
 <<EOF>>       { yyterminate();          }

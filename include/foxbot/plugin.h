@@ -1,5 +1,5 @@
 /*
- *   module.h -- May 18 2016 21:30:46 EDT
+ *   plugin.h -- May 18 2016 21:30:46 EDT
  *
  *   This file is part of the foxbot IRC bot
  *   Copyright (C) 2016 Matt Ullman (staticfox at staticfox dot net)
@@ -20,12 +20,12 @@
  *
  */
 
-#ifndef FOX_MODULE_H
-#define FOX_MODULE_H
+#ifndef FOX_PLUGIN_H
+#define FOX_PLUGIN_H
 
 #include <stdbool.h>
 
-struct module_t {
+struct plugin_t {
     const char *name;
     bool (*register_func)(void);
     bool (*unregister_func)(void);
@@ -35,8 +35,8 @@ struct module_t {
     char *build_time;
 };
 
-extern void register_module(struct module_t *module);
-void load_module(const char *name);
-void load_conf_modules(void);
+void iregister_plugin(struct plugin_t *plugin);
+void iload_plugin(const char *name);
+void load_conf_plugins(void);
 
 #endif

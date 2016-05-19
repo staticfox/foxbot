@@ -38,7 +38,7 @@ int yylex(void);
 %token T_CHANNEL
 %token T_HOST
 %token T_IDENT
-%token T_MODULE
+%token T_PLUGIN
 %token T_NICK
 %token T_DEBUG_CHANNEL
 %token T_PORT
@@ -62,7 +62,7 @@ bot_item:  bot_nick |
            bot_debug_channel |
            bot_channel |
            bot_realname |
-           bot_module |
+           bot_plugin |
            error ';' ;
 
 bot_nick: T_NICK '=' T_STRING ';'
@@ -128,10 +128,10 @@ bot_realname: T_REALNAME '=' T_STRING ';'
     botconfig.realname = xstrdup(yylval.string);
 }
 
-bot_module: T_MODULE '=' T_STRING ';'
+bot_plugin: T_PLUGIN '=' T_STRING ';'
 {
     if (conf_parser_ctx.pass != 2)
         break;
 
-    add_m_safe(yylval.string, CONF_MODULE);
+    add_m_safe(yylval.string, CONF_PLUGIN);
 }

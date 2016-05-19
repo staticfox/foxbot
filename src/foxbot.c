@@ -34,7 +34,7 @@
 #include <foxbot/ircd.h>
 #include <foxbot/list.h>
 #include <foxbot/message.h>
-#include <foxbot/module.h>
+#include <foxbot/plugin.h>
 #include <foxbot/signal.h>
 #include <foxbot/socket.h>
 #include <foxbot/user.h>
@@ -139,7 +139,7 @@ init_foxbot(int argc, char **argv)
 
     parse_opts(argc, argv);
     read_conf_file();
-    load_conf_modules();
+    load_conf_plugins();
     setup_signals();
     create_socket();
     establish_link();

@@ -25,7 +25,7 @@
 #include <foxbot/foxbot.h>
 #include <foxbot/hook.h>
 #include <foxbot/message.h>
-#include <foxbot/module.h>
+#include <foxbot/plugin.h>
 #include <foxbot/user.h>
 
 void
@@ -50,7 +50,7 @@ unregister_plugin(void)
     return true;
 }
 
-struct module_t _fox_module = {
+struct plugin_t fox_plugin = {
     .name = "Echo Test",                   /* Name of the plugin */
     .register_func = &register_plugin,     /* Register callback function */
     .unregister_func = &unregister_plugin, /* Unregister callback function */

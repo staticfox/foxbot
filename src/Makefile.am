@@ -22,8 +22,8 @@ libfoxbot_la_SOURCES = cap.c \
                  list.c \
                  memory.c \
                  message.c \
-                 module.c \
                  parser.c \
+                 plugin.c \
                  rope.c \
                  signal.c \
                  socket.c \
