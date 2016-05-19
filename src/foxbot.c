@@ -43,15 +43,23 @@ struct bot_t bot; /* That's me */
 
 /* IRC related socket helpers */
 void
-privmsg(const char *target, const char *message)
+privmsg(const char *const target, char *const message, ...)
 {
-    char buf[MAX_IRC_BUF];
-    snprintf(buf, sizeof(buf), "PRIVMSG %s :%s\n", target, message);
+    char buf[MAX_IRC_BUF] = { 0 };
+    snprintf(buf, sizeof(buf), "PRIVMSG %s :", target);
+
+    va_list ap;
+    va_start(ap, message);
+    vsnprintf(buf + strlen(buf), MAX_IRC_BUF - strlen(buf), message, ap);
+    va_end(ap);
+
+    buf[strlen(buf)] = '\n';
+
     raw(buf);
 }
 
 void
-join(const char *channel)
+join(const char *const channel)
 {
     char buf[MAX_IRC_BUF];
     snprintf(buf, sizeof(buf), "JOIN %s\n", channel);
@@ -67,7 +75,7 @@ join_with_key(const char *const channel, const char *const key)
 }
 
 void
-do_quit(const char *message)
+do_quit(const char *const message)
 {
     char buf[MAX_IRC_BUF];
     snprintf(buf, sizeof(buf), "QUIT :%s\n", message);

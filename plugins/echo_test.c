@@ -21,9 +21,11 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 
 #include <foxbot/foxbot.h>
 #include <foxbot/hook.h>
+#include <foxbot/memory.h>
 #include <foxbot/message.h>
 #include <foxbot/plugin.h>
 #include <foxbot/user.h>
@@ -31,12 +33,33 @@
 static void
 say_my_name(void)
 {
-    char buf[MAX_IRC_BUF];
-    snprintf(buf, sizeof(buf), "Hi %s! My name is %s!", bot.msg->from->nick, bot.user->nick);
-    if (bot.msg->target_is_channel)
-        privmsg(bot.msg->target, buf);
-    else
-        privmsg(bot.msg->from->nick, buf);
+    static const char const trigger = '.';
+    static const char *const hello_cmd = "hello";
+    const char *target = NULL;
+
+    /* +1 to remove the : */
+    char *message = xstrdup(bot.msg->params+1);
+
+    /* Wasn't a PM to us nor was it an in channel trigger */
+    if (bot.msg->params[0] == trigger && !bot.msg->target_is_channel) {
+        xfree(message);
+        return;
+    }
+
+    /* Get the first word from the message */
+    char *command = fox_strsep(&message, " ");
+
+    /* Command prefix was used */
+    if (bot.msg->target_is_channel) {
+        memmove(command, command+1, strlen(command));
+        target = bot.msg->target;
+    } else {
+        target = bot.msg->from->nick;
+    }
+
+    if (strcmp(command, hello_cmd) == 0) {
+        privmsg(target, "Hi %s! My name is %s!", bot.msg->from->nick, bot.user->nick);
+    }
 }
 
 static bool

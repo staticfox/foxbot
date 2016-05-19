@@ -77,7 +77,7 @@ struct bot_t {
 
 bool is_registered(void);
 void raw(char *fmt, ...);
-void privmsg(const char *target, const char *message);
+void privmsg(const char *target, char *message, ...);
 void join(const char *channel);
 void join_with_key(const char *channel, const char *key);
 void do_quit(const char *message);
