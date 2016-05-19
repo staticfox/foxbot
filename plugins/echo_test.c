@@ -60,6 +60,8 @@ say_my_name(void)
     if (strcmp(command, hello_cmd) == 0) {
         privmsg(target, "Hi %s! My name is %s!", bot.msg->from->nick, bot.user->nick);
     }
+
+    xfree(message);
 }
 
 static bool
