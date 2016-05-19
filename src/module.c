@@ -61,8 +61,7 @@ load_module(const char *const name)
     }
 
     void *obj = dlsym(mod, "_fox_module");
-    struct module_t *module = (struct module_t *) obj;
-    register_module(module);
+    register_module((struct module_t *) obj);
 }
 
 void
