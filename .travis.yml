@@ -108,6 +108,7 @@ after_failure:
 
 script:
   - autoreconf -fvi
-  - CFLAGS="$CFLAGS -Werror" ./configure
+  - CFLAGS="$CFLAGS -Werror" ./configure --prefix="$HOME/travis_build"
   - make
+  - make install
   - make check
