@@ -37,12 +37,12 @@ check_func(void)
 START_TEST(hook_check)
 {
     begin_test();
-    add_hook("check_hook", (hook_func)check_func);
+    add_hook("check_hook", (hook_func) check_func);
     /* echo_test + check_hook */
     ck_assert_int_eq(hook_count(), 2);
     exec_hook("check_hook");
     ck_assert_int_eq(passer, 1);
-    delete_hook((hook_func)check_func);
+    delete_hook("check_hook", (hook_func) check_func);
     ck_assert_int_eq(hook_count(), 1);
     ck_assert_int_eq(passer, 1);
     end_test();

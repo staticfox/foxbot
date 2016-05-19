@@ -46,7 +46,7 @@ register_plugin(void)
 bool
 unregister_plugin(void)
 {
-    delete_hook((hook_func) say_my_name);
+    delete_hook("on_privmsg", (hook_func) say_my_name);
     return true;
 }
 

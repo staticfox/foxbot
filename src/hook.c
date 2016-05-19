@@ -41,13 +41,13 @@ add_hook(const char *const name, const hook_func func)
 }
 
 void
-delete_hook(const hook_func func)
+delete_hook(const char *const name, const hook_func func)
 {
     struct hook_t *hook = NULL;
 
     DLINK_FOREACH(node, dlist_head(&hooks)) {
         hook = (struct hook_t *) dlink_data(node);
-        if (hook->func == func) {
+        if (hook->func == func && (strcmp(hook->name, name) == 0)) {
             xfree(hook->name);
             xfree(hook);
             dlink_delete(node, &hooks);
