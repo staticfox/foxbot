@@ -37,6 +37,7 @@ struct msg_t {
     char *command;
     char *target;
     char *params;
+    bool target_is_channel;
     bool is_invalid;
 };
 

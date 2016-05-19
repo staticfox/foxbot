@@ -33,7 +33,10 @@ say_my_name(void)
 {
     char buf[MAX_IRC_BUF];
     snprintf(buf, sizeof(buf), "Hi %s! My name is %s!", bot.msg->from->nick, bot.user->nick);
-    privmsg(bot.msg->target, buf);
+    if (bot.msg->target_is_channel)
+        privmsg(bot.msg->target, buf);
+    else
+        privmsg(bot.msg->from->nick, buf);
 }
 
 bool

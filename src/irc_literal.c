@@ -38,7 +38,7 @@ void
 handle_mode(void)
 {
     /* User mode change, it *must* be us. */
-    if (!(strchr(bot.ircd->supports.chan_types, bot.msg->target[0]))) {
+    if (!bot.msg->target_is_channel) {
         bool adding = true;
 
         assert(bot.user != NULL); /* Should not be null at this point */

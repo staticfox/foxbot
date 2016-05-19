@@ -196,6 +196,17 @@ fox_strsep(char **stringp, const char *delim)
     return p;
 }
 
+static void
+set_if_channel()
+{
+    /* Pre-IRCd */
+    if (bot.ircd->supports.chan_types == NULL)
+        return;
+
+    if (strchr(bot.ircd->supports.chan_types, bot.msg->target[0]))
+        bot.msg->target_is_channel = true;
+}
+
 bool
 parse_line(const char *line)
 {
@@ -260,6 +271,7 @@ parse_line(const char *line)
             break;
         case 2:
             bot.msg->target = xstrdup(token);
+            set_if_channel();
             break;
         }
 
