@@ -33,7 +33,7 @@
 static void
 say_my_name(void)
 {
-    static const char const trigger = '.';
+    static const char trigger = '.';
     static const char *const hello_cmd = "hello";
     const char *target = NULL;
 
