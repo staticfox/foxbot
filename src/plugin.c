@@ -153,7 +153,7 @@ iload_plugin(const char *const name, const bool announce)
     if (!mod) {
         if (bot.msg->from->nick)
             notice(bot.msg->from->nick, "Error opening %s: %s\n", name, dlerror());
-        do_error("Error opening %s: %s\n", name, dlerror());
+        do_error("Error opening %s: %s", name, dlerror());
         return;
     }
 

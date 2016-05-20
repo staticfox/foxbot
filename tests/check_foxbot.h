@@ -40,3 +40,4 @@ void rope_setup(Suite *s);
 void cap_parse_setup(Suite *s);
 void ircv3_parse_setup(Suite *s);
 void hook_setup(Suite *s);
+void admin_setup(Suite *s);

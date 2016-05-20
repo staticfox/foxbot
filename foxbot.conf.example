@@ -4,12 +4,32 @@
  *
  */
 
-/* bot {}: Bot options */
+/* bot {}: Bot block
+ *
+ * Defines core configuration and host information for your bot.
+ *
+ * The `plugin` field will load the specified plugin at runtime.
+ * The plugin must end in a .so file and must be located in the
+ * plugins directory. Multiple plugins can be specified.
+ *
+ * The `nick` field is what the bot will use to connect to the network.
+ *
+ * The `ident` field is what the bot will use to connect to the network.
+ *
+ * The `realname` field is what the bot will use to connect to the network.
+ *
+ * The `host` field is what the bot will connect to. IPv4, IPv6, and hostname
+ * connecting are supported.
+ *
+ * The `port` field is what port the bot will connect through. Currently, only
+ * plaintext ports are supported. (TLS soon)
+ */
 bot {
     /* Uncomment to load this plugin. You can add as many plugins
      * as you like.
      */
     // plugin = "echo_test.so";
+    plugin = "plugin_manager.so"
 
     nick = "foxbot";
     ident = "fox";
@@ -19,7 +39,20 @@ bot {
     port = "-4";
 };
 
-/* channel {}: Channel options, define as many channels as you want. */
+/* channel {}: Channel blocks
+ *
+ * Allows you to create channels for your bot to join.
+ *
+ * The `name` field is the channel in which the bot will join.
+ *
+ * The `key` field is used for your bot to join a channel that
+ * has a key set (+k).
+ *
+ * The `debug` field will specify that the channel will be used
+ * for logging debug information.
+ *
+ * Multiple channel blocks can be specified.
+ */
 channel {
     name = "#misconfigured";
 };
@@ -33,4 +66,41 @@ channel {
     name = "#some_private_chan";
     key = "s3cretk3y";
     debug = yes;
+};
+
+/* admin {}: Administrator blocks
+ *
+ * Allows you to create administrators for your bot.
+ *
+ * The `name` field is used as a reference point when listing admins
+ * through the bot (not implemented yet).
+ *
+ * The `nickserv` field will allow you to gain admin privileges to
+ * your bot if you are currently logged in to services under the
+ * specified account. Multiple accounts can be specified.
+ *
+ * The `host` field will allow you to gain admin privileges to your
+ * bot if your current host matches the host specified. Multiple hosts
+ * can be specified, however, wildcard hosts are currently not supported.
+ *
+ * The `access` field grants you access to the bot. If access is below 1,
+ * then the block will be ignored entirely. The upper limit is set to 1000.
+ *
+ * Multiple admin blocks can be specified.
+ *
+ * NOTE: All fields are case insensitive.
+ */
+admin {
+    name = "example admin";
+
+    /* Which services account to associate the block with (can be omitted) */
+    nickserv = "blindsight";
+    nickserv = "staticfox";
+
+    /* Which hosts to associate the block with (can be omitted) */
+    host = "192.168.hwo.mh";
+    host = "127.0.fdm.dga";
+
+    /* What access to give the user. Access must be greater than 0. */
+    access = 1000;
 };

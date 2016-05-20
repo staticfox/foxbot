@@ -21,10 +21,14 @@
  */
 
 %{
+#include <stdbool.h>
+#include <string.h>
+
 #include "config.h"
 
 #include <foxbot/conf.h>
 #include <foxbot/memory.h>
+#include <foxbot/parser.h>
 
 int yylex(void);
 
@@ -33,6 +37,13 @@ static struct channel_state_t {
     char *key;
     int is_debug;
 } channel_state;
+
+static struct admin_state_t {
+    char *name;
+    int access;
+    dlink_list nickserv;
+    dlink_list hosts;
+} admin_state;
 
 static void
 clear_cstate(void)
@@ -43,6 +54,25 @@ clear_cstate(void)
     channel_state = EMPTY_CSTATE;
 }
 
+static void
+clear_adminstate(void)
+{
+    static const struct admin_state_t EMPTY_ADMIN;
+    xfree(admin_state.name);
+
+    DLINK_FOREACH(node, dlist_head(&admin_state.nickserv)) {
+        xfree(dlink_data(node));
+        dlink_delete(node, &admin_state.nickserv);
+    }
+
+    DLINK_FOREACH(node, dlist_head(&admin_state.hosts)) {
+        xfree(dlink_data(node));
+        dlink_delete(node, &admin_state.hosts);
+    }
+
+    admin_state = EMPTY_ADMIN;
+}
+
 %}
 
 %union {
@@ -50,12 +80,16 @@ clear_cstate(void)
     char *string;
 }
 
+%token T_ACCESS
+%token T_ADMIN
 %token T_BOT
+%token T_NUMBER
 %token T_DEBUG
 %token T_HOST
 %token T_IDENT
 %token T_PLUGIN
 %token T_NICK
+%token T_NICKSERV
 %token T_PORT
 %token T_REALNAME
 %token T_CHANNEL
@@ -68,7 +102,7 @@ clear_cstate(void)
 %%
 
 conf: | conf conf_item;
-conf_item: bot_entry | channel_entry | error ';' | error '}' ;
+conf_item: bot_entry | channel_entry | admin_entry | error ';' | error '}' ;
 
 /* Bot config */
 bot_entry: T_BOT  '{' bot_items '}' ';' ;
@@ -190,3 +224,94 @@ channel_debug: T_DEBUG '=' T_BOOL ';'
 
     channel_state.is_debug = yylval.number;
 }
+
+/* Admin {} entries */
+admin_entry: T_ADMIN
+{
+    if (conf_parser_ctx.pass == 2)
+        clear_adminstate();
+}  '{' admin_items '}' ';'
+{
+    if (conf_parser_ctx.pass != 2)
+        break;
+
+    if (admin_state.name == NULL)
+        break;
+
+    struct admin_struct_t *admin = make_admin_conf(admin_state.name);
+    /* We already have the entry */
+    if (admin == NULL)
+        break;
+
+    admin->access = admin_state.access;
+
+    DLINK_FOREACH(node, dlist_head(&admin_state.nickserv))
+        admin_add_data(admin, CONF_ADMIN_NS, dlink_data(node));
+
+    DLINK_FOREACH(node, dlist_head(&admin_state.hosts))
+        admin_add_data(admin, CONF_ADMIN_HOST, dlink_data(node));
+};
+
+admin_items: admin_items admin_item | admin_item;
+admin_item:  admin_name |
+             admin_nickserv |
+             admin_host |
+             admin_access |
+             error ';' ;
+
+admin_name: T_NAME '=' T_STRING ';'
+{
+    if (conf_parser_ctx.pass != 2)
+        break;
+
+    if (yylval.string[0])
+        admin_state.name = xstrdup(yylval.string);
+};
+
+admin_nickserv: T_NICKSERV '=' T_STRING ';'
+{
+    bool found = false;
+
+    if (conf_parser_ctx.pass != 2)
+        break;
+
+    DLINK_FOREACH(node, dlist_head(&admin_state.nickserv)) {
+        if (fox_strcmp(dlink_data(node), yylval.string) == 0) {
+            found = true;
+            break;
+        }
+    }
+
+    if (found)
+        break;
+
+    dlink_insert(&admin_state.nickserv, xstrdup(yylval.string));
+};
+
+admin_host: T_HOST '=' T_STRING ';'
+{
+    bool found = false;
+
+    if (conf_parser_ctx.pass != 2)
+        break;
+
+    DLINK_FOREACH(node, dlist_head(&admin_state.hosts)) {
+        if (fox_strcmp(dlink_data(node), yylval.string) == 0) {
+            found = true;
+            break;
+        }
+    }
+
+    if (found)
+        break;
+
+    dlink_insert(&admin_state.hosts, xstrdup(yylval.string));
+};
+
+admin_access: T_ACCESS '=' T_NUMBER ';'
+{
+    if (conf_parser_ctx.pass != 2)
+        break;
+
+    admin_state.access = yylval.number;
+};

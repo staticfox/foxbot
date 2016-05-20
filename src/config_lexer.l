@@ -49,6 +49,7 @@ conf_yy_input(char *lbuf, unsigned int max_size)
 %}
 
 T_WS        [[:space:]]*
+DIGIT       [[:digit:]]+
 T_COMMENT   ("//"|"#").*
 T_STRING    \"[^\"\n]*[\"\n]
 %%
@@ -56,6 +57,7 @@ T_STRING    \"[^\"\n]*[\"\n]
 "/*"            { ccomment(); }
 {T_WS}          ;
 {T_COMMENT}     ;
+{DIGIT}         { yylval.number = atoi(yytext); return T_NUMBER; }
 {T_STRING}      {   if (yytext[yyleng - 2] == '\\')
                     {
                         yyless(yyleng - 1);  /* Return last quote */
@@ -79,10 +81,13 @@ T_STRING    \"[^\"\n]*[\"\n]
                     }
                 }
 
+access        { return T_ACCESS;        }
+admin         { return T_ADMIN;         }
 bot           { return T_BOT;           }
 host          { return T_HOST;          }
 ident         { return T_IDENT;         }
 nick          { return T_NICK;          }
+nickserv      { return T_NICKSERV;      }
 port          { return T_PORT;          }
 realname      { return T_REALNAME;      }
 plugin        { return T_PLUGIN;        }

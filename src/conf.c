@@ -27,6 +27,7 @@
 
 #include <foxbot/conf.h>
 #include <foxbot/foxbot.h>
+#include <foxbot/parser.h>
 
 struct conf_parser_context conf_parser_ctx;
 struct botconfig_entry botconfig;
@@ -41,14 +42,28 @@ clear_conf(void)
     xfree(botconfig.ident);
     xfree(botconfig.host);
     xfree(botconfig.port);
-    xfree(botconfig.debug_channel);
-    xfree(botconfig.channel);
     xfree(botconfig.realname);
     DLINK_FOREACH(node, dlist_head(&botconfig.conf_modules)) {
         struct conf_multiple *cm = dlink_data(node);
         xfree(cm->name);
         xfree(cm);
         dlink_delete(node, &botconfig.conf_modules);
+    }
+    /* in Epic Victory voice "EWWWWWWWWWW" */
+    DLINK_FOREACH(node, dlist_head(&botconfig.admins)) {
+        struct admin_struct_t *entry = dlink_data(node);
+        DLINK_FOREACH(node2, dlist_head(&entry->ns_accts)) {
+            char *data = dlink_data(node2);
+            xfree(data);
+            dlink_delete(node2, &entry->ns_accts);
+        }
+        DLINK_FOREACH(node2, dlist_head(&entry->hosts)) {
+            char *data = dlink_data(node2);
+            xfree(data);
+            dlink_delete(node2, &entry->hosts);
+        }
+        xfree(entry);
+        dlink_delete(node, &botconfig.admins);
     }
     botconfig = EMPTY_BOT;
 }
@@ -93,7 +108,7 @@ add_m_safe(const char *const entry, const enum conf_multiple_types type)
 {
     DLINK_FOREACH(node, dlist_head(&botconfig.conf_modules)) {
         struct conf_multiple *cm = dlink_data(node);
-        if ((strcmp(cm->name, entry) == 0) && cm->type == type)
+        if ((fox_strcmp(cm->name, entry) == 0) && cm->type == type)
             return;
     }
 
@@ -112,10 +127,49 @@ conf_set_ckey(const char *const entry,
 {
     DLINK_FOREACH(node, dlist_head(&botconfig.conf_modules)) {
         struct conf_multiple *cm = dlink_data(node);
-        if ((strcmp(cm->name, entry) == 0) && cm->type == type) {
+        if ((fox_strcmp(cm->name, entry) == 0) && cm->type == type) {
             xfree(cm->key);
             cm->key = xstrdup(key);
         }
+    }
+}
+
+struct admin_struct_t *
+make_admin_conf(const char *const entry)
+{
+    static const struct admin_struct_t EMPTY_ADMIN;
+    DLINK_FOREACH(node, dlist_head(&botconfig.admins)) {
+        struct admin_struct_t *tmp = NULL;
+        tmp = dlink_data(node);
+        if (fox_strcmp(tmp->name, entry) == 0)
+            return NULL;
+    }
+    struct admin_struct_t *admin = xmalloc(sizeof(*admin));
+    *admin = EMPTY_ADMIN;
+    admin->name = xstrdup(entry);
+    dlink_insert(&botconfig.admins, admin);
+    return admin;
+}
+
+void
+admin_add_data(struct admin_struct_t *entry,
+               const enum admin_data_flag type,
+               const char *const data)
+{
+    if (type == CONF_ADMIN_NS) {
+        DLINK_FOREACH(node, dlist_head(&entry->ns_accts)) {
+            if (fox_strcmp(dlink_data(node), data) == 0) {
+                return;
+            }
+        }
+        dlink_insert(&entry->ns_accts, xstrdup(data));
+    } else if (type == CONF_ADMIN_HOST) {
+        DLINK_FOREACH(node, dlist_head(&entry->hosts)) {
+            if (fox_strcmp(dlink_data(node), data) == 0) {
+                return;
+            }
+        }
+        dlink_insert(&entry->hosts, xstrdup(data));
     }
 }
 
@@ -144,6 +198,6 @@ yyerror(const char *message)
     if (conf_parser_ctx.pass != 1)
         return;
 
-    do_error((char *)message);
+    do_error((char *) message);
     exit(EXIT_FAILURE);
 }

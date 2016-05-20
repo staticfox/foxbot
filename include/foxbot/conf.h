@@ -34,10 +34,22 @@ enum conf_multiple_types {
     CONF_PLUGIN
 };
 
+enum admin_data_flag {
+    CONF_ADMIN_NS,
+    CONF_ADMIN_HOST
+};
+
 struct conf_multiple {
     enum conf_multiple_types type;
     char *name;
     char *key;
+};
+
+struct admin_struct_t {
+    char *name;
+    int access;
+    dlink_list ns_accts;
+    dlink_list hosts;
 };
 
 struct conf_parser_context {
@@ -51,13 +63,14 @@ struct botconfig_entry {
     char *ident;
     char *host;
     char *port;
-    char *debug_channel;
-    char *channel;
     char *realname;
     dlink_list conf_modules;
+    dlink_list admins;
 };
 
 void add_m_safe(const char *entry, enum conf_multiple_types type);
+struct admin_struct_t * make_admin_conf(const char *entry);
+void admin_add_data(struct admin_struct_t *entry, enum admin_data_flag type, const char *data);
 void conf_set_ckey(const char *entry, enum conf_multiple_types type, const char *key);
 void read_conf_file(void);
 void yyerror(const char *message);

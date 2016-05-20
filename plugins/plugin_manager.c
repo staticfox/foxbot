@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <foxbot/admin.h>
 #include <foxbot/foxbot.h>
 #include <foxbot/hook.h>
 #include <foxbot/memory.h>
@@ -37,18 +38,8 @@ struct plugin_t fox_plugin;
 static bool
 access(void)
 {
-    /* NickServ accounts
-     * TODO: Config file
-     */
-    static const char *const admin_accounts[] = { "admin1", "admin2" };
-
-    for (size_t i = 0; i < (sizeof(admin_accounts) / sizeof(admin_accounts[0])); i++) {
-        if (!bot.msg->from || !bot.msg->from->account)
-            continue;
-
-        if (fox_strcmp(bot.msg->from->account, admin_accounts[i]) == 0)
-            return true;
-    }
+    if (find_admin_access(bot.msg->from) > 900)
+        return true;
 
     if (!bot.msg->target_is_channel)
         notice(bot.msg->from->nick, "You are not authorized to preform this action.");
@@ -57,14 +48,11 @@ access(void)
 }
 
 static bool
-access_and_params(const char *const phrase,
+has_params(const char *const phrase,
                   const char *const used,
                   const char *const sub)
 {
-    if (!access())
-        return false;
-
-    if (!phrase || phrase[0] == '\0' || isspace(phrase[0])) {
+    if (phrase == NULL || strlen(phrase) < 1 || phrase[0] == '\0' || isspace(phrase[0])) {
         notice(bot.msg->from->nick, "%s %s requires more parameters.", used, sub);
         return false;
     }
@@ -117,23 +105,34 @@ plugin_manage_command(void)
     else
         goto done;
 
+    if (!access())
+        goto done;
+
     /* Sub-command */
     if (!(command = fox_strsep(&message, " "))) {
-        if (!access())
-            goto done;
         notice(bot.msg->from->nick, "%s requires more parameters.", cmd_used);
         goto done;
     }
 
     /* Full phrase (if it exists) */
-    const char *phrase = bot.msg->params + 3 + strlen(cmd_used) + strlen(command);
+    const char *phrase = NULL;
+    const size_t param_length = strlen(bot.msg->params);
+    if (bot.msg->target_is_channel) {
+        size_t len = 4 + strlen(cmd_used) + strlen(command);
+        if (len < param_length)
+            phrase = bot.msg->params + len;
+    } else {
+        size_t len = 3 + strlen(cmd_used) + strlen(command);
+        if (len < param_length)
+            phrase = bot.msg->params + len;
+    }
 
     /* Parse sub-commands
      * TODO: CLEAN ME
      */
     if (fox_strcmp(command, load_cmd) == 0) {
         /* plugin load */
-        if (!access_and_params(phrase, cmd_used, load_cmd))
+        if (!has_params(phrase, cmd_used, load_cmd))
             goto done;
         if (is_protected_plugin(phrase))
             goto done;
@@ -141,7 +140,7 @@ plugin_manage_command(void)
         iload_plugin(phrase, true);
     } else if (fox_strcmp(command, unload_cmd) == 0) {
         /* plugin unload */
-        if (!access_and_params(phrase, cmd_used, unload_cmd))
+        if (!has_params(phrase, cmd_used, unload_cmd))
             goto done;
         if (is_protected_plugin(phrase))
             goto done;
@@ -149,7 +148,7 @@ plugin_manage_command(void)
         iunload_plugin(phrase, true);
     } else if (fox_strcmp(command, reload_cmd) == 0) {
         /* plugin reload */
-        if (!access_and_params(phrase, cmd_used, reload_cmd))
+        if (!has_params(phrase, cmd_used, reload_cmd))
             goto done;
         if (is_protected_plugin(phrase))
             goto done;
@@ -158,7 +157,7 @@ plugin_manage_command(void)
         iload_plugin(phrase, true);
     } else if (fox_strcmp(command, info_cmd) == 0) {
         /* plugin info */
-        if (!access_and_params(phrase, cmd_used, info_cmd))
+        if (!has_params(phrase, cmd_used, info_cmd))
             goto done;
         const struct plugin_handle_t *const plugin_info = get_plugin_info(phrase);
         if (!plugin_info) {
@@ -176,24 +175,15 @@ plugin_manage_command(void)
         notice(bot.msg->from->nick, "Loaded at %p", plugin_info->dlobj);
     } else if (fox_strcmp(command, list_cmd) == 0) {
         /* plugin list */
-        if (!access())
-            goto done;
         list_plugins(bot.msg->from->nick);
     } else if (fox_strcmp(command, help_cmd) == 0) {
         /* plugin help. TODO: help sub-command */
-        if (!access())
-            goto done;
         notice(bot.msg->from->nick, "HELP for %s: ", cmd_used);
-        notice(bot.msg->from->nick, "%s allows you to manage foxbot's dynamic plugin system.", cmd_used);
+        notice(bot.msg->from->nick, "%s allows you to manage FoxBot's dynamic plugin system.", cmd_used);
         notice(bot.msg->from->nick, "Available sub-commands are: LOAD, UNLOAD, RELOAD, INFO, LIST, HELP");
     } else {
         /* plugin ??? */
-        if (!access())
-            goto done;
-        if (!phrase || phrase[0] == '\0' || isspace(phrase[0]))
-            notice(bot.msg->from->nick, "%s requires more parameters.", cmd_used);
-        else
-            notice(bot.msg->from->nick, "%s %s is an unknown sub-command.", cmd_used, phrase);
+        notice(bot.msg->from->nick, "%s %s is an unknown sub-command.", cmd_used, command);
     }
 
 done:

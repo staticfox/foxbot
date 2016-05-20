@@ -10,7 +10,8 @@ libfoxbot_la_DEPENDENCIES = $(LTDLDEPS)
 foxbotdir = $(pkglibdir)
 foxbot_LTLIBRARIES = libfoxbot.la libfoxbotaux.la
 
-libfoxbot_la_SOURCES = cap.c \
+libfoxbot_la_SOURCES = admin.c \
+                 cap.c \
 				 channel.c \
                  conf.c \
                  error.c \

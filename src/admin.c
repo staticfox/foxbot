@@ -1,5 +1,5 @@
 /*
- *   check_foxbot.c -- May 1 2016 9:31:02 EDT
+ *   admin.c -- May 20 2016 17:10:34 EDT
  *
  *   This file is part of the foxbot IRC bot
  *   Copyright (C) 2016 Matt Ullman (staticfox at staticfox dot net)
@@ -20,41 +20,32 @@
  *
  */
 
-#include <errno.h>
-#include <stdio.h>
-#include <stdlib.h>
-
-#include "check_foxbot.h"
-#include "check_server.h"
-
-static void
-add_testcases(Suite *s)
-{
-    connect_parse_setup(s);
-    channel_parse_setup(s);
-    memory_setup(s);
-    parser_setup(s);
-    rope_setup(s);
-    user_parse_setup(s);
-    cap_parse_setup(s);
-    ircv3_parse_setup(s);
-    hook_setup(s);
-    admin_setup(s);
-}
+#include <foxbot/conf.h>
+#include <foxbot/parser.h>
+#include <foxbot/user.h>
 
 int
-main()
+find_admin_access(const struct user_t *const user)
 {
-    Suite *s = suite_create("check_foxbot");
+    /* Scan through all bot admins */
+    DLINK_FOREACH(node, dlist_head(&botconfig.admins)) {
 
-    add_testcases(s);
+        const struct admin_struct_t *entry = dlink_data(node);
 
-    SRunner *runner = srunner_create(s);
-    srunner_set_tap(runner, "-");
-    srunner_run_all(runner, CK_NORMAL);
+        DLINK_FOREACH(node2, dlist_head(&entry->ns_accts)) {
+            if (user->account == NULL)
+                continue;
+            if (fox_strcmp(dlink_data(node2), user->account) == 0)
+                return entry->access;
+        }
 
-    int number_failed = srunner_ntests_failed(runner);
-    srunner_free(runner);
+        DLINK_FOREACH(node2, dlist_head(&entry->hosts)) {
+            if (user->host == NULL)
+                continue;
+            if (fox_strcmp(dlink_data(node2), user->host) == 0)
+                return entry->access;
+        }
+    }
 
-    return (number_failed == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
+    return 0;
 }
