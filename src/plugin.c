@@ -73,7 +73,7 @@ plugin_exists(const char *const name)
 }
 
 void
-iregister_plugin(struct plugin_handle_t *plugin_handle)
+iregister_plugin(struct plugin_handle_t *plugin_handle, const bool announce)
 {
     const struct plugin_t *const p = plugin_handle->plugin;
     if (!p->register_func()) {
@@ -89,7 +89,7 @@ iregister_plugin(struct plugin_handle_t *plugin_handle)
     printf("Registered plugin %s by %s, compiled %s. Loaded at address %p.\n",
            p->name, p->author, p->build_time, plugin_handle->dlobj);
 
-    if (bot.msg->from->nick) {
+    if (announce && bot.msg->from->nick) {
         notice(bot.msg->from->nick, "Registered plugin %s by %s, compiled %s. Loaded at address %p.",
                p->name, p->author, p->build_time, plugin_handle->dlobj);
     }
@@ -98,7 +98,7 @@ iregister_plugin(struct plugin_handle_t *plugin_handle)
 }
 
 void
-iunload_plugin(const char *const name)
+iunload_plugin(const char *const name, const bool announce)
 {
     struct plugin_handle_t *plugin_handle = NULL;
 
@@ -114,14 +114,14 @@ iunload_plugin(const char *const name)
 
     if (plugin_handle == NULL) {
         do_error("Unable to find plugin %s.", name);
-        if (bot.msg->from->nick)
+        if (announce && bot.msg->from->nick)
             notice(bot.msg->from->nick, "Unable to find plugin %s.", name);
         return;
     }
 
     const struct plugin_t *const p = plugin_handle->plugin;
     if (!p->unregister_func()) {
-        if (bot.msg->from->nick)
+        if (announce && bot.msg->from->nick)
             notice(bot.msg->from->nick, "Error unloading plugin %s.", p->name);
         do_error("Error unloading plugin %s.", p->name);
         return;
@@ -129,7 +129,7 @@ iunload_plugin(const char *const name)
 
     int tmp = dlclose(plugin_handle->dlobj);
     if (tmp != 0) {
-        if (bot.msg->from->nick)
+        if (announce && bot.msg->from->nick)
             notice(bot.msg->from->nick, "Error unloading plugin (dlclose): %s", dlerror());
         do_error("Error unloading plugin (dlclose): %s", dlerror());
         return;
@@ -137,12 +137,12 @@ iunload_plugin(const char *const name)
 
     xfree(plugin_handle->file_name);
     xfree(plugin_handle);
-    if (bot.msg->from->nick)
+    if (announce && bot.msg->from->nick)
         notice(bot.msg->from->nick, "Unloaded plugin %s.", name);
 }
 
 void
-iload_plugin(const char *const name)
+iload_plugin(const char *const name, const bool announce)
 {
     char buf[1024];
     static const struct plugin_handle_t EMPTY_PLUGIN_HANDLE;
@@ -173,7 +173,7 @@ iload_plugin(const char *const name)
     plugin_handle->file_name = xstrdup(name);
     plugin_handle->plugin = (struct plugin_t *) obj;
 
-    iregister_plugin(plugin_handle);
+    iregister_plugin(plugin_handle, announce);
 }
 
 void
@@ -182,6 +182,6 @@ load_conf_plugins(void)
     DLINK_FOREACH(node, dlist_head(&botconfig.conf_modules)) {
         const struct conf_multiple *const cm = dlink_data(node);
         if (cm->type == CONF_PLUGIN)
-            iload_plugin(cm->name);
+            iload_plugin(cm->name, false);
     }
 }

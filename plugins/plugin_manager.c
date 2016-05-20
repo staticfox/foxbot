@@ -142,7 +142,7 @@ plugin_manage_command(void)
         if (is_protected_plugin(phrase))
             goto done;
         notice(bot.msg->from->nick, "Loading %s.", phrase);
-        iload_plugin(phrase);
+        iload_plugin(phrase, true);
     } else if (fox_strcmp(command, unload_cmd) == 0) {
         /* plugin unload */
         if (!access_and_params(phrase, cmd_used, unload_cmd))
@@ -150,7 +150,7 @@ plugin_manage_command(void)
         if (is_protected_plugin(phrase))
             goto done;
         notice(bot.msg->from->nick, "Unloading %s.", phrase);
-        iunload_plugin(phrase);
+        iunload_plugin(phrase, true);
     } else if (fox_strcmp(command, reload_cmd) == 0) {
         /* plugin reload */
         if (!access_and_params(phrase, cmd_used, reload_cmd))
@@ -158,13 +158,13 @@ plugin_manage_command(void)
         if (is_protected_plugin(phrase))
             goto done;
         notice(bot.msg->from->nick, "Reloading %s.", phrase);
-        iunload_plugin(phrase);
-        iload_plugin(phrase);
+        iunload_plugin(phrase, true);
+        iload_plugin(phrase, true);
     } else if (fox_strcmp(command, info_cmd) == 0) {
         /* plugin info */
         if (!access_and_params(phrase, cmd_used, info_cmd))
             goto done;
-        const struct plugin_handle_t const *plugin_info = get_plugin_info(phrase);
+        const struct plugin_handle_t *const plugin_info = get_plugin_info(phrase);
         if (!plugin_info) {
             notice(bot.msg->from->nick, "%s is not loaded.", phrase);
             goto done;

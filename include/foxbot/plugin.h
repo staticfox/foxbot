@@ -43,9 +43,9 @@ struct plugin_handle_t {
 
 struct plugin_handle_t * get_plugin_info(const char *const name);
 void list_plugins(const char *nick);
-void iregister_plugin(struct plugin_handle_t *plugin_handle);
-void iunload_plugin(const char *name);
-void iload_plugin(const char *name);
+void iregister_plugin(struct plugin_handle_t *plugin_handle, bool announce);
+void iunload_plugin(const char *name, bool announce);
+void iload_plugin(const char *name, bool announce);
 void load_conf_plugins(void);
 
 #endif
