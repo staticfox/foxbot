@@ -105,20 +105,16 @@ plugin_manage_command(void)
     if (message[0] == trigger && !bot.msg->target_is_channel)
         goto done;
 
-    /* First word */
     command = fox_strsep(&message, " ");
 
-    /* Incase it was plural, just to be sure */
     if (bot.msg->target_is_channel)
         memmove(command, command+1, strlen(command));
 
     if (fox_strcmp(command, plugin_cmd) == 0)
         cmd_used = plugin_cmd;
-
-    if (fox_strcmp(command, plugins_cmd) == 0)
+    else if (fox_strcmp(command, plugins_cmd) == 0)
         cmd_used = plugins_cmd;
-
-    if (cmd_used == NULL)
+    else
         goto done;
 
     /* Sub-command */
