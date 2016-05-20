@@ -59,6 +59,22 @@ privmsg(const char *const target, char *const message, ...)
 }
 
 void
+notice(const char *const target, char *const message, ...)
+{
+    char buf[MAX_IRC_BUF] = { 0 };
+    snprintf(buf, sizeof(buf), "NOTICE %s :", target);
+
+    va_list ap;
+    va_start(ap, message);
+    vsnprintf(buf + strlen(buf), MAX_IRC_BUF - strlen(buf), message, ap);
+    va_end(ap);
+
+    buf[strlen(buf)] = '\n';
+
+    raw(buf);
+}
+
+void
 join(const char *const channel)
 {
     char buf[MAX_IRC_BUF];

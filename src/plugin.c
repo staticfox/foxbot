@@ -27,41 +27,153 @@
 
 #include <foxbot/conf.h>
 #include <foxbot/message.h>
+#include <foxbot/parser.h>
 #include <foxbot/plugin.h>
 #include <foxbot/list.h>
+#include <foxbot/user.h>
 
 static dlink_list plugins;
 
 void
-iregister_plugin(struct plugin_t *plugin)
+list_plugins(const char *const nick)
 {
-    if (!plugin->register_func()) {
-        do_error("Error loading plugin %s (%p)", plugin->name, plugin);
+    notice(nick, "%d plugins loaded:", dlist_length(&plugins));
+    DLINK_FOREACH(node, dlist_head(&plugins)) {
+        const struct plugin_handle_t *const p = dlink_data(node);
+        notice(nick, "%s - %s", p->plugin->name, p->file_name);
+    }
+}
+
+struct plugin_handle_t *
+get_plugin_info(const char *const name)
+{
+    DLINK_FOREACH(node, dlist_head(&plugins)) {
+        struct plugin_handle_t *temp = dlink_data(node);
+        if ((fox_strcmp(temp->plugin->name, name) == 0) ||
+            (fox_strcmp(temp->file_name, name) == 0)) {
+            return temp;
+        }
+    }
+
+    return NULL;
+}
+
+static bool
+plugin_exists(const char *const name)
+{
+    DLINK_FOREACH(node, dlist_head(&plugins)) {
+        const struct plugin_handle_t *const temp = dlink_data(node);
+        if ((fox_strcmp(temp->plugin->name, name) == 0) ||
+            (fox_strcmp(temp->file_name, name) == 0)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+void
+iregister_plugin(struct plugin_handle_t *plugin_handle)
+{
+    const struct plugin_t *const p = plugin_handle->plugin;
+    if (!p->register_func()) {
+        do_error("Error loading plugin %s (%p)",
+                 p->name, plugin_handle->dlobj);
+        dlclose(plugin_handle->dlobj);
+        xfree(plugin_handle->file_name);
+        xfree(plugin_handle);
         return;
     }
 
     /* TODO: log system */
-    printf("Registered plugin %s by %s, compiled %s.\n",
-           plugin->name, plugin->author, plugin->build_time);
+    printf("Registered plugin %s by %s, compiled %s. Loaded at address %p.\n",
+           p->name, p->author, p->build_time, plugin_handle->dlobj);
 
-    dlink_insert(&plugins, plugin);
+    if (bot.msg->from->nick) {
+        notice(bot.msg->from->nick, "Registered plugin %s by %s, compiled %s. Loaded at address %p.",
+               p->name, p->author, p->build_time, plugin_handle->dlobj);
+    }
+
+    dlink_insert(&plugins, plugin_handle);
+}
+
+void
+iunload_plugin(const char *const name)
+{
+    struct plugin_handle_t *plugin_handle = NULL;
+
+    DLINK_FOREACH(node, dlist_head(&plugins)) {
+        const struct plugin_handle_t *const temp = dlink_data(node);
+        if ((fox_strcmp(temp->plugin->name, name) == 0) ||
+            (fox_strcmp(temp->file_name, name) == 0)) {
+            plugin_handle = dlink_data(node);
+            dlink_delete(node, &plugins);
+            break;
+        }
+    }
+
+    if (plugin_handle == NULL) {
+        do_error("Unable to find plugin %s.", name);
+        if (bot.msg->from->nick)
+            notice(bot.msg->from->nick, "Unable to find plugin %s.", name);
+        return;
+    }
+
+    const struct plugin_t *const p = plugin_handle->plugin;
+    if (!p->unregister_func()) {
+        if (bot.msg->from->nick)
+            notice(bot.msg->from->nick, "Error unloading plugin %s.", p->name);
+        do_error("Error unloading plugin %s.", p->name);
+        return;
+    }
+
+    int tmp = dlclose(plugin_handle->dlobj);
+    if (tmp != 0) {
+        if (bot.msg->from->nick)
+            notice(bot.msg->from->nick, "Error unloading plugin (dlclose): %s", dlerror());
+        do_error("Error unloading plugin (dlclose): %s", dlerror());
+        return;
+    }
+
+    xfree(plugin_handle->file_name);
+    xfree(plugin_handle);
+    if (bot.msg->from->nick)
+        notice(bot.msg->from->nick, "Unloaded plugin %s.", name);
 }
 
 void
 iload_plugin(const char *const name)
 {
     char buf[1024];
+    static const struct plugin_handle_t EMPTY_PLUGIN_HANDLE;
     snprintf(buf, sizeof(buf), "%s/%s", PLUIGIN_DIR, name);
 
     void *mod = dlopen(buf, RTLD_NOW);
 
     if (!mod) {
+        if (bot.msg->from->nick)
+            notice(bot.msg->from->nick, "Error opening %s: %s\n", name, dlerror());
         do_error("Error opening %s: %s\n", name, dlerror());
         return;
     }
 
     void *obj = dlsym(mod, "fox_plugin");
-    iregister_plugin((struct plugin_t *) obj);
+
+    if (plugin_exists(((struct plugin_t *)obj)->name) || plugin_exists(name)) {
+        if (bot.msg->from->nick)
+            notice(bot.msg->from->nick, "%s is already loaded.", name);
+        do_error("%s is already loaded.", name);
+        dlclose(obj);
+        return;
+    }
+
+    struct plugin_handle_t *plugin_handle = xmalloc(sizeof(*plugin_handle));
+    *plugin_handle = EMPTY_PLUGIN_HANDLE;
+    plugin_handle->dlobj = mod;
+    plugin_handle->file_name = xstrdup(name);
+    plugin_handle->plugin = (struct plugin_t *) obj;
+
+    iregister_plugin(plugin_handle);
 }
 
 void

@@ -28,6 +28,23 @@
 
 #include <foxbot/parser.h>
 
+int
+fox_strcmp(const char *p1, const char *p2)
+{
+    register unsigned char *s1 = (unsigned char *) p1;
+    register unsigned char *s2 = (unsigned char *) p2;
+    unsigned char c1, c2;
+    do
+    {
+        c1 = (unsigned char) toupper((int) *s1++);
+        c2 = (unsigned char) toupper((int) *s2++);
+        if (c1 == '\0')
+            return c1 - c2;
+    }
+    while (c1 == c2);
+    return c1 - c2;
+}
+
 bool
 strip_prefix(const char *str, const char *prefix, char **suffix)
 {

@@ -38,10 +38,11 @@ say_my_name(void)
     const char *target = NULL;
 
     /* +1 to remove the : */
-    char *message = xstrdup(bot.msg->params+1);
+    char *tofree, *message;
+    tofree = message = xstrdup(bot.msg->params+1);
 
     /* Wasn't a PM to us nor was it an in channel trigger */
-    if (bot.msg->params[0] == trigger && !bot.msg->target_is_channel) {
+    if (message[0] == trigger && !bot.msg->target_is_channel) {
         xfree(message);
         return;
     }
@@ -61,7 +62,7 @@ say_my_name(void)
         privmsg(target, "Hi %s! My name is %s!", bot.msg->from->nick, bot.user->nick);
     }
 
-    xfree(message);
+    xfree(tofree);
 }
 
 static bool

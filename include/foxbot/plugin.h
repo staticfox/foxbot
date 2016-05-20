@@ -35,7 +35,16 @@ struct plugin_t {
     char *build_time;
 };
 
-void iregister_plugin(struct plugin_t *plugin);
+struct plugin_handle_t {
+    void *dlobj;
+    char *file_name;
+    struct plugin_t *plugin;
+};
+
+struct plugin_handle_t * get_plugin_info(const char *const name);
+void list_plugins(const char *nick);
+void iregister_plugin(struct plugin_handle_t *plugin_handle);
+void iunload_plugin(const char *name);
 void iload_plugin(const char *name);
 void load_conf_plugins(void);
 
