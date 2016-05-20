@@ -34,14 +34,14 @@ find_admin_access(const struct user_t *const user)
 
         DLINK_FOREACH(node2, dlist_head(&entry->ns_accts)) {
             if (user->account == NULL)
-                continue;
+                break;
             if (fox_strcmp(dlink_data(node2), user->account) == 0)
                 return entry->access;
         }
 
         DLINK_FOREACH(node2, dlist_head(&entry->hosts)) {
             if (user->host == NULL)
-                continue;
+                break;
             if (fox_strcmp(dlink_data(node2), user->host) == 0)
                 return entry->access;
         }
