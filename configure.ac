@@ -114,9 +114,8 @@ AC_ARG_WITH(plugindir,
   [AC_HELP_STRING([--with-plugindir=DIR], [Directory to install plugins.])],
   [plugindir=`echo $withval | sed 's/\/$//'`
   AC_MSG_RESULT(yes)],
-  [AS_IF([test "x$enable_fhs_paths" = "xyes"],
-    [plugindir='${pkglibdir}/plugins'],
-    [plugindir='${prefix}/plugins'])
+  [
+    plugindir='${prefix}/plugins'
     AC_MSG_RESULT(no)
   ])
 AC_DEFINE_DIR(PLUGIN_DIR, plugindir, [Prefix where plugins are installed.])
