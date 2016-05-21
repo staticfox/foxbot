@@ -115,7 +115,7 @@ AC_ARG_WITH(plugindir,
   [plugindir=`echo $withval | sed 's/\/$//'`
   AC_MSG_RESULT(yes)],
   [
-    plugindir='${prefix}/plugins'
+    plugindir=${libdir}/${PACKAGE}/plugins
     AC_MSG_RESULT(no)
   ])
 AC_DEFINE_DIR(PLUGIN_DIR, plugindir, [Prefix where plugins are installed.])
