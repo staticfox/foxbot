@@ -22,6 +22,7 @@
 
 #include <config.h>
 #include <dlfcn.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -72,46 +73,60 @@ plugin_exists(const char *const name)
     return false;
 }
 
-static bool
-is_valid_plugin(const struct plugin_handle_t *const p)
+static void
+report_status(const bool announce, const char *const msg, ...)
 {
-    if (p->plugin == NULL) {
-        do_error("%s: No valid foxbot struct found.", p->file_name);
+    char buf[MAX_IRC_BUF] = { 0 };
+    va_list ap;
+    va_start(ap, msg);
+    vsnprintf(buf, MAX_IRC_BUF, msg, ap);
+    va_end(ap);
+
+    do_error(buf);
+    if (announce && bot.msg->from->nick)
+        notice(bot.msg->from->nick, buf);
+}
+
+static bool
+is_valid_plugin(const char *const file, const struct plugin_t *const p, const bool announce)
+{
+    if (p == NULL) {
+        report_status(announce, "%s: No valid foxbot struct found.", file);
         return false;
     }
 
-    if (p->plugin->name == NULL) {
-        do_error("%s: Plugin name not found.", p->file_name);
+    if (p->name == NULL) {
+        report_status(announce, "%s: Plugin name not found.", file);
         return false;
     }
 
-    if (p->plugin->register_func == NULL) {
-        do_error("%s: No registration function found.", p->file_name);
+    if (p->register_func == NULL) {
+        report_status(announce, "%s: No registration function found.", file);
         return false;
     }
 
-    if (p->plugin->unregister_func == NULL) {
-        do_error("%s: No unregistration function found.", p->file_name);
+    if (p->unregister_func == NULL) {
+        report_status(announce, "%s: No unregistration function found.", file);
         return false;
     }
 
-    if (p->plugin->version == NULL) {
-        do_error("%s: No version found.", p->file_name);
+    if (p->version == NULL) {
+        report_status(announce, "%s: No version found.", file);
         return false;
     }
 
-    if (p->plugin->description == NULL) {
-        do_error("%s: No description found.", p->file_name);
+    if (p->description == NULL) {
+        report_status(announce, "%s: No description found.", file);
         return false;
     }
 
-    if (p->plugin->author == NULL) {
-        do_error("%s: No author found.", p->file_name);
+    if (p->author == NULL) {
+        report_status(announce, "%s: No author found.", file);
         return false;
     }
 
-    if (p->plugin->build_time == NULL) {
-        do_error("%s: No build_time found.", p->file_name);
+    if (p->build_time == NULL) {
+        report_status(announce, "%s: No build_time found.", file);
         return false;
     }
 
@@ -119,9 +134,19 @@ is_valid_plugin(const struct plugin_handle_t *const p)
 }
 
 static void
+dl_safe_close(void *addr)
+{
+    int res = dlclose(addr);
+
+    /* abort? */
+    if (res != 0)
+        report_status("Error closing shared library: %s", dlerror());
+}
+
+static void
 clean_up_plugin(struct plugin_handle_t *p)
 {
-    dlclose(p->dlobj);
+    dl_safe_close(p->dlobj);
     xfree(p->file_name);
     xfree(p);
 }
@@ -131,34 +156,14 @@ iregister_plugin(struct plugin_handle_t *plugin_handle, const bool announce)
 {
     const struct plugin_t *const p = plugin_handle->plugin;
 
-    if (!is_valid_plugin(plugin_handle)) {
-        do_error("%s is not a valid FoxBot plugin.", plugin_handle->file_name);
-        if (announce && bot.msg->from->nick) {
-            notice(bot.msg->from->nick, "%s is not a valid FoxBot plugin.",
-                   plugin_handle->file_name);
-        }
-        clean_up_plugin(plugin_handle);
-        return;
-    }
-
     if (!p->register_func()) {
-        do_error("Error loading plugin %s (%p)", p->name, plugin_handle->dlobj);
-        if (announce && bot.msg->from->nick) {
-            notice(bot.msg->from->nick, "Error loading plugin %s (%p)",
-                   p->name, plugin_handle->dlobj);
-        }
+        report_status(announce, "Error loading plugin %s (%p)", p->name, plugin_handle->dlobj);
         clean_up_plugin(plugin_handle);
         return;
     }
 
-    /* TODO: log system */
-    printf("Registered plugin %s by %s, compiled %s. Loaded at address %p.\n",
+    report_status(announce, "Registered plugin %s by %s, compiled %s. Loaded at address %p.",
            p->name, p->author, p->build_time, plugin_handle->dlobj);
-
-    if (announce && bot.msg->from->nick) {
-        notice(bot.msg->from->nick, "Registered plugin %s by %s, compiled %s. Loaded at address %p.",
-               p->name, p->author, p->build_time, plugin_handle->dlobj);
-    }
 
     dlink_insert(&plugins, plugin_handle);
 }
@@ -179,32 +184,18 @@ iunload_plugin(const char *const name, const bool announce)
     }
 
     if (plugin_handle == NULL) {
-        do_error("Unable to find plugin %s.", name);
-        if (announce && bot.msg->from->nick)
-            notice(bot.msg->from->nick, "Unable to find plugin %s.", name);
+        report_status(announce, "Unable to find plugin %s.", name);
         return;
     }
 
     const struct plugin_t *const p = plugin_handle->plugin;
     if (!p->unregister_func()) {
-        if (announce && bot.msg->from->nick)
-            notice(bot.msg->from->nick, "Error unloading plugin %s.", p->name);
-        do_error("Error unloading plugin %s.", p->name);
+        report_status(announce, "Error unloading plugin %s.", p->name);
         return;
     }
 
-    int tmp = dlclose(plugin_handle->dlobj);
-    if (tmp != 0) {
-        if (announce && bot.msg->from->nick)
-            notice(bot.msg->from->nick, "Error unloading plugin (dlclose): %s", dlerror());
-        do_error("Error unloading plugin (dlclose): %s", dlerror());
-        return;
-    }
-
-    xfree(plugin_handle->file_name);
-    xfree(plugin_handle);
-    if (announce && bot.msg->from->nick)
-        notice(bot.msg->from->nick, "Unloaded plugin %s.", name);
+    clean_up_plugin(plugin_handle);
+    report_status(announce, "Unloaded plugin %s.", name);
 }
 
 void
@@ -214,10 +205,12 @@ iload_plugin(const char *const name, const bool announce)
     static const struct plugin_handle_t EMPTY_PLUGIN_HANDLE;
 
     if (strstr(name, "../") || strstr(name, "/..")) {
-        do_error("Plugin names cannot include pathes.");
-        if (announce && bot.msg->from->nick)
-            notice(bot.msg->from->nick, "Plugin names cannot include pathes.");
+        report_status(announce, "Plugin names cannot include pathes.");
+        return;
+    }
 
+    if (plugin_exists(name)) {
+        report_status(announce, "%s is already loaded.", name);
         return;
     }
 
@@ -226,19 +219,22 @@ iload_plugin(const char *const name, const bool announce)
     void *mod = dlopen(buf, RTLD_NOW);
 
     if (!mod) {
-        if (announce && bot.msg->from->nick)
-            notice(bot.msg->from->nick, "Error opening %s: %s\n", name, dlerror());
-        do_error("Error opening %s: %s", name, dlerror());
+        report_status(announce, "Error opening %s: %s", name, dlerror());
         return;
     }
 
     void *obj = dlsym(mod, "fox_plugin");
+    struct plugin_t *plugin = (struct plugin_t *) obj;
 
-    if (plugin_exists(((struct plugin_t *)obj)->name) || plugin_exists(name)) {
-        if (announce && bot.msg->from->nick)
-            notice(bot.msg->from->nick, "%s is already loaded.", name);
-        do_error("%s is already loaded.", name);
-        dlclose(obj);
+    if (!is_valid_plugin(name, plugin, announce)) {
+        report_status(announce, "%s is not a valid FoxBot plugin.", name);
+        dl_safe_close(obj);
+        return;
+    }
+
+    if (plugin_exists(plugin->name)) {
+        report_status(announce, "%s is already loaded.", name);
+        dl_safe_close(obj);
         return;
     }
 
@@ -246,7 +242,7 @@ iload_plugin(const char *const name, const bool announce)
     *plugin_handle = EMPTY_PLUGIN_HANDLE;
     plugin_handle->dlobj = mod;
     plugin_handle->file_name = xstrdup(name);
-    plugin_handle->plugin = (struct plugin_t *) obj;
+    plugin_handle->plugin = plugin;
 
     iregister_plugin(plugin_handle, announce);
 }
