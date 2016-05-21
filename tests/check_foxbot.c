@@ -40,6 +40,7 @@ add_testcases(Suite *s)
     ircv3_parse_setup(s);
     hook_setup(s);
     admin_setup(s);
+    plugin_setup(s);
 }
 
 int

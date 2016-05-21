@@ -87,7 +87,7 @@ report_status(const bool announce, const char *const msg, ...)
         notice(bot.msg->from->nick, buf);
 }
 
-static bool
+bool
 is_valid_plugin(const char *const file, const struct plugin_t *const p, const bool announce)
 {
     if (p == NULL) {
@@ -126,7 +126,7 @@ is_valid_plugin(const char *const file, const struct plugin_t *const p, const bo
     }
 
     if (p->build_time == NULL) {
-        report_status(announce, "%s: No build_time found.", file);
+        report_status(announce, "%s: No build time found.", file);
         return false;
     }
 
@@ -146,7 +146,9 @@ dl_safe_close(void *addr)
 static void
 clean_up_plugin(struct plugin_handle_t *p)
 {
-    dl_safe_close(p->dlobj);
+    /* Until we can come up with a better way */
+    if (!(bot.flags & RUNTIME_TEST))
+        dl_safe_close(p->dlobj);
     xfree(p->file_name);
     xfree(p);
 }

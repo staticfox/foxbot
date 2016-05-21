@@ -47,5 +47,6 @@ void iregister_plugin(struct plugin_handle_t *plugin_handle, bool announce);
 void iunload_plugin(const char *name, bool announce);
 void iload_plugin(const char *name, bool announce);
 void load_conf_plugins(void);
+bool is_valid_plugin(const char *file, const struct plugin_t *p, bool announce);
 
 #endif
