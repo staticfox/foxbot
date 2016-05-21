@@ -119,6 +119,6 @@ AC_ARG_WITH(plugindir,
     [plugindir='${prefix}/plugins'])
     AC_MSG_RESULT(no)
   ])
-AC_DEFINE_DIR(PLUIGIN_DIR, plugindir, [Prefix where plugins are installed.])
+AC_DEFINE_DIR(PLUGIN_DIR, plugindir, [Prefix where plugins are installed.])
 
 AC_OUTPUT

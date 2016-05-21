@@ -216,7 +216,7 @@ iload_plugin(const char *const name, const bool announce)
         return;
     }
 
-    snprintf(buf, sizeof(buf), "%s/%s", PLUIGIN_DIR, name);
+    snprintf(buf, sizeof(buf), "%s/%s", PLUGIN_DIR, name);
 
     void *mod = dlopen(buf, RTLD_NOW);
 
