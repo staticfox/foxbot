@@ -90,6 +90,7 @@ clear_adminstate(void)
 %token T_PLUGIN
 %token T_NICK
 %token T_NICKSERV
+%token T_PASSWORD
 %token T_PORT
 %token T_REALNAME
 %token T_CHANNEL
@@ -114,6 +115,7 @@ bot_item:  bot_nick |
            bot_port |
            bot_realname |
            bot_plugin |
+           bot_password |
            error ';' ;
 
 bot_nick: T_NICK '=' T_STRING ';'
@@ -151,6 +153,15 @@ bot_port: T_PORT '=' T_STRING ';'
     xfree(botconfig.port);
     botconfig.port = xstrdup(yylval.string);
 };
+
+bot_password: T_PASSWORD '=' T_STRING ';'
+{
+    if (conf_parser_ctx.pass != 2)
+        break;
+
+    xfree(botconfig.password);
+    botconfig.password = xstrdup(yylval.string);
+}
 
 bot_realname: T_REALNAME '=' T_STRING ';'
 {

@@ -43,6 +43,7 @@ clear_conf(void)
     xfree(botconfig.host);
     xfree(botconfig.port);
     xfree(botconfig.realname);
+    xfree(botconfig.password);
     DLINK_FOREACH(node, dlist_head(&botconfig.conf_modules)) {
         struct conf_multiple *cm = dlink_data(node);
         xfree(cm->name);

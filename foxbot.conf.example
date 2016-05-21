@@ -23,6 +23,9 @@
  *
  * The `port` field is what port the bot will connect through. Currently, only
  * plaintext ports are supported. (TLS soon)
+ *
+ * The `password` field is used to specify the server's password. Use this field
+ * if your server requires a password.
  */
 bot {
     /* Uncomment to load this plugin. You can add as many plugins
@@ -37,6 +40,7 @@ bot {
 
     host = "misconfigured.network";
     port = "-4";
+    #password = "example_password";
 };
 
 /* channel {}: Channel blocks

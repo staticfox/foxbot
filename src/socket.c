@@ -91,6 +91,9 @@ establish_link(void)
         exit(EXIT_FAILURE);
     }
 
+    if (botconfig.password)
+        raw("PASS :%s\n", botconfig.password);
+
     raw("CAP LS\n");
     raw("NICK %s\n", botconfig.nick);
     raw("USER %s 0 0 :%s\n", botconfig.ident, botconfig.realname);

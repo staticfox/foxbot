@@ -88,6 +88,7 @@ host          { return T_HOST;          }
 ident         { return T_IDENT;         }
 nick          { return T_NICK;          }
 nickserv      { return T_NICKSERV;      }
+password      { return T_PASSWORD;      }
 port          { return T_PORT;          }
 realname      { return T_REALNAME;      }
 plugin        { return T_PLUGIN;        }

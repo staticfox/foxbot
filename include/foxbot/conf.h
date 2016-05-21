@@ -64,6 +64,7 @@ struct botconfig_entry {
     char *host;
     char *port;
     char *realname;
+    char *password;
     dlink_list conf_modules;
     dlink_list admins;
 };

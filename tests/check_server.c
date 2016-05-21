@@ -53,10 +53,11 @@ enum check_commands {
     CHECK_USER,
     CHECK_PONG,
     CHECK_QUIT,
-    CHECK_JOIN
+    CHECK_JOIN,
+    CHECK_PASS
 };
 
-static bool got_nick, got_user, connected;
+static bool got_nick, got_user, connected, got_pass;
 static char *check_nick, *check_user;
 char *last_buffer;
 static int notification_pipe[2] = {-1, -1};
@@ -135,6 +136,7 @@ inspircd_burst(void)
 void
 do_burst(int i)
 {
+    ck_assert_int_eq(got_pass, 1);
     switch(i) {
     case 0:
         ts6_burst();
@@ -177,7 +179,7 @@ parse_buffer(const char *buf)
     enum check_commands cmd = CHECK_INVALID;
     unsigned int i = 0;
     int params = 1;
-    bool check_pass = false;
+    bool check_chan_pass = false;
     char *token, *string, *tofree;
     static char *l_params = NULL;
 
@@ -205,6 +207,8 @@ parse_buffer(const char *buf)
                 cmd = CHECK_QUIT;
             else if (strcmp(token, "JOIN") == 0)
                 cmd = CHECK_JOIN;
+            else if (strcmp(token, "PASS") == 0)
+                cmd = CHECK_PASS;
             break;
         case 1:
             if (cmd == CHECK_NICK) {
@@ -223,13 +227,13 @@ parse_buffer(const char *buf)
                 goto end;
             } else if (cmd == CHECK_JOIN) {
                 if (strcmp(token, "#test_spam") == 0)
-                    check_pass = true;
+                    check_chan_pass = true;
                 else
                     goto end;
             }
             break;
         case 2:
-            if (check_pass)
+            if (check_chan_pass)
                 ck_assert_str_eq(token, "privchan");
         }
         i++;
@@ -245,6 +249,11 @@ parse_buffer(const char *buf)
 
     if (cmd == CHECK_QUIT)
         fox_write("ERROR :Closing Link: 127.0.0.1 (Quit: %s)\r\n", l_params);
+
+    if (cmd == CHECK_PASS) {
+        if (strcmp("s3kr3t", buf + 6) == 0)
+            got_pass = true;
+    }
 
 end:
     xfree(tofree);
