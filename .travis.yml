@@ -111,5 +111,4 @@ script:
   - CFLAGS="$CFLAGS -Werror" ./configure --prefix="$HOME/travis_build"
   - make clean
   - make
-  - make install
   - make check

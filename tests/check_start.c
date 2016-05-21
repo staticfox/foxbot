@@ -29,6 +29,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <time.h>
 
 #include <foxbot/foxbot.h>
@@ -48,6 +49,12 @@ delete_foxbot(void)
 void
 new_foxbot(int port)
 {
+    char path[4096];
+    ck_assert_ptr_ne(getcwd(path, sizeof(path)), NULL);
+    size_t cwdlen = strlen(path);
+    snprintf(path + cwdlen, sizeof(path) - cwdlen, "/../plugins/.libs");
+    ck_assert_int_eq(setenv("FOXBOT_PLUGIN_DIR", path, 1), 0);
+
     char s_port[16];
 
     snprintf(s_port, sizeof(s_port), "%d", port);

@@ -24,6 +24,7 @@
 #include <dlfcn.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include <foxbot/conf.h>
@@ -216,7 +217,9 @@ iload_plugin(const char *const name, const bool announce)
         return;
     }
 
-    snprintf(buf, sizeof(buf), "%s/%s", PLUGIN_DIR, name);
+    const char *plugin_dir = getenv("FOXBOT_PLUGIN_DIR");
+    plugin_dir = plugin_dir ? plugin_dir : PLUGIN_DIR;
+    snprintf(buf, sizeof(buf), "%s/%s", plugin_dir, name);
 
     void *mod = dlopen(buf, RTLD_NOW);
 
