@@ -152,7 +152,7 @@ make_admin_conf(const char *const entry)
 }
 
 void
-admin_add_data(struct admin_struct_t *entry,
+admin_add_data(struct admin_struct_t *const entry,
                const enum admin_data_flag type,
                const char *const data)
 {
@@ -193,7 +193,7 @@ read_conf_file(void)
 }
 
 void
-yyerror(const char *message)
+yyerror(const char *const message)
 {
     if (conf_parser_ctx.pass != 1)
         return;
