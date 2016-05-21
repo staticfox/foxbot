@@ -118,6 +118,14 @@ is_valid_plugin(const struct plugin_handle_t *const p)
     return true;
 }
 
+static void
+clean_up_plugin(struct plugin_handle_t *p)
+{
+    dlclose(p->dlobj);
+    xfree(p->file_name);
+    xfree(p);
+}
+
 void
 iregister_plugin(struct plugin_handle_t *plugin_handle, const bool announce)
 {
@@ -129,9 +137,7 @@ iregister_plugin(struct plugin_handle_t *plugin_handle, const bool announce)
             notice(bot.msg->from->nick, "%s is not a valid FoxBot plugin.",
                    plugin_handle->file_name);
         }
-        dlclose(plugin_handle->dlobj);
-        xfree(plugin_handle->file_name);
-        xfree(plugin_handle);
+        clean_up_plugin(plugin_handle);
         return;
     }
 
@@ -141,9 +147,7 @@ iregister_plugin(struct plugin_handle_t *plugin_handle, const bool announce)
             notice(bot.msg->from->nick, "Error loading plugin %s (%p)",
                    p->name, plugin_handle->dlobj);
         }
-        dlclose(plugin_handle->dlobj);
-        xfree(plugin_handle->file_name);
-        xfree(plugin_handle);
+        clean_up_plugin(plugin_handle);
         return;
     }
 
@@ -208,12 +212,21 @@ iload_plugin(const char *const name, const bool announce)
 {
     char buf[1024];
     static const struct plugin_handle_t EMPTY_PLUGIN_HANDLE;
+
+    if (strstr(name, "../") || strstr(name, "/..")) {
+        do_error("Plugin names cannot include pathes.");
+        if (announce && bot.msg->from->nick)
+            notice(bot.msg->from->nick, "Plugin names cannot include pathes.");
+
+        return;
+    }
+
     snprintf(buf, sizeof(buf), "%s/%s", PLUIGIN_DIR, name);
 
     void *mod = dlopen(buf, RTLD_NOW);
 
     if (!mod) {
-        if (bot.msg->from->nick)
+        if (announce && bot.msg->from->nick)
             notice(bot.msg->from->nick, "Error opening %s: %s\n", name, dlerror());
         do_error("Error opening %s: %s", name, dlerror());
         return;
@@ -222,7 +235,7 @@ iload_plugin(const char *const name, const bool announce)
     void *obj = dlsym(mod, "fox_plugin");
 
     if (plugin_exists(((struct plugin_t *)obj)->name) || plugin_exists(name)) {
-        if (bot.msg->from->nick)
+        if (announce && bot.msg->from->nick)
             notice(bot.msg->from->nick, "%s is already loaded.", name);
         do_error("%s is already loaded.", name);
         dlclose(obj);
