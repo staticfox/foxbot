@@ -72,13 +72,75 @@ plugin_exists(const char *const name)
     return false;
 }
 
+static bool
+is_valid_plugin(const struct plugin_handle_t *const p)
+{
+    if (p->plugin == NULL) {
+        do_error("%s: No valid foxbot struct found.", p->file_name);
+        return false;
+    }
+
+    if (p->plugin->name == NULL) {
+        do_error("%s: Plugin name not found.", p->file_name);
+        return false;
+    }
+
+    if (p->plugin->register_func == NULL) {
+        do_error("%s: No registration function found.", p->file_name);
+        return false;
+    }
+
+    if (p->plugin->unregister_func == NULL) {
+        do_error("%s: No unregistration function found.", p->file_name);
+        return false;
+    }
+
+    if (p->plugin->version == NULL) {
+        do_error("%s: No version found.", p->file_name);
+        return false;
+    }
+
+    if (p->plugin->description == NULL) {
+        do_error("%s: No description found.", p->file_name);
+        return false;
+    }
+
+    if (p->plugin->author == NULL) {
+        do_error("%s: No author found.", p->file_name);
+        return false;
+    }
+
+    if (p->plugin->build_time == NULL) {
+        do_error("%s: No build_time found.", p->file_name);
+        return false;
+    }
+
+    return true;
+}
+
 void
 iregister_plugin(struct plugin_handle_t *plugin_handle, const bool announce)
 {
     const struct plugin_t *const p = plugin_handle->plugin;
+
+    if (!is_valid_plugin(plugin_handle)) {
+        do_error("%s is not a valid FoxBot plugin.", plugin_handle->file_name);
+        if (announce && bot.msg->from->nick) {
+            notice(bot.msg->from->nick, "%s is not a valid FoxBot plugin.",
+                   plugin_handle->file_name);
+        }
+        dlclose(plugin_handle->dlobj);
+        xfree(plugin_handle->file_name);
+        xfree(plugin_handle);
+        return;
+    }
+
     if (!p->register_func()) {
-        do_error("Error loading plugin %s (%p)",
-                 p->name, plugin_handle->dlobj);
+        do_error("Error loading plugin %s (%p)", p->name, plugin_handle->dlobj);
+        if (announce && bot.msg->from->nick) {
+            notice(bot.msg->from->nick, "Error loading plugin %s (%p)",
+                   p->name, plugin_handle->dlobj);
+        }
         dlclose(plugin_handle->dlobj);
         xfree(plugin_handle->file_name);
         xfree(plugin_handle);
