@@ -49,3 +49,9 @@ find_admin_access(const struct user_t *const user)
 
     return 0;
 }
+
+int
+admin_count(void)
+{
+    return dlist_length(&botconfig.admins);
+}

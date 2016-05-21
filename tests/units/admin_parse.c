@@ -80,6 +80,16 @@ START_TEST(check_admin_noaccess)
 }
 END_TEST
 
+START_TEST(check_admin_count)
+{
+    begin_test();
+
+    ck_assert_int_eq(admin_count(), 2);
+
+    end_test();
+}
+END_TEST
+
 void
 admin_setup(Suite *s)
 {
@@ -89,6 +99,7 @@ admin_setup(Suite *s)
     tcase_add_test(tc, check_admin_nickserv);
     tcase_add_test(tc, check_admin_host);
     tcase_add_test(tc, check_admin_noaccess);
+    tcase_add_test(tc, check_admin_count);
 
     suite_add_tcase(s, tc);
 }

@@ -26,5 +26,6 @@
 #include <foxbot/user.h>
 
 int find_admin_access(const struct user_t *user);
+int admin_count(void);
 
 #endif
