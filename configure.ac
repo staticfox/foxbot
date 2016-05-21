@@ -56,11 +56,13 @@ AC_HEADER_STDBOOL
 AC_TYPE_SIZE_T
 AC_TYPE_SSIZE_T
 AC_TYPE_UINT8_T
+AC_C_INLINE
 
 dnl Checks for library functions.
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
-AC_CHECK_FUNCS([malloc_usable_size memchr memmove memset socket strchr strcspn strerror strtol strstr])
+AC_CHECK_FUNCS([malloc_usable_size memchr memmove memset socket strchr strcspn])
+AC_CHECK_FUNCS([strerror strtol strtoul strstr])
 
 dnl debugging information
 AC_MSG_CHECKING(whether to enable debugging symbols)
