@@ -181,7 +181,7 @@ parse_buffer(const char *buf)
     int params = 1;
     bool check_chan_pass = false;
     char *token, *string, *tofree;
-    static char *l_params = NULL;
+    const char *l_params = NULL;
 
     for (size_t ii = 0; buf[ii]; ii++)
         if (buf[ii] == ' ')
@@ -244,7 +244,7 @@ parse_buffer(const char *buf)
         if (cmd == CHECK_QUIT)
             len = 6;
         if (strlen(buf) > len)
-            l_params = xstrdup(buf + len);
+            l_params = buf + len;
     }
 
     if (cmd == CHECK_QUIT)
@@ -261,9 +261,6 @@ end:
     if (got_nick && got_user && !connected) {
         connected = true;
     }
-
-    xfree(l_params);
-    l_params = NULL;
 
 }
 
