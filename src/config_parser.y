@@ -29,7 +29,6 @@
 
 #include <foxbot/conf.h>
 #include <foxbot/memory.h>
-#include <foxbot/parser.h>
 
 int yylex(void);
 
