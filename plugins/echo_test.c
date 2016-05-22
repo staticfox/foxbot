@@ -68,14 +68,14 @@ say_my_name(void)
 static bool
 register_plugin(void)
 {
-    add_hook("on_privmsg", (hook_func) say_my_name);
+    add_hook("on_privmsg", say_my_name);
     return true;
 }
 
 static bool
 unregister_plugin(void)
 {
-    delete_hook("on_privmsg", (hook_func) say_my_name);
+    delete_hook("on_privmsg", say_my_name);
     return true;
 }
 

@@ -39,12 +39,12 @@ START_TEST(hook_check)
 {
     begin_test();
     passer = 0;
-    add_hook("check_hook", (hook_func) check_func);
+    add_hook("check_hook", check_func);
     /* echo_test + check_hook */
     ck_assert_int_eq(hook_count(), 2);
     exec_hook("check_hook");
     ck_assert_int_eq(passer, 1);
-    delete_hook("check_hook", (hook_func) check_func);
+    delete_hook("check_hook", check_func);
     ck_assert_int_eq(hook_count(), 1);
     ck_assert_int_eq(passer, 1);
     end_test();
@@ -55,12 +55,12 @@ START_TEST(hook_privmsg)
 {
     begin_test();
     passer = 0;
-    add_hook("on_privmsg", (hook_func) check_func);
+    add_hook("on_privmsg", check_func);
     ck_assert_ptr_ne(find_channel("#unit_test"), NULL);
     write_and_wait(":test_user1!~test@255.255.255.255 JOIN #unit_test");
     write_and_wait(":test_user1!~test@255.255.255.255 PRIVMSG #unit_test :hi");
     ck_assert_int_eq(passer, 1);
-    delete_hook("on_privmsg", (hook_func) check_func);
+    delete_hook("on_privmsg", check_func);
     end_test();
 }
 END_TEST

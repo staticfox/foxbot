@@ -25,7 +25,7 @@
 
 #include <foxbot/list.h>
 
-typedef void * (*hook_func)(void);
+typedef void (*hook_func)(void);
 
 struct hook_t {
     char *name;

@@ -195,14 +195,14 @@ done:
 static bool
 register_plugin(void)
 {
-    add_hook("on_privmsg", (hook_func) plugin_manage_command);
+    add_hook("on_privmsg", plugin_manage_command);
     return true;
 }
 
 static bool
 unregister_plugin(void)
 {
-    delete_hook("on_privmsg", (hook_func) plugin_manage_command);
+    delete_hook("on_privmsg", plugin_manage_command);
     return true;
 }
 
