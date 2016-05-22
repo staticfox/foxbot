@@ -20,6 +20,8 @@
  *
  */
 
+#define _POSIX_C_SOURCE 200112L
+
 #include <config.h>
 
 #include <limits.h>
@@ -136,8 +138,9 @@ parse_rpl_isupport(void)
         char *value;
 
         if (strip_prefix(token, "CHANLIMIT=", &value)) {
-            strtok(value, ":");
-            bot.ircd->chan_limit = atoi(strtok(NULL, ":"));
+            char *lasts = NULL;
+            strtok_r(value, ":", &lasts);
+            bot.ircd->chan_limit = atoi(strtok_r(NULL, ":", &lasts));
             continue;
         }
 

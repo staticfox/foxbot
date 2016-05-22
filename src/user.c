@@ -20,6 +20,8 @@
  *
  */
 
+#define _POSIX_C_SOURCE 200112L
+
 #include <config.h>
 
 #include <assert.h>
@@ -61,14 +63,15 @@ set_uh(struct user_t *user, char *src)
     if (!(strstr(src, "!") && strstr(src, "@")))
         return;
 
-    const char *nick = strtok(src, "!");
+    char *lasts = NULL;
+    const char *nick = strtok_r(src, "!", &lasts);
     if (!nick) goto fail;
 
-    char *ident = strtok(NULL, "!");
+    char *ident = strtok_r(NULL, "!", &lasts);
     if (!ident) goto fail;
-    ident = strtok(ident, "@");
+    ident = strtok_r(ident, "@", &lasts);
     if (!ident) goto fail;
-    const char *host = strtok(NULL, "@");
+    const char *host = strtok_r(NULL, "@", &lasts);
     if (!host) goto fail;
 
     user->ident = xstrdup(ident);
@@ -142,18 +145,19 @@ get_nuh(char *src)
     if (!(strstr(src, "!") && strstr(src, "@")))
         return NULL;
 
-    const char *nick = strtok(src, "!");
+    char *lasts = NULL;
+    const char *nick = strtok_r(src, "!", &lasts);
     if (!nick) goto fail;
 
     struct user_t *user = find_nick(nick);
     if (user != NULL)
         return user;
 
-    char *ident = strtok(NULL, "!");
+    char *ident = strtok_r(NULL, "!", &lasts);
     if (!ident) goto fail;
-    ident = strtok(ident, "@");
+    ident = strtok_r(ident, "@", &lasts);
     if (!ident) goto fail;
-    const char *host = strtok(NULL, "@");
+    const char *host = strtok_r(NULL, "@", &lasts);
     if (!host) goto fail;
 
     user = make_nuh(nick, ident, host);

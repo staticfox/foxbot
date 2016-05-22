@@ -20,6 +20,8 @@
  *
  */
 
+#define _POSIX_C_SOURCE 200112L
+
 #include <config.h>
 
 #include <assert.h>
@@ -135,8 +137,9 @@ void
 handle_kick(void)
 {
     /* Extra parsing required */
-    char *victim_s = strtok(bot.msg->params, ":");
-    /* char *kick_reason = strtok(NULL, ":"); */
+    char *lasts = NULL;
+    char *victim_s = strtok_r(bot.msg->params, ":", &lasts);
+    /* char *kick_reason = strtok_r(NULL, ":", &lasts); */
     /* ^ Will be useful for the hook system */
 
     /* Remove the trailing space */
