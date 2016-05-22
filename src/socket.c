@@ -106,7 +106,7 @@ sockwrite(const char *buf)
     ssize_t retval = write(get_io_fd(&bot.io), buf, writeval);
 
     if (retval == -1) {
-        fprintf(stderr, "Write error: %s\n", strerror(errno));
+        perror("Write error");
         exit(EXIT_FAILURE); /* rip */
     }
 

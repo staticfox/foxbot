@@ -68,7 +68,7 @@ wait_for_server_notification(void)
 {
     char c;
     if (read(notification_pipe[0], &c, 1) < 1) {
-        fprintf(stderr, "Read error: %s\n", strerror(errno));
+        perror("Read error");
         exit(EXIT_FAILURE);
     }
 }
@@ -77,7 +77,7 @@ static void
 trigger_server_notification(void)
 {
     if (write(notification_pipe[1], "\0", 1) < 1) {
-        fprintf(stderr, "[Server] Write error: %s\n", strerror(errno));
+        perror("[Server] Write error");
         exit(EXIT_FAILURE);
     }
 }
@@ -296,13 +296,13 @@ start_writer(void *client_sock_fd_ptr)
             break;
         }
         if (write(client_sock_fd, s->data, s->len - 1) < 0) {
-            fprintf(stderr, "[Server] Write error: %s\n", strerror(errno));
+            perror("[Server] Write error");
             exit(EXIT_FAILURE);
         }
         xfree(s);
     }
     if (shutdown(client_sock_fd, SHUT_WR)) {
-        fprintf(stderr, "[Server] Cannot shutdown: %s\n", strerror(errno));
+        perror("[Server] Cannot shutdown");
         exit(EXIT_FAILURE);
     }
     return NULL;
@@ -324,14 +324,13 @@ start_listener(void *unused)
         accept(sockfd, (struct sockaddr *)&cli_addr, &clilen);
 
     if (client_sock_fd < 0) {
-        fprintf(stderr, "[Server] Accept error: %s\n", strerror(errno));
+        perror("[Server] Accept error");
         exit(EXIT_FAILURE);
     }
 
     pthread_t thread;
     if (pthread_create(&thread, NULL, start_writer, (void *)&client_sock_fd)) {
-        fprintf(stderr, "[Server] Cannot create writer thread: %s\n",
-                strerror(errno));
+        perror("[Server] Cannot create writer thread");
         exit(EXIT_FAILURE);
     }
 
@@ -348,8 +347,7 @@ start_listener(void *unused)
 
     fox_shutdown();
     if (pthread_join(thread, NULL)) {
-        fprintf(stderr, "[Server] Cannot join writer thread: %s\n",
-                strerror(errno));
+        perror("[Server] Cannot join writer thread");
         exit(EXIT_FAILURE);
     }
     close(client_sock_fd);
@@ -388,7 +386,7 @@ bind_socket(int sockfd)
 
     /* Shouldn't be here, but I guess we couldn't find an available
      * port to bind to :( */
-    fprintf(stderr, "[Server] Bind error: %s\n", strerror(errno));
+    perror("[Server] Bind error");
     exit(EXIT_FAILURE);
 }
 
@@ -398,14 +396,14 @@ setup_test_server(void)
     int set = 1;
 
     if (pipe(notification_pipe)) {
-        fprintf(stderr, "[Server] Cannot create pipe: %s", strerror(errno));
+        perror("[Server] Cannot create pipe");
         exit(EXIT_FAILURE);
     }
 
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
 
     if (sockfd < 0) {
-        fprintf(stderr, "[Server] Socket error: %s", strerror(errno));
+        perror("[Server] Socket error");
         exit(EXIT_FAILURE);
     }
 
@@ -414,7 +412,7 @@ setup_test_server(void)
      * Fixes https://github.com/staticfox/foxbot/issues/17
      */
     if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &set, sizeof(set)) == -1) {
-        fprintf(stderr, "[Server] setsockopt error: %s\n", strerror(errno));
+        perror("[Server] setsockopt error");
         exit(EXIT_FAILURE);
     }
 

@@ -81,7 +81,7 @@ new_testserver(void)
     }
 
     if (pthread_create(&tid, NULL, start_listener, NULL)) {
-        fprintf(stderr, "Thread error: %s\n", strerror(errno));
+        perror("Thread error");
         return -1;
     }
 
@@ -93,8 +93,7 @@ delete_testserver(void)
 {
     fox_shutdown();
     if (pthread_join(tid, NULL)) {
-        fprintf(stderr, "Cannot join server thread: %s\n",
-                strerror(errno));
+        perror("Cannot join server thread");
         exit(EXIT_FAILURE);
     }
     shutdown_test_server();
