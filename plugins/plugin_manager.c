@@ -26,6 +26,7 @@
 #include <strings.h>
 
 #include <foxbot/admin.h>
+#include <foxbot/conf.h>
 #include <foxbot/foxbot.h>
 #include <foxbot/hook.h>
 #include <foxbot/memory.h>
@@ -77,7 +78,6 @@ plugin_manage_command(void)
 {
     char *command = NULL;
     const char *cmd_used = NULL;
-    static const char trigger = '.';
     static const char *const plugin_cmd  = "PLUGIN";
     static const char *const plugins_cmd = "PLUGINS";
     static const char *const load_cmd    = "LOAD";
@@ -91,7 +91,7 @@ plugin_manage_command(void)
     tofree = message = xstrdup(bot.msg->params+1);
 
     /* Check if we received a private message or an inchannel trigger. */
-    if (message[0] == trigger && !bot.msg->target_is_channel)
+    if (bot.msg->target_is_channel && (!botconfig.prefix || message[0] != botconfig.prefix))
         goto done;
 
     command = fox_strsep(&message, " ");

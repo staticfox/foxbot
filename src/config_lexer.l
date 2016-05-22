@@ -90,6 +90,7 @@ nick          { return T_NICK;          }
 nickserv      { return T_NICKSERV;      }
 password      { return T_PASSWORD;      }
 port          { return T_PORT;          }
+prefix        { return T_PREFIX;        }
 realname      { return T_REALNAME;      }
 plugin        { return T_PLUGIN;        }
 

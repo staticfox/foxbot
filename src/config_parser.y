@@ -92,6 +92,7 @@ clear_adminstate(void)
 %token T_NICKSERV
 %token T_PASSWORD
 %token T_PORT
+%token T_PREFIX
 %token T_REALNAME
 %token T_CHANNEL
 %token T_NAME
@@ -116,6 +117,7 @@ bot_item:  bot_nick |
            bot_realname |
            bot_plugin |
            bot_password |
+           bot_prefix |
            error ';' ;
 
 bot_nick: T_NICK '=' T_STRING ';'
@@ -178,6 +180,18 @@ bot_plugin: T_PLUGIN '=' T_STRING ';'
         break;
 
     add_m_safe(yylval.string, CONF_PLUGIN);
+}
+
+/* TODO: Add T_CHAR */
+bot_prefix: T_PREFIX '=' T_STRING ';'
+{
+    if (conf_parser_ctx.pass != 2)
+        break;
+
+    botconfig.prefix = 0;
+
+    if (yylval.string[0])
+        botconfig.prefix = yylval.string[0];
 }
 
 /* Channel {} entries */

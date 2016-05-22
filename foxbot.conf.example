@@ -26,6 +26,10 @@
  *
  * The `password` field is used to specify the server's password. Use this field
  * if your server requires a password.
+ *
+ * The `prefix` field is used to specify the command prefix in which the bot should
+ * respond to. Note, this is used as a guideline for core plugins so third party
+ * plugins may use alternative prefixes outside of the config one if they so chose.
  */
 bot {
     /* Uncomment to load this plugin. You can add as many plugins
@@ -33,6 +37,7 @@ bot {
      */
     // plugin = "echo_test.so";
     plugin = "plugin_manager.so"
+    prefix = ".";
 
     nick = "foxbot";
     ident = "fox";
