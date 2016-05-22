@@ -24,6 +24,7 @@
 
 #include <errno.h>
 #include <string.h>
+#include <strings.h>
 
 #include <foxbot/conf.h>
 #include <foxbot/foxbot.h>
@@ -109,7 +110,7 @@ add_m_safe(const char *const entry, const enum conf_multiple_types type)
 {
     DLINK_FOREACH(node, dlist_head(&botconfig.conf_modules)) {
         struct conf_multiple *cm = dlink_data(node);
-        if ((fox_strcmp(cm->name, entry) == 0) && cm->type == type)
+        if ((strcasecmp(cm->name, entry) == 0) && cm->type == type)
             return;
     }
 
@@ -128,7 +129,7 @@ conf_set_ckey(const char *const entry,
 {
     DLINK_FOREACH(node, dlist_head(&botconfig.conf_modules)) {
         struct conf_multiple *cm = dlink_data(node);
-        if ((fox_strcmp(cm->name, entry) == 0) && cm->type == type) {
+        if ((strcasecmp(cm->name, entry) == 0) && cm->type == type) {
             xfree(cm->key);
             cm->key = xstrdup(key);
         }
@@ -142,7 +143,7 @@ make_admin_conf(const char *const entry)
     DLINK_FOREACH(node, dlist_head(&botconfig.admins)) {
         struct admin_struct_t *tmp = NULL;
         tmp = dlink_data(node);
-        if (fox_strcmp(tmp->name, entry) == 0)
+        if (strcasecmp(tmp->name, entry) == 0)
             return NULL;
     }
     struct admin_struct_t *admin = xmalloc(sizeof(*admin));
@@ -159,14 +160,14 @@ admin_add_data(struct admin_struct_t *const entry,
 {
     if (type == CONF_ADMIN_NS) {
         DLINK_FOREACH(node, dlist_head(&entry->ns_accts)) {
-            if (fox_strcmp(dlink_data(node), data) == 0) {
+            if (strcasecmp(dlink_data(node), data) == 0) {
                 return;
             }
         }
         dlink_insert(&entry->ns_accts, xstrdup(data));
     } else if (type == CONF_ADMIN_HOST) {
         DLINK_FOREACH(node, dlist_head(&entry->hosts)) {
-            if (fox_strcmp(dlink_data(node), data) == 0) {
+            if (strcasecmp(dlink_data(node), data) == 0) {
                 return;
             }
         }

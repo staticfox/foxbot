@@ -23,6 +23,7 @@
 %{
 #include <stdbool.h>
 #include <string.h>
+#include <strings.h>
 
 #include "config.h"
 
@@ -287,7 +288,7 @@ admin_nickserv: T_NICKSERV '=' T_STRING ';'
         break;
 
     DLINK_FOREACH(node, dlist_head(&admin_state.nickserv)) {
-        if (fox_strcmp(dlink_data(node), yylval.string) == 0) {
+        if (strcasecmp(dlink_data(node), yylval.string) == 0) {
             found = true;
             break;
         }
@@ -307,7 +308,7 @@ admin_host: T_HOST '=' T_STRING ';'
         break;
 
     DLINK_FOREACH(node, dlist_head(&admin_state.hosts)) {
-        if (fox_strcmp(dlink_data(node), yylval.string) == 0) {
+        if (strcasecmp(dlink_data(node), yylval.string) == 0) {
             found = true;
             break;
         }

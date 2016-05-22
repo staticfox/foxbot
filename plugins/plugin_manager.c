@@ -23,6 +23,7 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <string.h>
+#include <strings.h>
 
 #include <foxbot/admin.h>
 #include <foxbot/foxbot.h>
@@ -63,7 +64,7 @@ has_params(const char *const phrase,
 static bool
 is_protected_plugin(const char *const name)
 {
-    if (fox_strcmp(name, fox_plugin.name) == 0) {
+    if (strcasecmp(name, fox_plugin.name) == 0) {
         notice(bot.msg->from->nick, "%s cannot be modified.", name);
         return true;
     }
@@ -98,9 +99,9 @@ plugin_manage_command(void)
     if (bot.msg->target_is_channel)
         memmove(command, command+1, strlen(command));
 
-    if (fox_strcmp(command, plugin_cmd) == 0)
+    if (strcasecmp(command, plugin_cmd) == 0)
         cmd_used = plugin_cmd;
-    else if (fox_strcmp(command, plugins_cmd) == 0)
+    else if (strcasecmp(command, plugins_cmd) == 0)
         cmd_used = plugins_cmd;
     else
         goto done;
@@ -130,7 +131,7 @@ plugin_manage_command(void)
     /* Parse sub-commands
      * TODO: CLEAN ME
      */
-    if (fox_strcmp(command, load_cmd) == 0) {
+    if (strcasecmp(command, load_cmd) == 0) {
         /* plugin load */
         if (!has_params(phrase, cmd_used, load_cmd))
             goto done;
@@ -138,7 +139,7 @@ plugin_manage_command(void)
             goto done;
         notice(bot.msg->from->nick, "Loading %s.", phrase);
         iload_plugin(phrase, true);
-    } else if (fox_strcmp(command, unload_cmd) == 0) {
+    } else if (strcasecmp(command, unload_cmd) == 0) {
         /* plugin unload */
         if (!has_params(phrase, cmd_used, unload_cmd))
             goto done;
@@ -146,7 +147,7 @@ plugin_manage_command(void)
             goto done;
         notice(bot.msg->from->nick, "Unloading %s.", phrase);
         iunload_plugin(phrase, true);
-    } else if (fox_strcmp(command, reload_cmd) == 0) {
+    } else if (strcasecmp(command, reload_cmd) == 0) {
         /* plugin reload */
         if (!has_params(phrase, cmd_used, reload_cmd))
             goto done;
@@ -155,7 +156,7 @@ plugin_manage_command(void)
         notice(bot.msg->from->nick, "Reloading %s.", phrase);
         iunload_plugin(phrase, true);
         iload_plugin(phrase, true);
-    } else if (fox_strcmp(command, info_cmd) == 0) {
+    } else if (strcasecmp(command, info_cmd) == 0) {
         /* plugin info */
         if (!has_params(phrase, cmd_used, info_cmd))
             goto done;
@@ -173,10 +174,10 @@ plugin_manage_command(void)
         notice(bot.msg->from->nick, "Author: %s", plugin_info->plugin->author);
         notice(bot.msg->from->nick, "Compiled: %s", plugin_info->plugin->build_time);
         notice(bot.msg->from->nick, "Loaded at %p", plugin_info->dlobj);
-    } else if (fox_strcmp(command, list_cmd) == 0) {
+    } else if (strcasecmp(command, list_cmd) == 0) {
         /* plugin list */
         list_plugins(bot.msg->from->nick);
-    } else if (fox_strcmp(command, help_cmd) == 0) {
+    } else if (strcasecmp(command, help_cmd) == 0) {
         /* plugin help. TODO: help sub-command */
         notice(bot.msg->from->nick, "HELP for %s: ", cmd_used);
         notice(bot.msg->from->nick, "%s allows you to manage FoxBot's dynamic plugin system.", cmd_used);

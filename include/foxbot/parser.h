@@ -25,9 +25,6 @@
 
 #include <stdbool.h>
 
-/** Compare 2 strings with case insensitivity */
-int fox_strcmp(const char *p1, const char *p2);
-
 /** Attempt to remove a `prefix` from `str`, returning `true` and storing the
  * remaining string in `suffix`.  Otherwise, `false` is returned.  Note that
  * `suffix` can be null. */

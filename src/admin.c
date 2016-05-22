@@ -20,6 +20,8 @@
  *
  */
 
+#include <strings.h>
+
 #include <foxbot/conf.h>
 #include <foxbot/parser.h>
 #include <foxbot/user.h>
@@ -35,14 +37,14 @@ find_admin_access(const struct user_t *const user)
         DLINK_FOREACH(node2, dlist_head(&entry->ns_accts)) {
             if (user->account == NULL)
                 break;
-            if (fox_strcmp(dlink_data(node2), user->account) == 0)
+            if (strcasecmp(dlink_data(node2), user->account) == 0)
                 return entry->access;
         }
 
         DLINK_FOREACH(node2, dlist_head(&entry->hosts)) {
             if (user->host == NULL)
                 break;
-            if (fox_strcmp(dlink_data(node2), user->host) == 0)
+            if (strcasecmp(dlink_data(node2), user->host) == 0)
                 return entry->access;
         }
     }

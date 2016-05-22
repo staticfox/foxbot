@@ -26,6 +26,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 
 #include <foxbot/conf.h>
 #include <foxbot/message.h>
@@ -51,8 +52,8 @@ get_plugin_info(const char *const name)
 {
     DLINK_FOREACH(node, dlist_head(&plugins)) {
         struct plugin_handle_t *temp = dlink_data(node);
-        if ((fox_strcmp(temp->plugin->name, name) == 0) ||
-            (fox_strcmp(temp->file_name, name) == 0)) {
+        if ((strcasecmp(temp->plugin->name, name) == 0) ||
+            (strcasecmp(temp->file_name, name) == 0)) {
             return temp;
         }
     }
@@ -65,8 +66,8 @@ plugin_exists(const char *const name)
 {
     DLINK_FOREACH(node, dlist_head(&plugins)) {
         const struct plugin_handle_t *const temp = dlink_data(node);
-        if ((fox_strcmp(temp->plugin->name, name) == 0) ||
-            (fox_strcmp(temp->file_name, name) == 0)) {
+        if ((strcasecmp(temp->plugin->name, name) == 0) ||
+            (strcasecmp(temp->file_name, name) == 0)) {
             return true;
         }
     }
@@ -178,8 +179,8 @@ iunload_plugin(const char *const name, const bool announce)
 
     DLINK_FOREACH(node, dlist_head(&plugins)) {
         const struct plugin_handle_t *const temp = dlink_data(node);
-        if ((fox_strcmp(temp->plugin->name, name) == 0) ||
-            (fox_strcmp(temp->file_name, name) == 0)) {
+        if ((strcasecmp(temp->plugin->name, name) == 0) ||
+            (strcasecmp(temp->file_name, name) == 0)) {
             plugin_handle = dlink_data(node);
             dlink_delete(node, &plugins);
             break;
