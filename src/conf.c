@@ -30,6 +30,8 @@
 #include <foxbot/foxbot.h>
 #include <foxbot/parser.h>
 
+#include "error.h"
+
 struct conf_parser_context conf_parser_ctx;
 struct botconfig_entry botconfig;
 
@@ -186,7 +188,9 @@ read_conf_file(void)
         filename = SYSCONFDIR "/foxbot.conf";
 
     if ((conf_parser_ctx.conf_file = fopen(filename, "r")) == NULL) {
-        do_error("Unable to read %s: %s", filename, strerror(errno));
+        char msg[512] = {0};
+        fox_strerror(errno, msg, sizeof(msg));
+        do_error("Unable to read %s: %s", filename, msg);
         exit(EXIT_FAILURE);
     }
 

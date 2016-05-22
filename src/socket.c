@@ -40,6 +40,8 @@
 #include <foxbot/message.h>
 #include <foxbot/socket.h>
 
+#include "error.h"
+
 void
 create_socket(void)
 {
@@ -51,14 +53,18 @@ create_socket(void)
     hints.ai_socktype = SOCK_STREAM;
 
     if ((addrerr = getaddrinfo(botconfig.host, botconfig.port, &hints, &bot.hil)) != 0) {
-        do_error("getaddrinfo() returned %d. %s",
-                 addrerr, addrerr == EAI_SYSTEM ? strerror(errno) : "");
+        char msg[512] = {0};
+        if (addrerr == EAI_SYSTEM)
+            fox_strerror(errno, msg, sizeof(msg));
+        do_error("getaddrinfo() returned %d. %s", addrerr, msg);
         exit(EXIT_FAILURE);
     }
 
     int fd = socket(bot.hil->ai_family, bot.hil->ai_socktype, bot.hil->ai_protocol);
     if (fd == -1) {
-        do_error(strerror(errno));
+        char msg[512] = {0};
+        fox_strerror(errno, msg, sizeof(msg));
+        do_error(msg);
         exit(EXIT_FAILURE);
     }
     init_io(&bot.io, fd, MAX_IRC_BUF);
@@ -87,7 +93,9 @@ establish_link(void)
 
     status = connect(get_io_fd(&bot.io), bot.hil->ai_addr, bot.hil->ai_addrlen);
     if (status == -1) {
-        do_error(strerror(errno));
+        char msg[512] = {0};
+        fox_strerror(errno, msg, sizeof(msg));
+        do_error(msg);
         exit(EXIT_FAILURE);
     }
 
@@ -215,8 +223,11 @@ io_simple_readline(io_state *io, const char *prefix)
         fprintf(stderr, "%sLine exceeded buffer length\n", prefix);
         return NULL;
     case IRS_ERROR:
-        if (errno != EINTR)
-            fprintf(stderr, "%sRead error: %s\n", prefix, strerror(errno));
+        if (errno != EINTR) {
+            char msg[512] = {0};
+            fox_strerror(errno, msg, sizeof(msg));
+            fprintf(stderr, "%sRead error: %s\n", prefix, msg);
+        }
         return NULL;
     }
     abort();

@@ -78,4 +78,6 @@ xensure0_(int value,
 #define panic(...) (void)0
 #endif
 
+void fox_strerror(int errnum, char *buf, size_t buflen);
+
 #endif

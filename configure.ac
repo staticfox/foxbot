@@ -62,7 +62,8 @@ dnl Checks for library functions.
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_CHECK_FUNCS([malloc_usable_size memchr memmove memset socket strchr strcspn])
-AC_CHECK_FUNCS([strerror strtol strtoul strstr])
+AC_CHECK_FUNCS([strtol strtoul strstr])
+AC_FUNC_STRERROR_R
 
 dnl debugging information
 AC_MSG_CHECKING(whether to enable debugging symbols)

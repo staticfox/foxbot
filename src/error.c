@@ -20,11 +20,14 @@
  *
  */
 
+#define _POSIX_C_SOURCE 200112L
+
 #include <config.h>
 
 #include <stdarg.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "error.h"
 
@@ -52,4 +55,29 @@ vpanic_message(const char *file,
     vsnprintf(msg, sizeof(msg), format, vlist);
     fprintf(stderr, PACKAGE_NAME ":%s:%lu:%s: %s\n", file, line, func, msg);
     fflush(stderr);
+}
+
+void
+fox_strerror(int errnum, char *buf, size_t buflen)
+{
+    static const char default_msg[] = "Unknown error";
+#ifdef STRERROR_R_CHAR_P
+    char *msg;
+    if ((msg = strerror_r(errnum, buf, buflen)) {
+        if (!(msg >= buf && msg < buf + buflen)) {
+            strncpy(buf, msg, buflen);
+            buf[buflen - 1] = '\0';
+        }
+        return;
+    }
+#else
+    if (!strerror_r(errnum, buf, buflen))
+        return;
+#endif
+    if (buflen < sizeof(default_msg)) {
+        fprintf(stderr, PACKAGE_NAME ":fox_strerror: buffer too small\n");
+        fflush(stderr);
+        abort();
+    }
+    strcpy(buf, default_msg);
 }
