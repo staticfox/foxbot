@@ -12,7 +12,7 @@ foxbot_LTLIBRARIES = libfoxbot.la libfoxbotaux.la
 
 libfoxbot_la_SOURCES = admin.c \
                  cap.c \
-				 channel.c \
+                 channel.c \
                  conf.c \
                  error.c \
                  foxbot.c \
