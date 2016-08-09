@@ -59,3 +59,6 @@ tests/units/.dirstamp
 *.gcda
 *.gcno
 coverage.info
+
+plugins/third_party/*
+!plugins/third_party/.keep
