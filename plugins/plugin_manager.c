@@ -34,6 +34,7 @@
 #include <foxbot/parser.h>
 #include <foxbot/plugin.h>
 #include <foxbot/user.h>
+#include <foxbot/utility.h>
 
 struct plugin_t fox_plugin;
 
@@ -184,6 +185,7 @@ plugin_manage_command(void)
         notice(bot.msg->from->nick, "Available sub-commands are: LOAD, UNLOAD, RELOAD, INFO, LIST, HELP");
     } else {
         /* plugin ??? */
+        fox_toupper(command);
         notice(bot.msg->from->nick, "%s %s is an unknown sub-command.", cmd_used, command);
     }
 

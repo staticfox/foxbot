@@ -28,7 +28,8 @@ libfoxbot_la_SOURCES = admin.c \
                  rope.c \
                  signal.c \
                  socket.c \
-                 user.c
+                 user.c \
+                 utility.c
 
 libfoxbotaux_la_SOURCES = config_lexer.l config_parser.y
 libfoxbotaux_la_CFLAGS =
