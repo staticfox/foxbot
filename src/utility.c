@@ -21,11 +21,23 @@
  */
 
 #include <ctype.h>
-#include <stddef.h>
+#include <string.h>
 
 void
 fox_toupper(char *str)
 {
     for (size_t ii = 0; str[ii]; ++ii)
         str[ii] = toupper(str[ii]);
+}
+
+char *
+fox_strsep(char **stringp, const char *delim)
+{
+    char *p = *stringp;
+    if (p) {
+        char *q = p + strcspn(p, delim);
+        *stringp = *q ? q + 1 : NULL;
+        *q = '\0';
+    }
+    return p;
 }

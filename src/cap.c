@@ -28,6 +28,7 @@
 #include <foxbot/ircd.h>
 #include <foxbot/memory.h>
 #include <foxbot/message.h>
+#include <foxbot/utility.h>
 
 static struct {
     const char *name;

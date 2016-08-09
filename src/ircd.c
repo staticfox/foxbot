@@ -34,6 +34,7 @@
 #include <foxbot/foxbot.h>
 #include <foxbot/parser.h>
 #include <foxbot/user.h>
+#include <foxbot/utility.h>
 
 /* 001 | RPL_WELCOME */
 void

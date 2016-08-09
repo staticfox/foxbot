@@ -37,6 +37,7 @@
 #include <foxbot/memory.h>
 #include <foxbot/message.h>
 #include <foxbot/user.h>
+#include <foxbot/utility.h>
 
 static int
 do_set_enum(const char *command, enum commands ecmd)
@@ -186,18 +187,6 @@ call_hooks(void)
         hook_numeric();
     else
         hook_literal();
-}
-
-char *
-fox_strsep(char **stringp, const char *delim)
-{
-    char *p = *stringp;
-    if (p) {
-        char *q = p + strcspn(p, delim);
-        *stringp = *q ? q + 1 : NULL;
-        *q = '\0';
-    }
-    return p;
 }
 
 static void

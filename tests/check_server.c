@@ -35,10 +35,11 @@
 #include <unistd.h>
 
 #include <foxbot/conf.h>
+#include <foxbot/foxbot.h>
 #include <foxbot/memory.h>
 #include <foxbot/message.h>
 #include <foxbot/rope.h>
-#include <foxbot/foxbot.h>
+#include <foxbot/utility.h>
 
 #include "check_foxbot.h"
 #include "check_server.h"

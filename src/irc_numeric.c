@@ -29,6 +29,7 @@
 #include <foxbot/memory.h>
 #include <foxbot/parser.h>
 #include <foxbot/user.h>
+#include <foxbot/utility.h>
 
 static unsigned int
 modchar_to_bitflag(const char f)

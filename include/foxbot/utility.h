@@ -21,3 +21,4 @@
  */
 
 void fox_toupper(char *str);
+char * fox_strsep(char **stringp, const char *delim);

@@ -44,7 +44,6 @@ struct msg_t {
 void hook_numeric(void);
 void hook_literal(void);
 void call_hooks(void);
-char * fox_strsep(char **stringp, const char *delim);
 bool parse_line(const char *line);
 
 #endif

@@ -29,6 +29,7 @@
 #include <foxbot/message.h>
 #include <foxbot/plugin.h>
 #include <foxbot/user.h>
+#include <foxbot/utility.h>
 
 static void
 say_my_name(void)
