@@ -141,7 +141,7 @@ START_TEST(channel_quit_check)
     write_and_wait(ibuf);
     ck_assert(channel_count() == 3);
     write_and_wait(":test_user2!~test@255.255.255.255 JOIN #unit_test");
-    write_and_wait(":test_user2!~test@255.255.255.255 JOIN #unit_test2");
+    write_and_wait(":test_user2!~test@255.255.255.255 JOIN :#unit_test2");
     ck_assert((uptr = find_nick("test_user2")) != NULL);
     ck_assert((chptr2 = find_channel("#unit_test2")) != NULL);
     ck_assert(user_count() == 3);

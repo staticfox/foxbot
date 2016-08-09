@@ -76,6 +76,8 @@ handle_mode(void)
 void
 handle_join(void)
 {
+    int offset = 0;
+
     /* eh? */
     if (bot.msg->from_server == true)
         return;
@@ -85,8 +87,11 @@ handle_join(void)
     if (bot.msg->from->ident == NULL || bot.msg->from->host == NULL)
         set_uh(bot.msg->from, bot.msg->source);
 
+    if (bot.msg->target[0] == ':')
+        offset = 1;
+
     struct channel_t *channel = NULL;
-    channel = find_channel(bot.msg->target);
+    channel = find_channel(bot.msg->target + offset);
 
     if (channel == NULL && bot.msg->from != bot.user) {
         do_error("Received JOIN for an unknown channel: %s", bot.msg->buffer);
