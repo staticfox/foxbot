@@ -106,6 +106,18 @@ find_nick(const char *nick)
     return NULL;
 }
 
+bool
+user_pointer_valid(struct user_t *user)
+{
+    DLINK_FOREACH(node, dlist_head(&users)) {
+        const struct user_t *const luser = (struct user_t *)dlink_data(node);
+        if (luser == user)
+            return true;
+    }
+
+    return false;
+}
+
 struct user_t *
 find_or_make_user(const char *nick, const char *ident, const char *host)
 {

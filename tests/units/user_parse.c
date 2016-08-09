@@ -126,6 +126,35 @@ START_TEST(user_nick_server)
 }
 END_TEST
 
+START_TEST(user_lookup_pointer)
+{
+    begin_test();
+    struct channel_t *chptr;
+    struct user_t *uptr;
+
+    ck_assert((chptr = find_channel("#unit_test")) != NULL);
+
+    write_and_wait(":test_user1!~test@255.255.255.255 JOIN #unit_test");
+    ck_assert(dlist_length(&chptr->users) == 2);
+    ck_assert(user_count() == 2);
+    ck_assert((uptr = find_nick("test_user1")) != NULL);
+    ck_assert_ptr_ne(channel_get_membership(chptr, uptr), NULL);
+    ck_assert(user_pointer_valid(uptr));
+
+    write_and_wait(":test_user1!~test@255.255.255.255 NICK :newnick1");
+    ck_assert(find_nick("newnick1") == uptr);
+    ck_assert(dlist_length(&chptr->users) == 2);
+    ck_assert(user_count() == 2);
+    ck_assert_ptr_ne(channel_get_membership(chptr, uptr), NULL);
+
+    write_and_wait(":newnick1!~test@255.255.255.255 PART #unit_test :Leaving");
+    ck_assert(find_nick("newnick1") == NULL);
+    ck_assert(!user_pointer_valid(uptr));
+
+    end_test();
+}
+END_TEST
+
 void
 user_parse_setup(Suite *s)
 {
@@ -136,6 +165,7 @@ user_parse_setup(Suite *s)
     tcase_add_test(tc, user_nick);
     tcase_add_test(tc, user_nick_me);
     tcase_add_test(tc, user_nick_server);
+    tcase_add_test(tc, user_lookup_pointer);
 
     suite_add_tcase(s, tc);
 }
