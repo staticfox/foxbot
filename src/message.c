@@ -82,6 +82,7 @@ set_command_enum(void)
     if (do_set_enum("NICK",    NICK)   ) return;
     if (do_set_enum("CAP",     CAP)    ) return;
     if (do_set_enum("ACCOUNT", ACCOUNT)) return;
+    if (do_set_enum("WALLOPS", WALLOPS)) return;
 
     do_error("Unhandled command: %s", bot.msg->command);
 }
@@ -170,6 +171,9 @@ hook_literal(void)
     case NOTICE:
         exec_hook("on_notice");
         break;
+    case WALLOPS:
+        exec_hook("on_wallops");
+        break;
     default:
         break;
     }
@@ -205,6 +209,14 @@ set_if_channel()
 
     if (strchr(bot.ircd->supports.chan_types, bot.msg->target[0]))
         bot.msg->target_is_channel = true;
+}
+
+static void
+set_no_target(const char *const line)
+{
+    const size_t len = strlen(bot.msg->source + 1) + 1 + strlen(bot.msg->command) + 3;
+    if (strlen(line) > len)
+        bot.msg->params = xstrdup(line + len);
 }
 
 bool
@@ -268,6 +280,13 @@ parse_line(const char *line)
         case 1:
             bot.msg->command = xstrdup(token);
             set_command_enum();
+
+            if (bot.msg->ctype == WALLOPS) {
+                set_no_target(line);
+                call_hooks();
+                goto end;
+            }
+
             break;
         case 2:
             bot.msg->target = xstrdup(token);

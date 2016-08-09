@@ -24,4 +24,5 @@ check_foxbot_SOURCES = check_foxbot.c \
                        units/parser.c \
                        units/plugin.c \
                        units/rope.c \
-                       units/user_parse.c
+                       units/user_parse.c \
+                       units/wallops_parse.c

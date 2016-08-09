@@ -1,5 +1,5 @@
 /*
- *   check_foxbot.c -- May 1 2016 9:31:02 EDT
+ *   wallops_parse.c -- Aug 8 2016 22:07:42 EDT
  *
  *   This file is part of the foxbot IRC bot
  *   Copyright (C) 2016 Matt Ullman (staticfox at staticfox dot net)
@@ -20,43 +20,35 @@
  *
  */
 
-#include <errno.h>
 #include <stdio.h>
-#include <stdlib.h>
+#include <foxbot/foxbot.h>
+#include <foxbot/message.h>
+#include <foxbot/user.h>
 
-#include "check_foxbot.h"
-#include "check_server.h"
+#include "../check_foxbot.h"
+#include "../check_server.h"
 
-static void
-add_testcases(Suite *s)
+START_TEST(check_wallops)
 {
-    connect_parse_setup(s);
-    channel_parse_setup(s);
-    memory_setup(s);
-    parser_setup(s);
-    rope_setup(s);
-    user_parse_setup(s);
-    cap_parse_setup(s);
-    ircv3_parse_setup(s);
-    hook_setup(s);
-    admin_setup(s);
-    plugin_setup(s);
-    wallops_parse_setup(s);
+    begin_test();
+
+    write_and_wait(":staticfox!fox@some.host WALLOPS :OPERWALL - Test");
+    ck_assert_int_eq(bot.msg->ctype, WALLOPS);
+    ck_assert_str_eq(bot.msg->source, "staticfox!fox@some.host");
+    ck_assert_str_eq(bot.msg->command, "WALLOPS");
+    ck_assert_str_eq(bot.msg->params, ":OPERWALL - Test");
+
+    end_test();
 }
+END_TEST
 
-int
-main()
+void
+wallops_parse_setup(Suite *s)
 {
-    Suite *s = suite_create("check_foxbot");
+    TCase *tc = tcase_create("wallops_parse");
 
-    add_testcases(s);
+    tcase_add_checked_fixture(tc, NULL, delete_foxbot);
+    tcase_add_test(tc, check_wallops);
 
-    SRunner *runner = srunner_create(s);
-    srunner_set_tap(runner, "-");
-    srunner_run_all(runner, CK_NORMAL);
-
-    int number_failed = srunner_ntests_failed(runner);
-    srunner_free(runner);
-
-    return (number_failed == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
+    suite_add_tcase(s, tc);
 }
