@@ -239,7 +239,7 @@ iload_plugin(const char *const name, const bool announce)
     }
 
     if (plugin_exists(plugin->name)) {
-        report_status(announce, "%s is already loaded.", name);
+        report_status(announce, "%s is already loaded.", plugin->name);
         dl_safe_close(obj);
         return;
     }
