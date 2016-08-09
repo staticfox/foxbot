@@ -121,4 +121,8 @@ AC_ARG_WITH(plugindir,
   ])
 AC_DEFINE_DIR(PLUGIN_DIR, plugindir, [Prefix where plugins are installed.])
 
+AC_CONFIG_COMMANDS([plugins/third_party/libdir.mk],
+  [echo LIBDIR = ${prefix}${plugindir} > plugins/third_party/libdir.mk],
+  [plugindir=$plugindir;prefix=$prefix])
+
 AC_OUTPUT
