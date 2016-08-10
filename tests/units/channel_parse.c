@@ -92,6 +92,9 @@ START_TEST(channel_part_check)
 
     wait_for_last_buf("PRIVMSG #test_spam :Attempting to rejoin test_user1 to #unit_test2.");
 
+    write_and_wait(":test_user1!~test@255.255.255.255 JOIN #unit_tESt");
+    wait_for_last_buf("PRIVMSG #test_spam :Attempting to rejoin test_user1 to #unit_test.");
+
     ck_assert(dlist_length(&chptr2->users) == 2);
 
     snprintf(ibuf, sizeof(ibuf), ":%s!%s@%s PART #unit_test2",

@@ -24,6 +24,7 @@
 
 #include <assert.h>
 #include <string.h>
+#include <strings.h>
 
 #include <foxbot/channel.h>
 #include <foxbot/foxbot.h>
@@ -157,7 +158,7 @@ struct channel_t *
 find_channel(const char *name)
 {
     DLINK_FOREACH(node, dlist_head(&channels))
-        if (strcmp(((struct channel_t *)dlink_data(node))->name, name) == 0)
+        if (strcasecmp(((struct channel_t *)dlink_data(node))->name, name) == 0)
             return (struct channel_t *)dlink_data(node);
     return NULL;
 }
