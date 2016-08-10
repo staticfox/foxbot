@@ -82,6 +82,8 @@ void privmsg(const char *target, char *message, ...);
 void notice(const char *target, char *message, ...);
 void join(const char *channel);
 void join_with_key(const char *channel, const char *key);
+void part(const char *channel);
+void part_with_message(const char *channel, const char *message);
 void do_quit(const char *message);
 void do_error(char *line, ...);
 void init_foxbot(int argc, char **argv);

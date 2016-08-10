@@ -91,6 +91,22 @@ join_with_key(const char *const channel, const char *const key)
 }
 
 void
+part(const char *const channel)
+{
+    char buf[MAX_IRC_BUF];
+    snprintf(buf, sizeof(buf), "PART %s :Leaving.\n", channel);
+    raw(buf);
+}
+
+void
+part_with_message(const char *const channel, const char *const message)
+{
+    char buf[MAX_IRC_BUF];
+    snprintf(buf, sizeof(buf), "PART %s :%s\n", channel, message);
+    raw(buf);
+}
+
+void
 do_quit(const char *const message)
 {
     char buf[MAX_IRC_BUF];
