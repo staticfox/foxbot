@@ -195,6 +195,7 @@ init_foxbot(int argc, char **argv)
 
     parse_opts(argc, argv);
     read_conf_file();
+    register_default_commands();
     load_conf_plugins();
     setup_signals();
     create_socket();

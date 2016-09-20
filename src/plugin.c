@@ -20,6 +20,7 @@
  *
  */
 
+#include <assert.h>
 #include <config.h>
 #include <dlfcn.h>
 #include <stdarg.h>
@@ -28,6 +29,7 @@
 #include <string.h>
 #include <strings.h>
 
+#include <foxbot/admin.h>
 #include <foxbot/conf.h>
 #include <foxbot/message.h>
 #include <foxbot/parser.h>
@@ -35,7 +37,8 @@
 #include <foxbot/list.h>
 #include <foxbot/user.h>
 
-static dlink_list plugins;
+static dlink_list plugins, commands;
+static unsigned int longest_name = 0;
 
 void
 list_plugins(const char *const nick)
@@ -261,4 +264,160 @@ load_conf_plugins(void)
         if (cm->type == CONF_PLUGIN)
             iload_plugin(cm->name, false);
     }
+}
+
+/* Commands */
+void
+register_command(const char *const command, const int params, const int access, const cmd_func func)
+{
+    if (find_command(false, command, true)) {
+        do_error("You cannot register a command with duplicate names. [%s]", command);
+        return;
+    }
+
+    static const struct command_t EMPTY_HOOK;
+    struct command_t *hook = xmalloc(sizeof(*hook));
+    *hook = EMPTY_HOOK;
+    hook->name = xstrdup(command);
+    hook->params = params;
+    hook->access = access;
+    hook->func = func;
+    dlink_insert(&commands, hook);
+
+    if (strlen(hook->name) > longest_name)
+        longest_name = strlen(hook->name);
+}
+
+void
+unregister_command(const char *const command, const cmd_func func)
+{
+    struct command_t *hook = NULL;
+
+    DLINK_FOREACH(node, dlist_head(&commands)) {
+        hook = (struct command_t *) dlink_data(node);
+        if (hook->func == func && (strcmp(hook->name, command) == 0)) {
+            xfree(hook->name);
+            xfree(hook);
+            dlink_delete(node, &commands);
+            return;
+        }
+    }
+
+    do_error("Called unregister_command on a non-existant command! %s %p",
+             command, func);
+}
+
+static bool
+access(int level)
+{
+    if (find_admin_access(bot.msg->from) > level)
+        return true;
+
+    if (!bot.msg->target_is_channel)
+        notice(bot.msg->from->nick, "You are not authorized to preform this action.");
+
+    return false;
+}
+
+void
+exec_command(void)
+{
+    if (!bot.msg->params || !bot.msg->params[1]) return;
+    const struct command_t *const command = find_command(true, bot.msg->params+1, false);
+    if (command) {
+        const char *param = strlen(bot.msg->params+1) - strlen(command->name) > 1 ?
+            bot.msg->params + strlen(command->name) + 2 : NULL;
+        command->func(param);
+    }
+}
+
+static size_t
+param_count(const char *const params)
+{
+    size_t num = 1;
+
+    for (size_t ii=0; params[ii]; ii++)
+        if (params[ii] == ' ')
+            num++;
+
+    return num;
+}
+
+struct command_t *
+find_command(const bool exec, const char *command, bool exact)
+{
+    struct command_t *hook, *tmp_hook = NULL;
+    size_t match_size = 0;
+
+    if (bot.msg->target_is_channel) {
+        if (command[0] != botconfig.prefix)
+            return NULL;
+        ++command;
+    }
+
+    DLINK_FOREACH(node, dlist_head(&commands)) {
+        hook = (struct command_t *) dlink_data(node);
+        assert(hook->name);
+
+        if (exact) {
+            if (strcasecmp(hook->name, command) == 0) return hook;
+        } else if (strncasecmp(hook->name, command, strlen(hook->name)) == 0) {
+            if (strlen(hook->name) <= match_size) continue;
+            match_size = strlen(hook->name);
+            tmp_hook = hook;
+        }
+    }
+
+    if (exact) return NULL;
+    if (tmp_hook) {
+        if (exec && !access(tmp_hook->access)) {
+            return NULL;
+        } else if (tmp_hook->params) {
+            const char *param = strlen(bot.msg->params+1) - strlen(tmp_hook->name) > 1 ?
+                bot.msg->params + strlen(tmp_hook->name) + 2 : NULL;
+            if (param == NULL) {
+                notice(bot.msg->from->nick, "%s requires more parameters.", tmp_hook->name);
+                return NULL;
+            } else if (param_count(param) < tmp_hook->params) {
+                notice(bot.msg->from->nick, "%s requires more parameters.", tmp_hook->name);
+                return NULL;
+            }
+        }
+
+        return tmp_hook;
+    }
+
+    if (exec) notice(bot.msg->from->nick, "%s is an unknown command.", command);
+    return NULL;
+}
+
+static void
+show_help(const char *const params)
+{
+    (void) params;
+    const int my_access = find_admin_access(bot.msg->from);
+    notice(bot.msg->from->nick, "Your access level is %d", my_access);
+    notice(bot.msg->from->nick, "Available commands:");
+
+    DLINK_FOREACH(node, dlist_head(&commands)) {
+        char buf[MAX_IRC_BUF];
+        int ii = 0;
+        const struct command_t *const p = dlink_data(node);
+
+        /* Only show the user what they can run */
+        if (my_access < p->access) continue;
+        unsigned int length_needed = (longest_name - strlen(p->name)) + 3;
+        ii += snprintf(buf+ii, sizeof(buf) - ii, "%s", p->name);
+        if ((sizeof(buf) - ii) > length_needed) {
+            memset(buf+ii, ' ', length_needed);
+            snprintf(buf+ii+length_needed, sizeof(buf) - ii, "[%d]", p->access);
+        }
+        notice(bot.msg->from->nick, "%s", buf);
+    }
+}
+
+void
+register_default_commands(void)
+{
+    register_command("HELP", 0, 0, show_help);
 }

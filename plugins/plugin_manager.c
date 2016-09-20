@@ -39,31 +39,6 @@
 struct plugin_t fox_plugin;
 
 static bool
-access(void)
-{
-    if (find_admin_access(bot.msg->from) > 900)
-        return true;
-
-    if (!bot.msg->target_is_channel)
-        notice(bot.msg->from->nick, "You are not authorized to preform this action.");
-
-    return false;
-}
-
-static bool
-has_params(const char *const phrase,
-                  const char *const used,
-                  const char *const sub)
-{
-    if (phrase == NULL || strlen(phrase) < 1 || phrase[0] == '\0' || isspace(phrase[0])) {
-        notice(bot.msg->from->nick, "%s %s requires more parameters.", used, sub);
-        return false;
-    }
-
-    return true;
-}
-
-static bool
 is_protected_plugin(const char *const name)
 {
     if (strcasecmp(name, fox_plugin.name) == 0) {
@@ -74,137 +49,131 @@ is_protected_plugin(const char *const name)
     return false;
 }
 
-static void
-plugin_manage_command(void)
+static bool
+is_valid_plugin_name(const char *const name)
 {
-    char *command = NULL;
-    const char *cmd_used = NULL;
-    static const char *const plugin_cmd  = "PLUGIN";
-    static const char *const plugins_cmd = "PLUGINS";
-    static const char *const load_cmd    = "LOAD";
-    static const char *const unload_cmd  = "UNLOAD";
-    static const char *const reload_cmd  = "RELOAD";
-    static const char *const info_cmd    = "INFO";
-    static const char *const list_cmd    = "LIST";
-    static const char *const help_cmd    = "HELP";
-
-    char *tofree, *message;
-    tofree = message = xstrdup(bot.msg->params+1);
-
-    /* Check if we received a private message or an inchannel trigger. */
-    if (bot.msg->target_is_channel && (!botconfig.prefix || message[0] != botconfig.prefix))
-        goto done;
-
-    command = fox_strsep(&message, " ");
-
-    if (bot.msg->target_is_channel)
-        memmove(command, command+1, strlen(command));
-
-    if (strcasecmp(command, plugin_cmd) == 0)
-        cmd_used = plugin_cmd;
-    else if (strcasecmp(command, plugins_cmd) == 0)
-        cmd_used = plugins_cmd;
-    else
-        goto done;
-
-    if (!access())
-        goto done;
-
-    /* Sub-command */
-    if (!(command = fox_strsep(&message, " "))) {
-        notice(bot.msg->from->nick, "%s requires more parameters.", cmd_used);
-        goto done;
+    if (strstr(name, " ")) {
+        notice(bot.msg->from->nick, "Plugin names cannot have spaces.");
+        return false;
     }
 
-    /* Full phrase (if it exists) */
-    const char *phrase = NULL;
-    const size_t param_length = strlen(bot.msg->params);
-    if (bot.msg->target_is_channel) {
-        size_t len = 4 + strlen(cmd_used) + strlen(command);
-        if (len < param_length)
-            phrase = bot.msg->params + len;
-    } else {
-        size_t len = 3 + strlen(cmd_used) + strlen(command);
-        if (len < param_length)
-            phrase = bot.msg->params + len;
+    if (strstr(name, "../") || strstr(name, "/..")) {
+        notice(bot.msg->from->nick, "Plugin names cannot include pathes.");
+        return false;
     }
 
-    /* Parse sub-commands
-     * TODO: CLEAN ME
-     */
-    if (strcasecmp(command, load_cmd) == 0) {
-        /* plugin load */
-        if (!has_params(phrase, cmd_used, load_cmd))
-            goto done;
-        if (is_protected_plugin(phrase))
-            goto done;
-        notice(bot.msg->from->nick, "Loading %s.", phrase);
-        iload_plugin(phrase, true);
-    } else if (strcasecmp(command, unload_cmd) == 0) {
-        /* plugin unload */
-        if (!has_params(phrase, cmd_used, unload_cmd))
-            goto done;
-        if (is_protected_plugin(phrase))
-            goto done;
-        notice(bot.msg->from->nick, "Unloading %s.", phrase);
-        iunload_plugin(phrase, true);
-    } else if (strcasecmp(command, reload_cmd) == 0) {
-        /* plugin reload */
-        if (!has_params(phrase, cmd_used, reload_cmd))
-            goto done;
-        if (is_protected_plugin(phrase))
-            goto done;
-        notice(bot.msg->from->nick, "Reloading %s.", phrase);
-        iunload_plugin(phrase, true);
-        iload_plugin(phrase, true);
-    } else if (strcasecmp(command, info_cmd) == 0) {
-        /* plugin info */
-        if (!has_params(phrase, cmd_used, info_cmd))
-            goto done;
-        const struct plugin_handle_t *const plugin_info = get_plugin_info(phrase);
-        if (!plugin_info) {
-            notice(bot.msg->from->nick, "%s is not loaded.", phrase);
-            goto done;
-        }
-        notice(bot.msg->from->nick, "Information on %s:", phrase);
-        notice(bot.msg->from->nick, " ");
-        notice(bot.msg->from->nick, "File: %s", plugin_info->file_name);
-        notice(bot.msg->from->nick, "Name: %s", plugin_info->plugin->name);
-        notice(bot.msg->from->nick, "Description: %s", plugin_info->plugin->description);
-        notice(bot.msg->from->nick, "Version: %s", plugin_info->plugin->version);
-        notice(bot.msg->from->nick, "Author: %s", plugin_info->plugin->author);
-        notice(bot.msg->from->nick, "Compiled: %s", plugin_info->plugin->build_time);
-        notice(bot.msg->from->nick, "Loaded at %p", plugin_info->dlobj);
-    } else if (strcasecmp(command, list_cmd) == 0) {
-        /* plugin list */
-        list_plugins(bot.msg->from->nick);
-    } else if (strcasecmp(command, help_cmd) == 0) {
-        /* plugin help. TODO: help sub-command */
-        notice(bot.msg->from->nick, "HELP for %s: ", cmd_used);
-        notice(bot.msg->from->nick, "%s allows you to manage FoxBot's dynamic plugin system.", cmd_used);
-        notice(bot.msg->from->nick, "Available sub-commands are: LOAD, UNLOAD, RELOAD, INFO, LIST, HELP");
-    } else {
-        /* plugin ??? */
-        fox_toupper(command);
-        notice(bot.msg->from->nick, "%s %s is an unknown sub-command.", cmd_used, command);
-    }
+    return true;
+}
 
-done:
-    xfree(tofree);
+static void
+command_plugin_list(const char *const params)
+{
+    (void) params;
+    list_plugins(bot.msg->from->nick);
+}
+
+static void
+command_plugin_help(const char *const params)
+{
+    (void) params;
+    notice(bot.msg->from->nick, "HELP for PLUGIN:");
+    notice(bot.msg->from->nick, "PLUGIN allows you to manage FoxBot's dynamic plugin system.");
+    notice(bot.msg->from->nick, "Available sub-commands are: LOAD, UNLOAD, RELOAD, INFO, LIST, HELP");
+}
+
+static void
+command_plugin_load(const char *const params)
+{
+    if (!is_valid_plugin_name(params)) return;
+    if (is_protected_plugin(params)) return;
+    notice(bot.msg->from->nick, "Loading %s.", params);
+    iload_plugin(params, true);
+}
+
+static void
+command_plugin_unload(const char *const params)
+{
+    if (!is_valid_plugin_name(params)) return;
+    if (is_protected_plugin(params)) return;
+    notice(bot.msg->from->nick, "Unloading %s.", params);
+    iunload_plugin(params, true);
+}
+
+static void
+command_plugin_reload(const char *const params)
+{
+    if (!is_valid_plugin_name(params)) return;
+    if (is_protected_plugin(params)) return;
+    notice(bot.msg->from->nick, "Reloading %s.", params);
+    iunload_plugin(params, true);
+    iload_plugin(params, true);
+}
+
+static void
+command_plugin_info(const char *const params)
+{
+    if (!is_valid_plugin_name(params)) return;
+    const struct plugin_handle_t *const plugin_info = get_plugin_info(params);
+    if (!plugin_info) {
+        notice(bot.msg->from->nick, "%s is not loaded.", params);
+        return;
+    }
+    notice(bot.msg->from->nick, "Information on %s:", params);
+    notice(bot.msg->from->nick, " ");
+    notice(bot.msg->from->nick, "File: %s", plugin_info->file_name);
+    notice(bot.msg->from->nick, "Name: %s", plugin_info->plugin->name);
+    notice(bot.msg->from->nick, "Description: %s", plugin_info->plugin->description);
+    notice(bot.msg->from->nick, "Version: %s", plugin_info->plugin->version);
+    notice(bot.msg->from->nick, "Author: %s", plugin_info->plugin->author);
+    notice(bot.msg->from->nick, "Compiled: %s", plugin_info->plugin->build_time);
+    notice(bot.msg->from->nick, "Loaded at %p", plugin_info->dlobj);
+}
+
+static void
+command_plugin_need_more_params(const char *const params)
+{
+    (void) params;
+    notice(bot.msg->from->nick, "PLUGIN requires more parameters.");
 }
 
 /* Plugin manager call backs */
 static bool
 register_plugin(void)
 {
-    add_hook("on_privmsg", plugin_manage_command);
+    register_command("PLUGIN", 0, 900, command_plugin_need_more_params);
+    register_command("PLUGIN LIST", 0, 900, command_plugin_list);
+    register_command("PLUGIN HELP", 0, 900, command_plugin_help);
+    register_command("PLUGIN LOAD", 1, 900, command_plugin_load);
+    register_command("PLUGIN UNLOAD", 1, 900, command_plugin_unload);
+    register_command("PLUGIN RELOAD", 1, 900, command_plugin_reload);
+    register_command("PLUGIN INFO", 1, 900, command_plugin_info);
+    register_command("PLUGINS", 0, 900, command_plugin_need_more_params);
+    register_command("PLUGINS LIST", 0, 900, command_plugin_list);
+    register_command("PLUGINS HELP", 0, 900, command_plugin_help);
+    register_command("PLUGINS LOAD", 1, 900, command_plugin_load);
+    register_command("PLUGINS UNLOAD", 1, 900, command_plugin_unload);
+    register_command("PLUGINS RELOAD", 1, 900, command_plugin_reload);
+    register_command("PLUGINS INFO", 1, 900, command_plugin_info);
     return true;
 }
 
 static bool
 unregister_plugin(void)
 {
-    delete_hook("on_privmsg", plugin_manage_command);
+    unregister_command("PLUGIN", command_plugin_need_more_params);
+    unregister_command("PLUGIN LIST", command_plugin_list);
+    unregister_command("PLUGIN HELP", command_plugin_help);
+    unregister_command("PLUGIN LOAD", command_plugin_load);
+    unregister_command("PLUGIN UNLOAD", command_plugin_unload);
+    unregister_command("PLUGIN RELOAD", command_plugin_reload);
+    unregister_command("PLUGIN INFO", command_plugin_info);
+    unregister_command("PLUGINS", command_plugin_need_more_params);
+    unregister_command("PLUGINS LIST", command_plugin_list);
+    unregister_command("PLUGINS HELP", command_plugin_help);
+    unregister_command("PLUGINS LOAD", command_plugin_load);
+    unregister_command("PLUGINS UNLOAD", command_plugin_unload);
+    unregister_command("PLUGINS RELOAD", command_plugin_reload);
+    unregister_command("PLUGINS INFO", command_plugin_info);
     return true;
 }
 

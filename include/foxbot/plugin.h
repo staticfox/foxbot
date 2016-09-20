@@ -25,6 +25,15 @@
 
 #include <stdbool.h>
 
+typedef void (*cmd_func)(const char *param);
+
+struct command_t {
+    char *name;
+    int access;
+    cmd_func func;
+    unsigned params;
+};
+
 struct plugin_t {
     const char *name;
     bool (*register_func)(void);
@@ -48,5 +57,10 @@ void iunload_plugin(const char *name, bool announce);
 void iload_plugin(const char *name, bool announce);
 void load_conf_plugins(void);
 bool is_valid_plugin(const char *file, const struct plugin_t *p, bool announce);
+void register_command(const char *command, const int params, const int access, const cmd_func func);
+void unregister_command(const char *const command, const cmd_func func);
+void register_default_commands(void);
+struct command_t * find_command(const bool exec, const char *command, bool exact);
+void exec_command(void);
 
 #endif

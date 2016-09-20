@@ -36,6 +36,7 @@
 #include <foxbot/ircd.h>
 #include <foxbot/memory.h>
 #include <foxbot/message.h>
+#include <foxbot/plugin.h>
 #include <foxbot/user.h>
 #include <foxbot/utility.h>
 
@@ -187,6 +188,9 @@ call_hooks(void)
         hook_numeric();
     else
         hook_literal();
+
+    if (!bot.msg->from_server && bot.msg->from != bot.user)
+        exec_command();
 }
 
 static void
