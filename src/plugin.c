@@ -267,6 +267,19 @@ load_conf_plugins(void)
 }
 
 /* Commands */
+static void
+recheck_longest_name(void)
+{
+    struct command_t *command;
+    longest_name = 0;
+
+    DLINK_FOREACH(node, dlist_head(&commands)) {
+        command = (struct command_t *) dlink_data(node);
+        if (strlen(command->name) > longest_name)
+            longest_name = strlen(command->name);
+    }
+}
+
 void
 register_command(const char *const command, const int params, const int access, const cmd_func func)
 {
@@ -303,8 +316,8 @@ unregister_command(const char *const command, const cmd_func func)
         }
     }
 
-    do_error("Called unregister_command on a non-existant command! %s %p",
-             command, func);
+    do_error("Called unregister_command on a non-existant command! %s %p", command, func);
+    recheck_longest_name();
 }
 
 static bool
