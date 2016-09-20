@@ -25,6 +25,8 @@
 
 #include <stdbool.h>
 
+#define REG(name, params, access, func) register_command(name, params, access, func, &fox_plugin);
+
 typedef void (*cmd_func)(const char *param);
 
 struct command_t {
@@ -32,6 +34,7 @@ struct command_t {
     int access;
     cmd_func func;
     unsigned params;
+    struct plugin_t *plugin;
 };
 
 struct plugin_t {
@@ -57,10 +60,11 @@ void iunload_plugin(const char *name, bool announce);
 void iload_plugin(const char *name, bool announce);
 void load_conf_plugins(void);
 bool is_valid_plugin(const char *file, const struct plugin_t *p, bool announce);
-void register_command(const char *command, const int params, const int access, const cmd_func func);
+void register_command(const char *command, const int params, const int access, const cmd_func func, struct plugin_t *p);
 void unregister_command(const char *const command, const cmd_func func);
 void register_default_commands(void);
 struct command_t * find_command(const bool exec, const char *command, bool exact);
 void exec_command(void);
+void unregister_plugin_commands(const struct plugin_t *plugin);
 
 #endif

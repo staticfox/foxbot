@@ -201,6 +201,7 @@ iunload_plugin(const char *const name, const bool announce)
         return;
     }
 
+    unregister_plugin_commands(p);
     clean_up_plugin(plugin_handle);
     report_status(announce, "Unloaded plugin %s.", name);
 }
@@ -281,7 +282,7 @@ recheck_longest_name(void)
 }
 
 void
-register_command(const char *const command, const int params, const int access, const cmd_func func)
+register_command(const char *const command, const int params, const int access, const cmd_func func, struct plugin_t *p)
 {
     if (find_command(false, command, true)) {
         do_error("You cannot register a command with duplicate names. [%s]", command);
@@ -295,6 +296,7 @@ register_command(const char *const command, const int params, const int access, 
     hook->params = params;
     hook->access = access;
     hook->func = func;
+    hook->plugin = p;
     dlink_insert(&commands, hook);
 
     if (strlen(hook->name) > longest_name)
@@ -317,6 +319,23 @@ unregister_command(const char *const command, const cmd_func func)
     }
 
     do_error("Called unregister_command on a non-existant command! %s %p", command, func);
+    recheck_longest_name();
+}
+
+void
+unregister_plugin_commands(const struct plugin_t *const plugin)
+{
+    struct command_t *command;
+
+    DLINK_FOREACH(node, dlist_head(&commands)) {
+        command = (struct command_t *) dlink_data(node);
+        if (command->plugin == plugin) {
+            xfree(command->name);
+            xfree(command);
+            dlink_delete(node, &commands);
+        }
+    }
+
     recheck_longest_name();
 }
 
@@ -432,5 +451,5 @@ show_help(const char *const params)
 void
 register_default_commands(void)
 {
-    register_command("HELP", 0, 0, show_help);
+    register_command("HELP", 0, 0, show_help, NULL);
 }

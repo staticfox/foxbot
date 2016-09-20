@@ -140,40 +140,26 @@ command_plugin_need_more_params(const char *const params)
 static bool
 register_plugin(void)
 {
-    register_command("PLUGIN", 0, 900, command_plugin_need_more_params);
-    register_command("PLUGIN LIST", 0, 900, command_plugin_list);
-    register_command("PLUGIN HELP", 0, 900, command_plugin_help);
-    register_command("PLUGIN LOAD", 1, 900, command_plugin_load);
-    register_command("PLUGIN UNLOAD", 1, 900, command_plugin_unload);
-    register_command("PLUGIN RELOAD", 1, 900, command_plugin_reload);
-    register_command("PLUGIN INFO", 1, 900, command_plugin_info);
-    register_command("PLUGINS", 0, 900, command_plugin_need_more_params);
-    register_command("PLUGINS LIST", 0, 900, command_plugin_list);
-    register_command("PLUGINS HELP", 0, 900, command_plugin_help);
-    register_command("PLUGINS LOAD", 1, 900, command_plugin_load);
-    register_command("PLUGINS UNLOAD", 1, 900, command_plugin_unload);
-    register_command("PLUGINS RELOAD", 1, 900, command_plugin_reload);
-    register_command("PLUGINS INFO", 1, 900, command_plugin_info);
+    REG("PLUGIN", 0, 900, command_plugin_need_more_params);
+    REG("PLUGIN LIST", 0, 900, command_plugin_list);
+    REG("PLUGIN HELP", 0, 900, command_plugin_help);
+    REG("PLUGIN LOAD", 1, 900, command_plugin_load);
+    REG("PLUGIN UNLOAD", 1, 900, command_plugin_unload);
+    REG("PLUGIN RELOAD", 1, 900, command_plugin_reload);
+    REG("PLUGIN INFO", 1, 900, command_plugin_info);
+    REG("PLUGINS", 0, 900, command_plugin_need_more_params);
+    REG("PLUGINS LIST", 0, 900, command_plugin_list);
+    REG("PLUGINS HELP", 0, 900, command_plugin_help);
+    REG("PLUGINS LOAD", 1, 900, command_plugin_load);
+    REG("PLUGINS UNLOAD", 1, 900, command_plugin_unload);
+    REG("PLUGINS RELOAD", 1, 900, command_plugin_reload);
+    REG("PLUGINS INFO", 1, 900, command_plugin_info);
     return true;
 }
 
 static bool
 unregister_plugin(void)
 {
-    unregister_command("PLUGIN", command_plugin_need_more_params);
-    unregister_command("PLUGIN LIST", command_plugin_list);
-    unregister_command("PLUGIN HELP", command_plugin_help);
-    unregister_command("PLUGIN LOAD", command_plugin_load);
-    unregister_command("PLUGIN UNLOAD", command_plugin_unload);
-    unregister_command("PLUGIN RELOAD", command_plugin_reload);
-    unregister_command("PLUGIN INFO", command_plugin_info);
-    unregister_command("PLUGINS", command_plugin_need_more_params);
-    unregister_command("PLUGINS LIST", command_plugin_list);
-    unregister_command("PLUGINS HELP", command_plugin_help);
-    unregister_command("PLUGINS LOAD", command_plugin_load);
-    unregister_command("PLUGINS UNLOAD", command_plugin_unload);
-    unregister_command("PLUGINS RELOAD", command_plugin_reload);
-    unregister_command("PLUGINS INFO", command_plugin_info);
     return true;
 }
 
