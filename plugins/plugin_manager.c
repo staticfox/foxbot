@@ -147,13 +147,6 @@ register_plugin(void)
     REG("PLUGIN UNLOAD", 1, 900, command_plugin_unload);
     REG("PLUGIN RELOAD", 1, 900, command_plugin_reload);
     REG("PLUGIN INFO", 1, 900, command_plugin_info);
-    REG("PLUGINS", 0, 900, command_plugin_need_more_params);
-    REG("PLUGINS LIST", 0, 900, command_plugin_list);
-    REG("PLUGINS HELP", 0, 900, command_plugin_help);
-    REG("PLUGINS LOAD", 1, 900, command_plugin_load);
-    REG("PLUGINS UNLOAD", 1, 900, command_plugin_unload);
-    REG("PLUGINS RELOAD", 1, 900, command_plugin_reload);
-    REG("PLUGINS INFO", 1, 900, command_plugin_info);
     return true;
 }
 
