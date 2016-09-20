@@ -72,6 +72,13 @@ install:
       gem install coveralls-lcov;
     fi
 
+before_install:
+  - if [ "$TRAVIS_OS_NAME" = osx ]; then
+        brew update;
+        brew uninstall libtool;
+        brew install libtool;
+    fi
+
 before_script:
     # must set these flags after installation to avoid running coverage on
     # other dependencies like libcheck
