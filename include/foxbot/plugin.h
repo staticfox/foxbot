@@ -25,7 +25,7 @@
 
 #include <stdbool.h>
 
-#define REG(name, params, access, func) register_command(name, params, access, func, &fox_plugin);
+#define REG(name, params, access, func) register_command(name, params, access, func, &fox_plugin)
 
 typedef void (*cmd_func)(const char *param);
 
