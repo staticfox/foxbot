@@ -366,7 +366,7 @@ shutdown_test_server(void)
 }
 
 static int
-bind_socket(int sockfd)
+bind_socket(void)
 {
     int nport = 43210;
 
@@ -417,7 +417,7 @@ setup_test_server(void)
         exit(EXIT_FAILURE);
     }
 
-    const int port = bind_socket(sockfd);
+    const int port = bind_socket();
     listen(sockfd, 5);
     return port;
 }
