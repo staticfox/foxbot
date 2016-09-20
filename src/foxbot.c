@@ -125,7 +125,7 @@ do_error(char *line, ...)
 
     if (bot.registered) {
         DLINK_FOREACH(node, dlist_head(&botconfig.conf_modules)) {
-        const struct conf_multiple *const cm = dlink_data(node);
+            const struct conf_multiple *const cm = dlink_data(node);
             if (cm->type == CONF_DEBUG_CHANNEL) {
                 struct channel_t *const chptr = find_channel(cm->name);
                 if (chptr && channel_get_membership(chptr, bot.user) != NULL)
