@@ -189,7 +189,8 @@ call_hooks(void)
     else
         hook_literal();
 
-    if (!bot.msg->from_server && bot.msg->from != bot.user)
+    if (!bot.msg->from_server && bot.msg->from != bot.user
+        && (bot.msg->ctype == PRIVMSG || bot.msg->ctype == NOTICE))
         exec_command();
 }
 
