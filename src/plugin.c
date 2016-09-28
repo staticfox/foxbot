@@ -408,10 +408,12 @@ find_command(const bool exec, const char *command, bool exact)
             const char *param = strlen(bot.msg->params+1) - strlen(tmp_hook->name) > 1 ?
                 bot.msg->params + strlen(tmp_hook->name) + 2 : NULL;
             if (param == NULL) {
-                notice(bot.msg->from->nick, "%s requires more parameters.", tmp_hook->name);
+                if (bot.msg->from)
+                    notice(bot.msg->from->nick, "%s requires more parameters.", tmp_hook->name);
                 return NULL;
             } else if (param_count(param) < tmp_hook->params) {
-                notice(bot.msg->from->nick, "%s requires more parameters.", tmp_hook->name);
+                if (bot.msg->from)
+                    notice(bot.msg->from->nick, "%s requires more parameters.", tmp_hook->name);
                 return NULL;
             }
         }
@@ -419,7 +421,8 @@ find_command(const bool exec, const char *command, bool exact)
         return tmp_hook;
     }
 
-    if (exec) notice(bot.msg->from->nick, "%s is an unknown command.", command);
+    if (exec && bot.msg->from)
+        notice(bot.msg->from->nick, "%s is an unknown command.", command);
     return NULL;
 }
 
