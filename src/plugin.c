@@ -366,9 +366,9 @@ exec_command(void)
 static size_t
 param_count(const char *const params)
 {
-    size_t num = 1;
+    size_t num = 1, ii = 0;
 
-    for (size_t ii=0; params[ii]; ii++)
+    for (; params[ii]; ii++)
         if (params[ii] == ' ')
             num++;
 
