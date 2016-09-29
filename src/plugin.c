@@ -345,7 +345,7 @@ access(int level)
     if (find_admin_access(bot.msg->from) > level)
         return true;
 
-    if (!bot.msg->target_is_channel)
+    if (!bot.msg->target_is_channel && bot.msg->from)
         notice(bot.msg->from->nick, "You are not authorized to preform this action.");
 
     return false;
