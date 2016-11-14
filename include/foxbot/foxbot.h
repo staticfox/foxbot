@@ -23,8 +23,8 @@
 #ifndef FOX_FOXBOT_H_
 #define FOX_FOXBOT_H_
 
-#include "ircd.h"
-#include "socket.h"
+#include <foxbot/ircd.h>
+#include <foxbot/socket.h>
 
 #define MAX_IRC_BUF 512
 #include <signal.h>

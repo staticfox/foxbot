@@ -26,7 +26,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#include "list.h"
+#include <foxbot/list.h>
 
 /** A user object.  The object owns all of the member strings. */
 struct user_t {

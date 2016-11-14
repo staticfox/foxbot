@@ -25,7 +25,7 @@
 
 #include <stdbool.h>
 
-#include "foxbot.h"
+#include <foxbot/foxbot.h>
 
 struct msg_t {
     enum commands ctype;

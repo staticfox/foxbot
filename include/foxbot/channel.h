@@ -26,8 +26,8 @@
 #include <time.h>
 #include <stddef.h>
 
-#include "list.h"
-#include "user.h"
+#include <foxbot/list.h>
+#include <foxbot/user.h>
 
 #define CFLAG_USEROP    0x01
 #define CFLAG_VOICE     0x02
