@@ -52,7 +52,8 @@ enum commands {
     NICK,
     CAP,
     ACCOUNT,
-    WALLOPS
+    WALLOPS,
+    TOPIC
 };
 
 enum bot_status {

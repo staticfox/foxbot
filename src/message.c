@@ -85,6 +85,7 @@ set_command_enum(void)
     if (do_set_enum("CAP",     CAP)    ) return;
     if (do_set_enum("ACCOUNT", ACCOUNT)) return;
     if (do_set_enum("WALLOPS", WALLOPS)) return;
+    if (do_set_enum("TOPIC",   TOPIC)  ) return;
 
     do_error("Unhandled command: %s", bot.msg->command);
 }
@@ -175,6 +176,9 @@ hook_literal(void)
         break;
     case WALLOPS:
         exec_hook("on_wallops");
+        break;
+    case TOPIC:
+        exec_hook("on_topic");
         break;
     default:
         break;
