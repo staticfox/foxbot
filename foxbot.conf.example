@@ -9,8 +9,8 @@
  * Defines core configuration and host information for your bot.
  *
  * The `plugin` field will load the specified plugin at runtime.
- * The plugin must end in a .so file and must be located in the
- * plugins directory. Multiple plugins can be specified.
+ * The plugin must be located in the plugins directory. Multiple
+ * plugins can be specified.
  *
  * The `nick` field is what the bot will use to connect to the network.
  *
@@ -35,8 +35,8 @@ bot {
     /* Uncomment to load this plugin. You can add as many plugins
      * as you like.
      */
-    // plugin = "echo_test.so";
-    plugin = "plugin_manager.so"
+    // plugin = "echo_test";
+    plugin = "plugin_manager"
     prefix = ".";
 
     nick = "foxbot";
