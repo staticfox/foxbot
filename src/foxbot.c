@@ -186,6 +186,13 @@ init_foxbot(int argc, char **argv)
 {
     static const struct msg_t MSG_EMPTY;
     static const struct ircd_t IRCD_EMPTY;
+
+    if (lt_dlinit() != 0) {
+        fprintf(stderr, "libltdl failed to initialize: %s\n", lt_dlerror());
+        fflush(stderr);
+        abort();
+    }
+
     bot.msg = xmalloc(sizeof(*bot.msg));
     *bot.msg = MSG_EMPTY;
     bot.msg->from = xmalloc(sizeof(*bot.msg->from));
@@ -224,6 +231,12 @@ quit_foxbot(void)
     static const struct bot_t BOT_EMPTY;
     bot = BOT_EMPTY;
     quit_signal = 0;
+
+    if (lt_dlexit() != 0) {
+        fprintf(stderr, "libltdl failed to shut down: %s\n", lt_dlerror());
+        fflush(stderr);
+        abort();
+    }
 }
 
 static bool

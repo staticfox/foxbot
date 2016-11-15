@@ -122,7 +122,7 @@ connect_parse_setup(Suite *s)
     TCase *tc = tcase_create("connect_parse");
     tcase_set_timeout(tc, 20);
 
-    tcase_add_checked_fixture(tc, NULL, delete_foxbot);
+    tcase_add_checked_fixture(tc, NULL, NULL);
     tcase_add_test(tc, connect_check);
     tcase_add_test(tc, ircd_support_check);
     tcase_add_test(tc, ircd_ping_pong);

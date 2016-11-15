@@ -24,6 +24,7 @@
 #define FOX_PLUGIN_H
 
 #include <stdbool.h>
+#include <ltdl.h>
 
 #define REG(name, params, access, func) register_command(name, params, access, func, &fox_plugin)
 
@@ -48,7 +49,7 @@ struct plugin_t {
 };
 
 struct plugin_handle_t {
-    void *dlobj;
+    lt_dlhandle dlobj;
     char *file_name;
     struct plugin_t *plugin;
 };

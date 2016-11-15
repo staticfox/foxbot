@@ -70,7 +70,7 @@ hook_setup(Suite *s)
 {
     TCase *tc = tcase_create("hook");
 
-    tcase_add_checked_fixture(tc, NULL, delete_foxbot);
+    tcase_add_checked_fixture(tc, NULL, NULL);
     tcase_add_test(tc, hook_check);
     tcase_add_test(tc, hook_privmsg);
 

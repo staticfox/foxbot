@@ -76,7 +76,7 @@ cap_parse_setup(Suite *s)
 {
     TCase *tc = tcase_create("cap_parse");
 
-    tcase_add_checked_fixture(tc, NULL, delete_foxbot);
+    tcase_add_checked_fixture(tc, NULL, NULL);
     tcase_add_test(tc, check_cap_ls);
     tcase_add_test(tc, check_cap_ack);
     tcase_add_test(tc, check_cap_modifier);

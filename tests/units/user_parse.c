@@ -160,7 +160,7 @@ user_parse_setup(Suite *s)
 {
     TCase *tc = tcase_create("user_parse");
 
-    tcase_add_checked_fixture(tc, NULL, delete_foxbot);
+    tcase_add_checked_fixture(tc, NULL, NULL);
     tcase_add_test(tc, user_mode_check);
     tcase_add_test(tc, user_nick);
     tcase_add_test(tc, user_nick_me);

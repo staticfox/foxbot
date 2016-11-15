@@ -479,7 +479,7 @@ channel_parse_setup(Suite *s)
     tcase_set_timeout(tc, 30);
     /* ^ Excessive */
 
-    tcase_add_checked_fixture(tc, NULL, delete_foxbot);
+    tcase_add_checked_fixture(tc, NULL, NULL);
     tcase_add_test(tc, simple_channel_check);
     tcase_add_test(tc, channel_part_check);
     tcase_add_test(tc, channel_quit_check);

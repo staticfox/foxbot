@@ -22,8 +22,9 @@
 
 #include <assert.h>
 #include <config.h>
-#include <dlfcn.h>
+#include <inttypes.h>
 #include <stdarg.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -139,13 +140,13 @@ is_valid_plugin(const char *const file, const struct plugin_t *const p, const bo
 }
 
 static void
-dl_safe_close(void *addr)
+dl_safe_close(lt_dlhandle addr)
 {
-    int res = dlclose(addr);
+    int res = lt_dlclose(addr);
 
     /* abort? */
     if (res != 0)
-        report_status("Error closing shared library: %s", dlerror());
+        report_status("Error closing shared library: %s", lt_dlerror());
 }
 
 static void
@@ -164,13 +165,15 @@ iregister_plugin(struct plugin_handle_t *plugin_handle, const bool announce)
     const struct plugin_t *const p = plugin_handle->plugin;
 
     if (!p->register_func()) {
-        report_status(announce, "Error loading plugin %s (%p)", p->name, plugin_handle->dlobj);
+        report_status(announce, "Error loading plugin %s (" PRIxPTR ")",
+                      p->name, (uintptr_t)plugin_handle->dlobj);
         clean_up_plugin(plugin_handle);
         return;
     }
 
-    report_status(announce, "Registered plugin %s by %s, compiled %s. Loaded at address %p.",
-           p->name, p->author, p->build_time, plugin_handle->dlobj);
+    report_status(announce, "Registered plugin %s by %s, compiled %s. "
+                  "Loaded at address " PRIxPTR ".", p->name, p->author,
+                  p->build_time, (uintptr_t)plugin_handle->dlobj);
 
     dlink_insert(&plugins, plugin_handle);
 }
@@ -217,6 +220,11 @@ iload_plugin(const char *const name, const bool announce)
         return;
     }
 
+    if (strchr(name, '.') != NULL) {
+        report_status(announce, "Plugin names cannot include dots.");
+        return;
+    }
+
     if (plugin_exists(name)) {
         report_status(announce, "%s is already loaded.", name);
         return;
@@ -226,14 +234,14 @@ iload_plugin(const char *const name, const bool announce)
     plugin_dir = plugin_dir ? plugin_dir : PLUGIN_DIR;
     snprintf(buf, sizeof(buf), "%s/%s", plugin_dir, name);
 
-    void *mod = dlopen(buf, RTLD_NOW);
+    lt_dlhandle mod = lt_dlopenext(buf);
 
     if (!mod) {
-        report_status(announce, "Error opening %s: %s", name, dlerror());
+        report_status(announce, "Error opening %s: %s", name, lt_dlerror());
         return;
     }
 
-    void *obj = dlsym(mod, "fox_plugin");
+    void *obj = lt_dlsym(mod, "fox_plugin");
     struct plugin_t *plugin = (struct plugin_t *) obj;
 
     if (!is_valid_plugin(name, plugin, announce)) {

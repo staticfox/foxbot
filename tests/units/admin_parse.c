@@ -95,7 +95,7 @@ admin_setup(Suite *s)
 {
     TCase *tc = tcase_create("admin_parse");
 
-    tcase_add_checked_fixture(tc, NULL, delete_foxbot);
+    tcase_add_checked_fixture(tc, NULL, NULL);
     tcase_add_test(tc, check_admin_nickserv);
     tcase_add_test(tc, check_admin_host);
     tcase_add_test(tc, check_admin_noaccess);

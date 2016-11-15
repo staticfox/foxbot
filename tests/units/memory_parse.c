@@ -91,7 +91,7 @@ memory_setup(Suite *s)
 {
     TCase *tc = tcase_create("memory_parse");
 
-    tcase_add_checked_fixture(tc, NULL, delete_foxbot);
+    tcase_add_checked_fixture(tc, NULL, NULL);
     tcase_add_test(tc, calloc_check);
     tcase_add_test(tc, malloc_check);
     tcase_add_test(tc, realloc_check);

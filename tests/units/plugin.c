@@ -61,7 +61,7 @@ START_TEST(check_load_plugin_loader)
     begin_test();
 
     bot.msg->from = bot.user;
-    iload_plugin("plugin_manager.so", true);
+    iload_plugin("plugin_manager", true);
     yield_to_server();
 
     ck_assert_ptr_ne(strstr(last_buffer, "NOTICE foxbot :Registered plugin Plugin Manager by staticfox"), NULL);
@@ -76,10 +76,10 @@ START_TEST(check_load_plugin_path)
 
     bot.msg->from = bot.user;
 
-    iload_plugin("../rogue.so", true);
+    iload_plugin("../rogue", true);
     wait_for_last_buf("NOTICE foxbot :Plugin names cannot include pathes.");
 
-    iload_plugin("plugin_manager.so", true);
+    iload_plugin("plugin_manager", true);
     end_test();
 }
 END_TEST
@@ -90,8 +90,8 @@ START_TEST(check_load_plugin_exists)
 
     bot.msg->from = bot.user;
 
-    iload_plugin("echo_test.so", true);
-    wait_for_last_buf("NOTICE foxbot :echo_test.so is already loaded.");
+    iload_plugin("echo_test", true);
+    wait_for_last_buf("NOTICE foxbot :echo_test is already loaded.");
 
     end_test();
 }
@@ -103,9 +103,9 @@ START_TEST(check_load_plugin_unknown)
 
     bot.msg->from = bot.user;
 
-    iload_plugin("unknownplugin.so", true);
+    iload_plugin("unknownplugin", true);
     yield_to_server();
-    ck_assert_ptr_ne(strstr(last_buffer, "NOTICE foxbot :Error opening unknownplugin.so: "), NULL);
+    ck_assert_ptr_ne(strstr(last_buffer, "NOTICE foxbot :Error opening unknownplugin: "), NULL);
 
     end_test();
 }
@@ -117,9 +117,9 @@ START_TEST(check_load_plugin_nullptr)
 
     bot.msg->from = bot.user;
 
-    ck_assert_int_eq(is_valid_plugin("unknown.so", NULL, true), 0);
+    ck_assert_int_eq(is_valid_plugin("unknown", NULL, true), 0);
     yield_to_server();
-    ck_assert_str_eq(last_buffer, "NOTICE foxbot :unknown.so: No valid foxbot struct found.");
+    ck_assert_str_eq(last_buffer, "NOTICE foxbot :unknown: No valid foxbot struct found.");
 
     end_test();
 }
@@ -134,9 +134,9 @@ START_TEST(check_load_plugin_noname)
     struct plugin_t fox_plugin;
     fox_plugin = EMPTY_PLUGIN;
 
-    ck_assert_int_eq(is_valid_plugin("unknown.so", &fox_plugin, true), 0);
+    ck_assert_int_eq(is_valid_plugin("unknown", &fox_plugin, true), 0);
     yield_to_server();
-    ck_assert_str_eq(last_buffer, "NOTICE foxbot :unknown.so: Plugin name not found.");
+    ck_assert_str_eq(last_buffer, "NOTICE foxbot :unknown: Plugin name not found.");
 
     end_test();
 }
@@ -152,9 +152,9 @@ START_TEST(check_load_plugin_noregfunc)
     fox_plugin = EMPTY_PLUGIN;
     fox_plugin.name = xstrdup("Unit Test");
 
-    ck_assert_int_eq(is_valid_plugin("unknown.so", &fox_plugin, true), 0);
+    ck_assert_int_eq(is_valid_plugin("unknown", &fox_plugin, true), 0);
     yield_to_server();
-    ck_assert_str_eq(last_buffer, "NOTICE foxbot :unknown.so: No registration function found.");
+    ck_assert_str_eq(last_buffer, "NOTICE foxbot :unknown: No registration function found.");
 
     xfree((char *) fox_plugin.name);
 
@@ -173,9 +173,9 @@ START_TEST(check_load_plugin_nounregfunc)
     fox_plugin.name = xstrdup("Unit Test");
     fox_plugin.register_func = &test_reg;
 
-    ck_assert_int_eq(is_valid_plugin("unknown.so", &fox_plugin, true), 0);
+    ck_assert_int_eq(is_valid_plugin("unknown", &fox_plugin, true), 0);
     yield_to_server();
-    ck_assert_str_eq(last_buffer, "NOTICE foxbot :unknown.so: No unregistration function found.");
+    ck_assert_str_eq(last_buffer, "NOTICE foxbot :unknown: No unregistration function found.");
     xfree((char *) fox_plugin.name);
 
     end_test();
@@ -194,9 +194,9 @@ START_TEST(check_load_plugin_noversion)
     fox_plugin.register_func = &test_reg;
     fox_plugin.unregister_func = &test_unreg;
 
-    ck_assert_int_eq(is_valid_plugin("unknown.so", &fox_plugin, true), 0);
+    ck_assert_int_eq(is_valid_plugin("unknown", &fox_plugin, true), 0);
     yield_to_server();
-    ck_assert_str_eq(last_buffer, "NOTICE foxbot :unknown.so: No version found.");
+    ck_assert_str_eq(last_buffer, "NOTICE foxbot :unknown: No version found.");
     xfree((char *) fox_plugin.name);
 
     end_test();
@@ -216,9 +216,9 @@ START_TEST(check_load_plugin_nodescription)
     fox_plugin.unregister_func = &test_unreg;
     fox_plugin.version = xstrdup("0.0.0");
 
-    ck_assert_int_eq(is_valid_plugin("unknown.so", &fox_plugin, true), 0);
+    ck_assert_int_eq(is_valid_plugin("unknown", &fox_plugin, true), 0);
     yield_to_server();
-    ck_assert_str_eq(last_buffer, "NOTICE foxbot :unknown.so: No description found.");
+    ck_assert_str_eq(last_buffer, "NOTICE foxbot :unknown: No description found.");
     xfree((char *) fox_plugin.name);
     xfree((char *) fox_plugin.version);
 
@@ -240,9 +240,9 @@ START_TEST(check_load_plugin_noauthor)
     fox_plugin.version = xstrdup("0.0.0");
     fox_plugin.description = xstrdup("Some description");
 
-    ck_assert_int_eq(is_valid_plugin("unknown.so", &fox_plugin, true), 0);
+    ck_assert_int_eq(is_valid_plugin("unknown", &fox_plugin, true), 0);
     yield_to_server();
-    ck_assert_str_eq(last_buffer, "NOTICE foxbot :unknown.so: No author found.");
+    ck_assert_str_eq(last_buffer, "NOTICE foxbot :unknown: No author found.");
     xfree((char *) fox_plugin.name);
     xfree((char *) fox_plugin.version);
     xfree((char *) fox_plugin.description);
@@ -266,9 +266,9 @@ START_TEST(check_load_plugin_nobuildtime)
     fox_plugin.description = xstrdup("Some description");
     fox_plugin.author = xstrdup("staticfox");
 
-    ck_assert_int_eq(is_valid_plugin("unknown.so", &fox_plugin, true), 0);
+    ck_assert_int_eq(is_valid_plugin("unknown", &fox_plugin, true), 0);
     yield_to_server();
-    ck_assert_str_eq(last_buffer, "NOTICE foxbot :unknown.so: No build time found.");
+    ck_assert_str_eq(last_buffer, "NOTICE foxbot :unknown: No build time found.");
     xfree((char *) fox_plugin.name);
     xfree((char *) fox_plugin.version);
     xfree((char *) fox_plugin.description);
@@ -294,7 +294,7 @@ START_TEST(check_load_plugin_valid)
         .build_time = __DATE__", "__TIME__,
     };
 
-    ck_assert_int_eq(is_valid_plugin("unknown.so", &fox_plugin, true), 1);
+    ck_assert_int_eq(is_valid_plugin("unknown", &fox_plugin, true), 1);
 
     end_test();
 }
@@ -316,7 +316,7 @@ START_TEST(check_load_plugin_regfailure)
         .build_time = __DATE__", "__TIME__,
     };
 
-    ck_assert_int_eq(is_valid_plugin("unknown.so", &fox_plugin, true), 1);
+    ck_assert_int_eq(is_valid_plugin("unknown", &fox_plugin, true), 1);
 
     /* iregister_plugin automatically frees this */
     struct plugin_handle_t *plugin_handle = xmalloc(sizeof(*plugin_handle));
@@ -349,11 +349,11 @@ START_TEST(check_load_plugin_regsuccess)
         .build_time = __DATE__", "__TIME__,
     };
 
-    ck_assert_int_eq(is_valid_plugin("unknown.so", &fox_plugin, true), 1);
+    ck_assert_int_eq(is_valid_plugin("unknown", &fox_plugin, true), 1);
 
     struct plugin_handle_t *plugin_handle = xmalloc(sizeof(*plugin_handle));
     *plugin_handle = EMPTY_PLUGIN_HANDLE;
-    plugin_handle->file_name = xstrdup("unknown.so");
+    plugin_handle->file_name = xstrdup("unknown");
     plugin_handle->dlobj = NULL;
     plugin_handle->plugin = &fox_plugin;
 
@@ -373,8 +373,8 @@ START_TEST(check_plugin_info)
 {
     begin_test();
 
-    ck_assert_ptr_ne(get_plugin_info("echo_test.so"), NULL);
-    ck_assert_ptr_eq(get_plugin_info("unknown.so"), NULL);
+    ck_assert_ptr_ne(get_plugin_info("echo_test"), NULL);
+    ck_assert_ptr_eq(get_plugin_info("unknown"), NULL);
 
     end_test();
 }
@@ -386,7 +386,7 @@ START_TEST(check_plugin_list)
 
     list_plugins("foxbot");
 
-    wait_for_last_buf("NOTICE foxbot :Echo Test - echo_test.so");
+    wait_for_last_buf("NOTICE foxbot :Echo Test - echo_test");
 
     end_test();
 }
@@ -398,9 +398,9 @@ START_TEST(check_unload_plugin_notexists)
 
     bot.msg->from = bot.user;
 
-    iunload_plugin("unknown.so", true);
+    iunload_plugin("unknown", true);
     yield_to_server();
-    ck_assert_str_eq(last_buffer, "NOTICE foxbot :Unable to find plugin unknown.so.");
+    ck_assert_str_eq(last_buffer, "NOTICE foxbot :Unable to find plugin unknown.");
 
     end_test();
 }
@@ -422,11 +422,11 @@ START_TEST(check_unload_plugin_unregfailure)
         .build_time = __DATE__", "__TIME__,
     };
 
-    ck_assert_int_eq(is_valid_plugin("unknown.so", &fox_plugin, true), 1);
+    ck_assert_int_eq(is_valid_plugin("unknown", &fox_plugin, true), 1);
 
     struct plugin_handle_t *plugin_handle = xmalloc(sizeof(*plugin_handle));
     *plugin_handle = EMPTY_PLUGIN_HANDLE;
-    plugin_handle->file_name = xstrdup("unknown.so");
+    plugin_handle->file_name = xstrdup("unknown");
     plugin_handle->dlobj = NULL;
     plugin_handle->plugin = &fox_plugin;
 
@@ -435,7 +435,7 @@ START_TEST(check_unload_plugin_unregfailure)
 
     ck_assert_ptr_ne(strstr(last_buffer, "NOTICE foxbot :Registered plugin Unit Test by staticfox"), NULL);
 
-    iunload_plugin("unknown.so", true);
+    iunload_plugin("unknown", true);
     yield_to_server();
     ck_assert_str_eq(last_buffer, "NOTICE foxbot :Error unloading plugin Unit Test.");
 
@@ -462,12 +462,12 @@ START_TEST(check_unload_plugin_unregsuccess)
         .build_time = __DATE__", "__TIME__,
     };
 
-    ck_assert_int_eq(is_valid_plugin("unknown.so", &fox_plugin, true), 1);
+    ck_assert_int_eq(is_valid_plugin("unknown", &fox_plugin, true), 1);
 
     /* automatically gets freed in iunload_plugin */
     struct plugin_handle_t *plugin_handle = xmalloc(sizeof(*plugin_handle));
     *plugin_handle = EMPTY_PLUGIN_HANDLE;
-    plugin_handle->file_name = xstrdup("unknown.so");
+    plugin_handle->file_name = xstrdup("unknown");
     plugin_handle->dlobj = NULL;
     plugin_handle->plugin = &fox_plugin;
 
@@ -476,9 +476,9 @@ START_TEST(check_unload_plugin_unregsuccess)
 
     ck_assert_ptr_ne(strstr(last_buffer, "NOTICE foxbot :Registered plugin Unit Test by staticfox"), NULL);
 
-    iunload_plugin("unknown.so", true);
+    iunload_plugin("unknown", true);
     yield_to_server();
-    ck_assert_str_eq(last_buffer, "NOTICE foxbot :Unloaded plugin unknown.so.");
+    ck_assert_str_eq(last_buffer, "NOTICE foxbot :Unloaded plugin unknown.");
 
     end_test();
 }
@@ -489,7 +489,7 @@ plugin_setup(Suite *s)
 {
     TCase *tc = tcase_create("plugin");
 
-    tcase_add_checked_fixture(tc, NULL, delete_foxbot);
+    tcase_add_checked_fixture(tc, NULL, NULL);
     tcase_add_test(tc, check_load_plugin_loader);
     tcase_add_test(tc, check_load_plugin_path);
     tcase_add_test(tc, check_load_plugin_exists);
