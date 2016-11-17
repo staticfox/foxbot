@@ -57,27 +57,25 @@ vpanic_message(const char *file,
     fflush(stderr);
 }
 
-void
+int
 fox_strerror(int errnum, char *buf, size_t buflen)
 {
-    static const char default_msg[] = "Unknown error";
+    int e = 0;
+    if (buflen > 0) {
+        size_t i = 0;
 #ifdef STRERROR_R_CHAR_P
-    char *msg;
-    if ((msg = strerror_r(errnum, buf, buflen)) {
-        if (!(msg >= buf && msg < buf + buflen)) {
-            strncpy(buf, msg, buflen);
-            buf[buflen - 1] = '\0';
+        char *const msg = strerror_r(errnum, buf, buflen);
+        /* copy downward since msg may be a substring of buf */
+        for (; i < buflen - 1 && msg[i] != '\0'; ++i) {
+            buf[i] = msg[i];
         }
-        return;
-    }
 #else
-    if (!strerror_r(errnum, buf, buflen))
-        return;
+        e = strerror_r(errnum, buf, buflen);
+        if (e == 0) {
+            return 0;
+        }
 #endif
-    if (buflen < sizeof(default_msg)) {
-        fprintf(stderr, PACKAGE_NAME ":fox_strerror: buffer too small\n");
-        fflush(stderr);
-        abort();
+        buf[i] = '\0';
     }
-    strcpy(buf, default_msg);
+    return e;
 }
