@@ -36,7 +36,7 @@ bot {
      * as you like.
      */
     // plugin = "echo_test";
-    plugin = "plugin_manager"
+    plugin = "plugin_manager";
     prefix = ".";
 
     nick = "foxbot";
